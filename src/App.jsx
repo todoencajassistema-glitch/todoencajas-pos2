@@ -1781,7 +1781,7 @@ export default function App(){
               <span style={{color:"#E8681A",fontWeight:600}}>${ordenItems.reduce((a,i)=>a+i.cantidad*Number(i.costo),0).toFixed(2)}</span>
             </div>
             <div style={{display:"flex",gap:10}}>
-              <button className="btn btn-gold" style={{flex:1}} onClick={()=>{
+              <button className="btn btn-gold" style={{flex:1}} onClick={async ()=>{
                 const itemsValidos=ordenItems.filter(i=>i.cantidad>0);
                 if(!itemsValidos.length){notify("Agrega al menos un producto","error");return;}
                 const folio=`ORD-${String(ordenes.length+1).padStart(4,"0")}`;
@@ -1893,7 +1893,7 @@ export default function App(){
               <span style={{color:"#E8681A",fontWeight:600}}>${editOrden.items.reduce((a,i)=>a+i.cantidad*Number(i.costo),0).toFixed(2)}</span>
             </div>
             <div style={{display:"flex",gap:10}}>
-              <button className="btn btn-gold" style={{flex:1}} onClick={()=>{
+              <button className="btn btn-gold" style={{flex:1}} onClick={async ()=>{
                 await sb.patch("ordenes_compra", editOrden.id, {
                   nota:editOrden.nota,
                   items: JSON.stringify(editOrden.items),
@@ -1920,7 +1920,7 @@ export default function App(){
               <input value={motivoCancelOrden} onChange={e=>setMotivoCancelOrden(e.target.value)} placeholder="Ej: Precio muy alto, cambio de proveedor..." style={{width:"100%"}}/>
             </div>
             <div style={{display:"flex",gap:10}}>
-              <button className="btn btn-red" style={{flex:1,padding:"10px"}} onClick={()=>{
+              <button className="btn btn-red" style={{flex:1,padding:"10px"}} onClick={async ()=>{
                 await sb.patch("ordenes_compra", showCancelarOrden.id, {cancelada:true, motivo_cancel:motivoCancelOrden||"Sin motivo"});
                 setOrdenes(prev=>prev.map(o=>o.id===showCancelarOrden.id?{...o,cancelada:true,motivoCancel:motivoCancelOrden||"Sin motivo"}:o));
                 setShowCancelarOrden(null);notify("Orden cancelada");
@@ -1960,7 +1960,7 @@ export default function App(){
               <span style={{color:"#E8681A",fontWeight:600}}>${editOrden.items.reduce((a,i)=>a+i.cantidad*Number(i.costo),0).toFixed(2)}</span>
             </div>
             <div style={{display:"flex",gap:10}}>
-              <button className="btn btn-gold" style={{flex:1}} onClick={()=>{
+              <button className="btn btn-gold" style={{flex:1}} onClick={async ()=>{
                 await sb.patch("ordenes_compra", editOrden.id, {
                   nota:editOrden.nota,
                   items: JSON.stringify(editOrden.items),
@@ -1987,7 +1987,7 @@ export default function App(){
               <input value={motivoCancelOrden} onChange={e=>setMotivoCancelOrden(e.target.value)} placeholder="Ej: Precio muy alto, cambio de proveedor..." style={{width:"100%"}}/>
             </div>
             <div style={{display:"flex",gap:10}}>
-              <button className="btn btn-red" style={{flex:1,padding:"10px"}} onClick={()=>{
+              <button className="btn btn-red" style={{flex:1,padding:"10px"}} onClick={async ()=>{
                 await sb.patch("ordenes_compra", showCancelarOrden.id, {cancelada:true, motivo_cancel:motivoCancelOrden||"Sin motivo"});
                 setOrdenes(prev=>prev.map(o=>o.id===showCancelarOrden.id?{...o,cancelada:true,motivoCancel:motivoCancelOrden||"Sin motivo"}:o));
                 setShowCancelarOrden(null);notify("Orden cancelada");
