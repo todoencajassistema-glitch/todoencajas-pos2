@@ -393,18 +393,22 @@ export default function App(){
   // ── LOAD DATA ──────────────────────────────────────────────────────────────
   const loadData = useCallback(async () => {
     try {
-      const [prods, clts, provs, sts, usrs] = await Promise.all([
+      const [prods, clts, provs, sts, usrs, ords, ents] = await Promise.all([
         sb.get("productos","order=nombre.asc&activo=eq.true"),
         sb.get("clientes","order=nombre.asc"),
         sb.get("proveedores","order=nombre.asc"),
         sb.get("ventas","order=created_at.desc&limit=200"),
         sb.get("usuarios","order=nombre.asc"),
+        sb.get("ordenes_compra","order=created_at.desc"),
+        sb.get("entradas_mercancia","order=created_at.desc"),
       ]);
       if(Array.isArray(prods)) setProducts(prods);
       if(Array.isArray(clts))  setClientes(clts);
       if(Array.isArray(provs)) setProveedores(provs);
       if(Array.isArray(sts))   setSales(sts);
       if(Array.isArray(usrs))  setDbUsers(usrs);
+      if(Array.isArray(ords))  setOrdenes(ords.map(o=>({...o, items: typeof o.items === 'string' ? JSON.parse(o.items) : (o.items||[])})));
+      if(Array.isArray(ents))  setEntradas(ents.map(e=>({...e, items: typeof e.items === 'string' ? JSON.parse(e.items) : (e.items||[])})));
       setDataLoaded(true);
     } catch(e) {
       console.error("Error cargando datos:", e);
@@ -1426,15 +1430,17 @@ export default function App(){
                       <td style={{fontSize:11,color:"#555"}}>{fmtDate(o.fecha)}</td>
                       <td>{o.proveedor}</td>
                       <td style={{fontSize:12,color:"#666"}}>{o.items.filter(i=>i.cantidad>0).length} productos</td>
-                      <td><span className={`tag ${o.recibida?"tag-ok":"tag-warn"}`}>{o.recibida?"✓ Recibida":"⏳ Pendiente"}</span></td>
+                      <td><span className={`tag ${o.recibida?"tag-ok":o.cancelada?"tag-danger":"tag-warn"}`}>{o.recibida?"✓ Recibida":o.cancelada?"✕ Cancelada":"⏳ Pendiente"}</span></td>
                       <td>
                         <div style={{display:"flex",gap:5}}>
-                          <button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>printOrden(o)}>🖨 Imprimir</button>
-                          {!o.recibida&&<button className="btn btn-green" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>{
+                          <button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>printOrden(o)}>🖨 PDF</button>
+                          {!o.recibida&&!o.cancelada&&<button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setEditOrden({...o,items:[...o.items.map(i=>({...i}))]})}>✏ Editar</button>}
+                          {!o.recibida&&!o.cancelada&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>{setShowCancelarOrden(o);setMotivoCancelOrden("");}}>✕ Cancelar</button>}
+                          {!o.recibida&&!o.cancelada&&<button className="btn btn-green" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>{
                             const init={};
                             o.items.filter(i=>i.cantidad>0).forEach(i=>{init[i.productoId]=i.cantidad;});
                             setEntradaItems(init);setEntradaRecibe(currentUser.nombre);setShowNuevaEntrada(o);
-                          }}>📥 Registrar Entrada</button>}
+                          }}>📥 Entrada</button>}
                         </div>
                       </td>
                     </tr>
@@ -1780,10 +1786,18 @@ export default function App(){
                 if(!itemsValidos.length){notify("Agrega al menos un producto","error");return;}
                 const folio=`ORD-${String(ordenes.length+1).padStart(4,"0")}`;
                 const nuevaOrden={id:Date.now(),folio,fecha:new Date().toISOString(),proveedor:ordenProv,nota:ordenNota,items:itemsValidos,recibida:false};
-                setOrdenes(prev=>[nuevaOrden,...prev]);
+                const savedOrden = await sb.post("ordenes_compra", {
+                  folio, proveedor:ordenProv, nota:ordenNota,
+                  items: JSON.stringify(itemsValidos),
+                  total: itemsValidos.reduce((a,i)=>a+i.cantidad*Number(i.costo),0),
+                  recibida:false, cancelada:false, creado_por:currentUser.nombre
+                });
+                const ordenConId = Array.isArray(savedOrden)?savedOrden[0]:savedOrden;
+                const ordenFinal = ordenConId?.id ? {...nuevaOrden, id:ordenConId.id} : nuevaOrden;
+                setOrdenes(prev=>[ordenFinal,...prev]);
                 setShowNuevaOrden(false);
                 notify("Orden " + folio + " creada");
-                setTimeout(()=>printOrden(nuevaOrden),300);
+                setTimeout(()=>printOrden(ordenFinal),300);
               }}>Crear e Imprimir Orden</button>
               <button className="btn btn-dark" style={{flex:1}} onClick={()=>setShowNuevaOrden(false)}>Cancelar</button>
             </div>
@@ -1831,6 +1845,13 @@ export default function App(){
                 await loadData();
                 const folio=`ENT-${String(entradas.length+1).padStart(4,"0")}`;
                 const entrada={id:Date.now(),folio,fecha:new Date().toISOString(),proveedor:showNuevaEntrada.proveedor,recibe:entradaRecibe,refOrden:showNuevaEntrada.folio,items:itemsRecibidos};
+                const savedEntrada = await sb.post("entradas_mercancia", {
+                  folio, proveedor:showNuevaEntrada.proveedor,
+                  ref_orden:showNuevaEntrada.folio,
+                  items: JSON.stringify(itemsRecibidos),
+                  recibe: entradaRecibe
+                });
+                await sb.patch("ordenes_compra", showNuevaEntrada.id, {recibida:true});
                 setEntradas(prev=>[entrada,...prev]);
                 setOrdenes(prev=>prev.map(o=>o.id===showNuevaEntrada.id?{...o,recibida:true}:o));
                 setShowNuevaEntrada(null);setLoading(false);
@@ -1873,6 +1894,11 @@ export default function App(){
             </div>
             <div style={{display:"flex",gap:10}}>
               <button className="btn btn-gold" style={{flex:1}} onClick={()=>{
+                await sb.patch("ordenes_compra", editOrden.id, {
+                  nota:editOrden.nota,
+                  items: JSON.stringify(editOrden.items),
+                  total: editOrden.items.reduce((a,i)=>a+i.cantidad*Number(i.costo),0)
+                });
                 setOrdenes(prev=>prev.map(o=>o.id===editOrden.id?{...editOrden}:o));
                 setEditOrden(null);notify("Orden actualizada");
               }}>Guardar Cambios</button>
@@ -1895,6 +1921,7 @@ export default function App(){
             </div>
             <div style={{display:"flex",gap:10}}>
               <button className="btn btn-red" style={{flex:1,padding:"10px"}} onClick={()=>{
+                await sb.patch("ordenes_compra", showCancelarOrden.id, {cancelada:true, motivo_cancel:motivoCancelOrden||"Sin motivo"});
                 setOrdenes(prev=>prev.map(o=>o.id===showCancelarOrden.id?{...o,cancelada:true,motivoCancel:motivoCancelOrden||"Sin motivo"}:o));
                 setShowCancelarOrden(null);notify("Orden cancelada");
               }}>Confirmar Cancelación</button>
@@ -1934,6 +1961,11 @@ export default function App(){
             </div>
             <div style={{display:"flex",gap:10}}>
               <button className="btn btn-gold" style={{flex:1}} onClick={()=>{
+                await sb.patch("ordenes_compra", editOrden.id, {
+                  nota:editOrden.nota,
+                  items: JSON.stringify(editOrden.items),
+                  total: editOrden.items.reduce((a,i)=>a+i.cantidad*Number(i.costo),0)
+                });
                 setOrdenes(prev=>prev.map(o=>o.id===editOrden.id?{...editOrden}:o));
                 setEditOrden(null);notify("Orden actualizada");
               }}>Guardar Cambios</button>
@@ -1956,6 +1988,7 @@ export default function App(){
             </div>
             <div style={{display:"flex",gap:10}}>
               <button className="btn btn-red" style={{flex:1,padding:"10px"}} onClick={()=>{
+                await sb.patch("ordenes_compra", showCancelarOrden.id, {cancelada:true, motivo_cancel:motivoCancelOrden||"Sin motivo"});
                 setOrdenes(prev=>prev.map(o=>o.id===showCancelarOrden.id?{...o,cancelada:true,motivoCancel:motivoCancelOrden||"Sin motivo"}:o));
                 setShowCancelarOrden(null);notify("Orden cancelada");
               }}>Confirmar Cancelacion</button>
