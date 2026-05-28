@@ -377,6 +377,9 @@ export default function App(){
   const [ordenNota,setOrdenNota]       = useState("");
   const [entradaItems,setEntradaItems] = useState({});
   const [entradaRecibe,setEntradaRecibe] = useState("");
+  const [editOrden,setEditOrden] = useState(null);
+  const [showCancelarOrden,setShowCancelarOrden] = useState(null);
+  const [motivoCancelOrden,setMotivoCancelOrden] = useState("");
   const [filtroPago,setFiltroPago]     = useState("todos");
   const [filtroEstado,setFiltroEstado] = useState("todos");
   const [filtroClienteH,setFiltroClienteH] = useState("");
