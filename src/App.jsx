@@ -407,8 +407,16 @@ export default function App(){
       if(Array.isArray(provs)) setProveedores(provs);
       if(Array.isArray(sts))   setSales(sts);
       if(Array.isArray(usrs))  setDbUsers(usrs);
-      if(Array.isArray(ords))  setOrdenes(ords.map(o=>({...o, items: typeof o.items === 'string' ? JSON.parse(o.items) : (o.items||[])})));
-      if(Array.isArray(ents))  setEntradas(ents.map(e=>({...e, items: typeof e.items === 'string' ? JSON.parse(e.items) : (e.items||[])})));
+      if(Array.isArray(ords))  setOrdenes(ords.map(o=>{
+        let items = o.items;
+        try { if(typeof items === 'string') items = JSON.parse(items); } catch(e) { items = []; }
+        return {...o, items: Array.isArray(items) ? items : [], cancelada: o.cancelada||false, recibida: o.recibida||false, motivoCancel: o.motivo_cancel||""};
+      }));
+      if(Array.isArray(ents))  setEntradas(ents.map(e=>{
+        let items = e.items;
+        try { if(typeof items === 'string') items = JSON.parse(items); } catch(e2) { items = []; }
+        return {...e, items: Array.isArray(items) ? items : []};
+      }));
       setDataLoaded(true);
     } catch(e) {
       console.error("Error cargando datos:", e);
