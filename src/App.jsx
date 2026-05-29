@@ -66,49 +66,56 @@ const fmtTime  = iso => new Date(iso).toLocaleTimeString("es-MX",{hour:"2-digit"
 const fmtShort = iso => new Date(iso).toLocaleDateString("es-MX",{day:"2-digit",month:"short"});
 
 function printOrden(orden) {
-  const items = orden.items.filter(function(i){ return i.cantidad>0; });
-  const total = items.reduce(function(a,i){ return a+i.cantidad*Number(i.costo); }, 0);
-  const rowsHtml = items.map(function(i,idx){
-    var bg = idx%2===0 ? '#fff' : '#f9f9f9';
+  var meta = parseOrdenNota(orden.nota);
+  var items = (orden.items||[]).filter(function(i){return i.cantidad>0;});
+  var subtotal = items.reduce(function(a,i){return a+i.cantidad*Number(i.costo);},0);
+  var iva = meta.iva ? subtotal*0.16 : 0;
+  var total = subtotal + iva;
+  var prov = null;
+  var rowsHtml = items.map(function(i,idx){
+    var bg = idx%2===0?'#fff':'#f9f9f9';
     return '<tr style="background:'+bg+'">'+
       '<td style="padding:8px 10px;border:1px solid #ddd">'+i.sku+'</td>'+
       '<td style="padding:8px 10px;border:1px solid #ddd">'+i.nombre+'</td>'+
       '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center">'+i.cantidad+'</td>'+
       '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right">$'+Number(i.costo).toFixed(2)+'</td>'+
       '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right;font-weight:600">$'+(i.cantidad*Number(i.costo)).toFixed(2)+'</td>'+
-      '</tr>';
+    '</tr>';
   }).join('');
-  var notaRow = orden.nota ? '<p><b>Notas:</b> '+orden.nota+'</p>' : '';
-  var cancelRow = orden.cancelada ? '<div style="color:red;font-size:14pt;font-weight:800;border:3px solid red;padding:6px;text-align:center;margin:10px 0">CANCELADA - '+orden.motivoCancel+'</div>' : '';
-  var estadoTxt = orden.recibida ? 'Recibida' : orden.cancelada ? 'Cancelada' : 'Pendiente';
+  var cancelRow = orden.cancelada ? '<div style="color:red;font-size:14pt;font-weight:800;border:3px solid red;padding:6px;text-align:center;margin:10px 0">CANCELADA - '+(orden.motivoCancel||orden.motivo_cancel||'')+'</div>' : '';
+  var estadoTxt = orden.recibida?'Recibida':orden.cancelada?'Cancelada':'Pendiente';
   var win = window.open('','_blank','width=900,height=700');
-  var css = [
-    '*{box-sizing:border-box;margin:0;padding:0}',
-    'body{font-family:Arial,sans-serif;padding:20mm;background:#fff;color:#111;font-size:11pt}',
-    '@media print{body{padding:15mm} .no-print{display:none}}'
-  ].join('');
+  var css = '*{box-sizing:border-box;margin:0;padding:0} body{font-family:Arial,sans-serif;padding:15mm;background:#fff;color:#111;font-size:11pt} @media print{.no-print{display:none}}';
   var parts = [];
-  parts.push('<html><head><title>Orden '+orden.folio+'</title><style>'+css+'</style></head><body>');
+  parts.push('<html><head><title>OC '+orden.folio+'</title><style>'+css+'</style></head><body>');
   parts.push('<div class="no-print" style="text-align:center;margin-bottom:15px">');
-  parts.push('<button onclick="window.print()" style="background:#E8681A;color:#fff;border:none;padding:10px 30px;font-size:14px;border-radius:6px;cursor:pointer;margin-right:10px">Imprimir PDF</button>');
+  parts.push('<button onclick="window.print()" style="background:#E8681A;color:#fff;border:none;padding:10px 30px;font-size:14px;border-radius:6px;cursor:pointer;margin-right:10px">Imprimir / Guardar PDF</button>');
   parts.push('<button onclick="window.close()" style="background:#555;color:#fff;border:none;padding:10px 20px;font-size:14px;border-radius:6px;cursor:pointer">Cerrar</button></div>');
-  parts.push('<table style="width:100%;margin-bottom:16px"><tr><td style="width:60%">');
-  parts.push('<div style="font-size:22pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
-  parts.push('<div style="font-size:10pt;color:#666">Soluciones de empaque a la medida de tus ideas</div>');
-  parts.push('<div style="font-size:10pt;color:#666;margin-top:4px">Cucurpe 44, Alvaro Obregon, CDMX</div>');
-  parts.push('<div style="font-size:10pt;color:#666">WhatsApp: 55 2268 8744 - todoencajas.com</div>');
-  parts.push('</td><td style="text-align:right;vertical-align:top">');
+  parts.push('<table style="width:100%;margin-bottom:16px"><tr>');
+  parts.push('<td style="width:55%"><div style="font-size:22pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
+  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon</div>');
+  parts.push('<div style="font-size:10pt;color:#666">Venustiano Carranza, 15990 CDMX</div>');
+  parts.push('<div style="font-size:10pt;color:#666">Tel: 55 2268 8744 | todoencajas.com</div></td>');
+  parts.push('<td style="text-align:right;vertical-align:top">');
   parts.push('<div style="font-size:18pt;font-weight:800;color:#333">ORDEN DE COMPRA</div>');
   parts.push('<div style="font-size:14pt;color:#E8681A;font-weight:800">'+orden.folio+'</div>');
   parts.push('<div style="font-size:10pt;color:#666">Fecha: '+fmtDate(orden.fecha)+'</div>');
+  parts.push('<div style="font-size:10pt;color:#666">Estado: <b>'+estadoTxt+'</b></div>');
   parts.push('</td></tr></table>');
   parts.push('<hr style="border:2px solid #E8681A;margin-bottom:16px"/>');
   parts.push(cancelRow);
-  parts.push('<table style="width:100%;margin-bottom:16px"><tr>');
-  parts.push('<td><p style="margin:4px 0"><b>Proveedor:</b> '+orden.proveedor+'</p>'+notaRow+'</td>');
-  parts.push('<td style="text-align:right"><p style="color:#666">Estado: <b>'+estadoTxt+'</b></p></td>');
-  parts.push('</tr></table>');
-  parts.push('<table style="width:100%;border-collapse:collapse;margin-bottom:20px">');
+  parts.push('<table style="width:100%;margin-bottom:16px;border-collapse:collapse"><tr>');
+  parts.push('<td style="width:50%;padding:10px;background:#f9f9f9;border:1px solid #eee;vertical-align:top">');
+  parts.push('<div style="font-weight:700;margin-bottom:6px;color:#E8681A">PROVEEDOR</div>');
+  parts.push('<div style="font-size:12pt;font-weight:700">'+orden.proveedor+'</div>');
+  if(meta.contacto) parts.push('<div style="font-size:10pt;color:#666;margin-top:4px">Contacto: '+meta.contacto+'</div>');
+  parts.push('</td>');
+  parts.push('<td style="width:50%;padding:10px;background:#f9f9f9;border:1px solid #eee;vertical-align:top">');
+  parts.push('<div style="font-weight:700;margin-bottom:6px;color:#E8681A">DETALLES</div>');
+  if(meta.fechaEntrega) parts.push('<div style="font-size:10pt">Entrega estimada: <b>'+meta.fechaEntrega+'</b></div>');
+  if(meta.notas) parts.push('<div style="font-size:10pt;margin-top:4px">Notas: '+meta.notas+'</div>');
+  parts.push('</td></tr></table>');
+  parts.push('<table style="width:100%;border-collapse:collapse;margin-bottom:16px">');
   parts.push('<thead><tr style="background:#E8681A;color:#fff">');
   parts.push('<th style="padding:10px;text-align:left;border:1px solid #ddd">SKU</th>');
   parts.push('<th style="padding:10px;text-align:left;border:1px solid #ddd">Producto</th>');
@@ -116,19 +123,19 @@ function printOrden(orden) {
   parts.push('<th style="padding:10px;text-align:right;border:1px solid #ddd">Costo Unit.</th>');
   parts.push('<th style="padding:10px;text-align:right;border:1px solid #ddd">Subtotal</th>');
   parts.push('</tr></thead><tbody>'+rowsHtml+'</tbody>');
-  parts.push('<tfoot><tr style="background:#f0f0f0">');
-  parts.push('<td colspan="4" style="padding:10px;text-align:right;border:1px solid #ddd;font-weight:800">TOTAL ESTIMADO:</td>');
-  parts.push('<td style="padding:10px;text-align:right;border:1px solid #ddd;font-size:14pt;font-weight:800;color:#E8681A">$'+total.toFixed(2)+'</td>');
-  parts.push('</tr></tfoot></table>');
+  parts.push('<tfoot>');
+  parts.push('<tr style="background:#f9f9f9"><td colspan="4" style="padding:8px 10px;text-align:right;border:1px solid #ddd">Subtotal:</td><td style="padding:8px 10px;text-align:right;border:1px solid #ddd">$'+subtotal.toFixed(2)+'</td></tr>');
+  if(meta.iva) parts.push('<tr style="background:#f9f9f9"><td colspan="4" style="padding:8px 10px;text-align:right;border:1px solid #ddd">IVA (16%):</td><td style="padding:8px 10px;text-align:right;border:1px solid #ddd">$'+iva.toFixed(2)+'</td></tr>');
+  parts.push('<tr style="background:#f0f0f0"><td colspan="4" style="padding:10px;text-align:right;border:1px solid #ddd;font-weight:800;font-size:12pt">TOTAL'+(meta.iva?' (IVA incluido)':'')+':</td><td style="padding:10px;text-align:right;border:1px solid #ddd;font-weight:800;font-size:14pt;color:#E8681A">$'+total.toFixed(2)+'</td></tr>');
+  parts.push('</tfoot></table>');
   parts.push('<table style="width:100%;margin-top:30px"><tr>');
-  parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Autoriza</div></td>');
+  parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Autoriza compra</div></td>');
   parts.push('<td style="width:10%"></td>');
-  parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Proveedor</div></td>');
+  parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Firma proveedor: '+orden.proveedor+'</div></td>');
   parts.push('</tr></table>');
   parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - 55 2268 8744</p>');
   parts.push('</body></html>');
-  var html = parts.join('');
-    win.document.write(html);
+  win.document.write(parts.join(''));
   win.document.close();
 }
 
@@ -186,6 +193,11 @@ function printEntrada(entrada) {
   parts.push('</body></html>');
   win.document.write(parts.join(''));
   win.document.close();
+}
+
+function parseOrdenNota(nota) {
+  if(!nota) return {notas:"",contacto:"",fechaEntrega:"",iva:false};
+  try { return typeof nota==="string" ? JSON.parse(nota) : nota; } catch(e) { return {notas:nota||"",contacto:"",fechaEntrega:"",iva:false}; }
 }
 
 function exportCSV(sales) {
@@ -1465,13 +1477,13 @@ export default function App(){
                       <td style={{fontSize:11,color:"#555"}}>{fmtDate(o.fecha)}</td>
                       <td>{o.proveedor}</td>
                       <td style={{fontSize:12,color:"#666"}}>{o.items.filter(i=>i.cantidad>0).length} productos</td>
-                      <td><span className={`tag ${o.recibida?"tag-ok":o.cancelada?"tag-danger":"tag-warn"}`}>{o.recibida?"✓ Recibida":o.cancelada?"✕ Cancelada":"⏳ Pendiente"}</span></td>
+                      <td><span className={`tag ${o.recibida?"tag-ok":o.cancelada?"tag-danger":o.parcial?"tag-blue":"tag-warn"}`}>{o.recibida?"✓ Recibida":o.cancelada?"✕ Cancelada":o.parcial?"📦 Parcial":"⏳ Pendiente"}</span></td>
                       <td>
                         <div style={{display:"flex",gap:5}}>
                           <button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>printOrden(o)}>🖨 PDF</button>
                           {!o.recibida&&!o.cancelada&&<button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setEditOrden({...o,items:[...o.items.map(i=>({...i}))]})}>✏ Editar</button>}
                           {!o.recibida&&!o.cancelada&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>{setShowCancelarOrden(o);setMotivoCancelOrden("");}}>✕ Cancelar</button>}
-                          {!o.recibida&&!o.cancelada&&<button className="btn btn-green" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>{
+                          {!o.recibida&&!o.cancelada&&<button className="btn btn-green" style={{fontSize:10,padding:"3px 9px",background:o.parcial?"#1a2e1a":"#153a15"}} onClick={()=>{
                             const init={};
                             o.items.filter(i=>i.cantidad>0).forEach(i=>{init[i.productoId]=i.cantidad;});
                             setEntradaItems(init);setEntradaRecibe(currentUser.nombre);setShowNuevaEntrada(o);
@@ -1782,17 +1794,30 @@ export default function App(){
         <div className="overlay" onClick={()=>setShowNuevaOrden(false)}>
           <div className="modal anim-in" style={{maxWidth:560}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:18}}>Nueva Orden de Compra</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
               <div>
                 <div className="label" style={{marginBottom:6}}>Proveedor</div>
-                <select value={ordenProv} onChange={e=>setOrdenProv(e.target.value)} style={{width:"100%"}}>
+                <select value={ordenProv} onChange={e=>{setOrdenProv(e.target.value);const p=proveedores.find(pv=>pv.nombre===e.target.value);if(p)setOrdenContacto(p.contacto||"");}} style={{width:"100%",background:"#1c1c1c",border:"1px solid #333",color:"#e8e0d0",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
                   {proveedores.map(p=><option key={p.id} value={p.nombre}>{p.nombre}</option>)}
                 </select>
               </div>
               <div>
-                <div className="label" style={{marginBottom:6}}>Notas (opcional)</div>
-                <input value={ordenNota} onChange={e=>setOrdenNota(e.target.value)} placeholder="Urgente, fecha de entrega, etc." style={{width:"100%"}}/>
+                <div className="label" style={{marginBottom:6}}>Contacto</div>
+                <input value={ordenContacto} onChange={e=>setOrdenContacto(e.target.value)} placeholder="Nombre del contacto" style={{width:"100%"}}/>
               </div>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Fecha de entrega estimada</div>
+                <input type="date" value={ordenFechaEntrega} onChange={e=>setOrdenFechaEntrega(e.target.value)} style={{width:"100%"}}/>
+              </div>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Notas adicionales</div>
+                <input value={ordenNota} onChange={e=>setOrdenNota(e.target.value)} placeholder="Instrucciones, urgente, etc." style={{width:"100%"}}/>
+              </div>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12,padding:"8px 12px",background:"#1a1a1a",borderRadius:6}}>
+              <input type="checkbox" id="ordenIva" checked={ordenIva} onChange={e=>setOrdenIva(e.target.checked)} style={{width:16,height:16,accentColor:"#E8681A"}}/>
+              <label htmlFor="ordenIva" style={{fontSize:13,cursor:"pointer"}}>Aplicar IVA 16%</label>
+              {ordenIva&&<span style={{marginLeft:"auto",color:"#E8681A",fontSize:12,fontWeight:600}}>Subtotal + 16% IVA</span>}
             </div>
             <div className="label" style={{marginBottom:8}}>Productos a solicitar</div>
             <div style={{maxHeight:300,overflowY:"auto",marginBottom:16}}>
@@ -1820,11 +1845,15 @@ export default function App(){
                 const itemsValidos=ordenItems.filter(i=>i.cantidad>0);
                 if(!itemsValidos.length){notify("Agrega al menos un producto","error");return;}
                 const folio=`ORD-${String(ordenes.length+1).padStart(4,"0")}`;
-                const nuevaOrden={id:Date.now(),folio,fecha:new Date().toISOString(),proveedor:ordenProv,nota:ordenNota,items:itemsValidos,recibida:false};
+                const nuevaOrden={id:Date.now(),folio,fecha:new Date().toISOString(),proveedor:ordenProv,nota:JSON.stringify({notas:ordenNota,contacto:ordenContacto,fechaEntrega:ordenFechaEntrega,iva:ordenIva}),items:itemsValidos,recibida:false,cancelada:false,subtotal:subtotalOrden,iva:ivaOrden,total:totalOrden};
+                const subtotalOrden = itemsValidos.reduce((a,i)=>a+i.cantidad*Number(i.costo),0);
+                const ivaOrden = ordenIva ? subtotalOrden*0.16 : 0;
+                const totalOrden = subtotalOrden + ivaOrden;
                 const savedOrden = await sb.post("ordenes_compra", {
-                  folio, proveedor:ordenProv, nota:ordenNota,
+                  folio, proveedor:ordenProv,
+                  nota:JSON.stringify({notas:ordenNota,contacto:ordenContacto,fechaEntrega:ordenFechaEntrega,iva:ordenIva}),
                   items: JSON.stringify(itemsValidos),
-                  total: itemsValidos.reduce((a,i)=>a+i.cantidad*Number(i.costo),0),
+                  total: totalOrden,
                   recibida:false, cancelada:false, creado_por:currentUser.nombre
                 });
                 const ordenConId = Array.isArray(savedOrden)?savedOrden[0]:savedOrden;
@@ -1886,9 +1915,15 @@ export default function App(){
                   items: JSON.stringify(itemsRecibidos),
                   recibe: entradaRecibe
                 });
-                await sb.patch("ordenes_compra", showNuevaEntrada.id, {recibida:true});
+                // Check if all items are fully received
+                const totalSolicitado = showNuevaEntrada.items.reduce(function(a,i){return a+i.cantidad;},0);
+                const totalRecibidoPrev = entradas.filter(function(e){return e.refOrden===showNuevaEntrada.folio;}).reduce(function(a,e){return a+(e.items||[]).reduce(function(b,i){return b+i.cantidad;},0);},0);
+                const totalRecibidoAhora = itemsRecibidos.reduce(function(a,i){return a+i.cantidad;},0);
+                const totalRecibidoFinal = totalRecibidoPrev + totalRecibidoAhora;
+                const ordenCompleta = totalRecibidoFinal >= totalSolicitado;
+                await sb.patch("ordenes_compra", showNuevaEntrada.id, {recibida:ordenCompleta});
                 setEntradas(prev=>[entrada,...prev]);
-                setOrdenes(prev=>prev.map(o=>o.id===showNuevaEntrada.id?{...o,recibida:true}:o));
+                setOrdenes(prev=>prev.map(o=>o.id===showNuevaEntrada.id?{...o,recibida:ordenCompleta,parcial:!ordenCompleta&&totalRecibidoFinal>0}:o));
                 setShowNuevaEntrada(null);setLoading(false);
                 notify("Entrada " + folio + " registrada - Stock actualizado");
                 setTimeout(()=>printEntrada(entrada),300);
