@@ -133,54 +133,59 @@ function printOrden(orden) {
 }
 
 function printEntrada(entrada) {
-  const win = window.open("","_blank","width=420,height:700");
-  win.document.write(`<html><head><title>Entrada ${entrada.folio}</title><style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'DM Mono',monospace;width:80mm;margin:0 auto;padding:6mm;background:#fff;color:#111;font-size:9pt}
-    .center{text-align:center}.dashed{border-top:1px dashed #aaa;margin:2mm 0}
-    .row{display:flex;justify-content:space-between;margin:1.5mm 0;font-size:8pt}
-    .big{font-family:'Syne',sans-serif;font-weight:800;font-size:13pt}
-    .footer{text-align:center;font-size:7pt;color:#aaa;margin-top:4mm;border-top:1px dashed #aaa;padding-top:3mm}
-    @media print{body{margin:0}}
-  </style></head><body>
-  <div class="center">
-    <div style="font-size:7pt;letter-spacing:3px;color:#666;margin-bottom:1mm">NOTA DE RECEPCIÓN DE MERCANCÍA</div>
-    <div class="big">${entrada.folio}</div>
-    <div style="font-size:8pt;color:#555">${fmtDate(entrada.fecha)} · ${fmtTime(entrada.fecha)}</div>
-  </div>
-  <div class="dashed"></div>
-  <div class="row"><span style="color:#888">Proveedor</span><span>${entrada.proveedor}</span></div>
-  <div class="row"><span style="color:#888">Recibió</span><span>${entrada.recibe}</span></div>
-  ${entrada.refOrden?`<div class="row"><span style="color:#888">Ref. Orden</span><span>${entrada.refOrden}</span></div>`:''}
-  <div class="dashed"></div>
-  <div style="font-size:7pt;color:#888;letter-spacing:1px;margin-bottom:1mm">MERCANCÍA RECIBIDA</div>
-  <div class="row" style="font-size:7pt;color:#888"><span>Producto</span><span>Cantidad</span></div>
-  <div class="dashed"></div>
-  ${entrada.items.map(i=>`
-    <div class="row">
-      <span>${i.nombre.slice(0,26)}</span>
-      <span style="font-weight:600">${i.cantidad} uds</span>
-    </div>
-    <div style="font-size:7pt;color:#666;margin-bottom:1mm">${i.sku}</div>
-  `).join('')}
-  <div class="dashed"></div>
-  <div class="row" style="font-weight:600"><span>TOTAL UNIDADES</span><span>${entrada.items.reduce((a,i)=>a+i.cantidad,0)} uds</span></div>
-  <div style="margin-top:6mm;display:grid;grid-template-columns:1fr 1fr;gap:4mm;font-size:8pt">
-    <div>
-      <div>Firma quien entrega:</div>
-      <div style="border-bottom:1px solid #aaa;margin-top:8mm"></div>
-      <div style="font-size:7pt;color:#888;margin-top:1mm">Repartidor</div>
-    </div>
-    <div>
-      <div>Firma quien recibe:</div>
-      <div style="border-bottom:1px solid #aaa;margin-top:8mm"></div>
-      <div style="font-size:7pt;color:#888;margin-top:1mm">${entrada.recibe}</div>
-    </div>
-  </div>
-  <div class="footer">Todo en Cajas.com · 55 2268 8744<br/>Cucurpe 44, Álvaro Obregón, CDMX</div>
-  </body></html>`);
-  win.document.close(); setTimeout(()=>{win.focus();win.print();},400);
+  var win = window.open('','_blank','width=900,height=700');
+  var rowsHtml = (entrada.items||[]).map(function(i,idx){
+    var bg = idx%2===0?'#fff':'#f9f9f9';
+    return '<tr style="background:'+bg+'">'+
+      '<td style="padding:8px 10px;border:1px solid #ddd">'+i.sku+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ddd">'+i.nombre+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-weight:700">'+i.cantidad+'</td>'+
+    '</tr>';
+  }).join('');
+  var totalUds = (entrada.items||[]).reduce(function(a,i){return a+i.cantidad;},0);
+  var css = '*{box-sizing:border-box;margin:0;padding:0} body{font-family:Arial,sans-serif;padding:15mm;background:#fff;color:#111;font-size:11pt} @media print{.no-print{display:none}}';
+  var parts = [];
+  parts.push('<html><head><title>Entrada '+entrada.folio+'</title><style>'+css+'</style></head><body>');
+  parts.push('<div class="no-print" style="text-align:center;margin-bottom:15px">');
+  parts.push('<button onclick="window.print()" style="background:#E8681A;color:#fff;border:none;padding:10px 30px;font-size:14px;border-radius:6px;cursor:pointer;margin-right:10px">Imprimir / Guardar PDF</button>');
+  parts.push('<button onclick="window.close()" style="background:#555;color:#fff;border:none;padding:10px 20px;font-size:14px;border-radius:6px;cursor:pointer">Cerrar</button></div>');
+  parts.push('<table style="width:100%;margin-bottom:16px"><tr>');
+  parts.push('<td><div style="font-size:20pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
+  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon, CDMX | 55 2268 8744</div></td>');
+  parts.push('<td style="text-align:right;vertical-align:top">');
+  parts.push('<div style="font-size:16pt;font-weight:800">ENTRADA DE MERCANCIA</div>');
+  parts.push('<div style="font-size:14pt;color:#E8681A;font-weight:800">'+entrada.folio+'</div>');
+  parts.push('<div style="font-size:10pt;color:#666">Fecha: '+fmtDate(entrada.fecha)+' '+fmtTime(entrada.fecha)+'</div>');
+  parts.push('</td></tr></table>');
+  parts.push('<hr style="border:2px solid #E8681A;margin-bottom:16px"/>');
+  parts.push('<table style="width:100%;margin-bottom:16px"><tr>');
+  parts.push('<td><p style="margin:4px 0;font-size:11pt"><b>Proveedor:</b> '+entrada.proveedor+'</p>');
+  parts.push('<p style="margin:4px 0;font-size:11pt"><b>Recibio:</b> '+entrada.recibe+'</p>');
+  if(entrada.refOrden) parts.push('<p style="margin:4px 0;font-size:11pt"><b>Ref. Orden:</b> '+entrada.refOrden+'</p>');
+  parts.push('</td><td style="text-align:right">');
+  parts.push('<div style="background:#e8f5e9;padding:10px 16px;border-radius:8px;display:inline-block">');
+  parts.push('<div style="font-size:10pt;color:#2e7d32">TOTAL UNIDADES RECIBIDAS</div>');
+  parts.push('<div style="font-size:22pt;font-weight:800;color:#2e7d32">'+totalUds+'</div>');
+  parts.push('</div></td></tr></table>');
+  parts.push('<table style="width:100%;border-collapse:collapse;margin-bottom:24px">');
+  parts.push('<thead><tr style="background:#E8681A;color:#fff">');
+  parts.push('<th style="padding:10px;text-align:left;border:1px solid #ddd">SKU</th>');
+  parts.push('<th style="padding:10px;text-align:left;border:1px solid #ddd">Producto</th>');
+  parts.push('<th style="padding:10px;text-align:center;border:1px solid #ddd">Cantidad Recibida</th>');
+  parts.push('</tr></thead><tbody>'+rowsHtml+'</tbody>');
+  parts.push('<tfoot><tr style="background:#f0f0f0">');
+  parts.push('<td colspan="2" style="padding:10px;text-align:right;font-weight:800;border:1px solid #ddd">TOTAL UNIDADES:</td>');
+  parts.push('<td style="padding:10px;text-align:center;font-weight:800;font-size:13pt;color:#E8681A;border:1px solid #ddd">'+totalUds+'</td>');
+  parts.push('</tr></tfoot></table>');
+  parts.push('<table style="width:100%;margin-top:30px"><tr>');
+  parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Firma quien entrega (Repartidor)</div></td>');
+  parts.push('<td style="width:10%"></td>');
+  parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Firma quien recibe: '+entrada.recibe+'</div></td>');
+  parts.push('</tr></table>');
+  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - 55 2268 8744</p>');
+  parts.push('</body></html>');
+  win.document.write(parts.join(''));
+  win.document.close();
 }
 
 function exportCSV(sales) {
@@ -1246,66 +1251,88 @@ export default function App(){
               <div style={{display:"flex",gap:8}}>
                 <button className="btn btn-dark" style={{fontSize:12}} onClick={loadData}>↻ Actualizar</button>
                 <button className="btn btn-gold" style={{fontSize:12}} onClick={()=>{
-                  const win=window.open("","_blank","width=420,height:800");
-                  const fecha=fmtDate(new Date().toISOString());
-                  const hora=fmtTime(new Date().toISOString());
-                  win.document.write(`<html><head><title>Corte ${fecha}</title><style>
-                    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
-                    *{margin:0;padding:0;box-sizing:border-box}
-                    body{font-family:'DM Mono',monospace;width:80mm;margin:0 auto;padding:6mm;background:#fff;color:#111;font-size:9pt}
-                    .center{text-align:center}
-                    .brand{font-family:'Syne',sans-serif;font-size:16pt;font-weight:800}
-                    .dashed{border-top:1px dashed #aaa;margin:2mm 0}
-                    .row{display:flex;justify-content:space-between;margin:1.5mm 0;font-size:8pt}
-                    .total-row{display:flex;justify-content:space-between;margin-top:3mm}
-                    .total-label{font-family:'Syne',sans-serif;font-weight:700;font-size:10pt}
-                    .total-value{font-family:'Syne',sans-serif;font-weight:800;font-size:14pt}
-                    .section{font-size:7pt;color:#888;letter-spacing:1px;text-transform:uppercase;margin:2mm 0 1mm}
-                    .footer{text-align:center;font-size:7pt;color:#aaa;margin-top:4mm;border-top:1px dashed #aaa;padding-top:3mm}
-                    @media print{body{margin:0}}
-                  </style></head><body>
-                  <div class="center">
-                    <img src="${LOGO_SRC}" style="width:100px;height:auto;margin-bottom:2mm"/>
-                    <div style="font-size:7pt;letter-spacing:3px;color:#666">CORTE DE CAJA</div>
-                  </div>
-                  <div class="dashed"></div>
-                  <div class="center" style="margin:2mm 0">
-                    <div style="font-size:9pt;font-weight:500">${fecha}</div>
-                    <div style="font-size:8pt;color:#555">Hora de corte: ${hora}</div>
-                    <div style="font-size:8pt;color:#555">Cajero: ${currentUser.nombre}</div>
-                  </div>
-                  <div class="dashed"></div>
-                  <div class="section">Resumen General</div>
-                  <div class="row"><span>Transacciones</span><span>${corteSales.length}</span></div>
-                  <div class="row"><span>Cancelaciones</span><span>${sales.filter(s=>s.cancelada&&new Date(s.fecha)>=corteFecha&&new Date(s.fecha)<=corteFechaFin).length}</span></div>
-                  <div class="row"><span>Devoluciones</span><span>${sales.filter(s=>s.devolucion&&new Date(s.fecha)>=corteFecha&&new Date(s.fecha)<=corteFechaFin).length}</span></div>
-                  <div class="row"><span>Ticket promedio</span><span>${corteSales.length?fmt(corteTotal/corteSales.length):fmt(0)}</span></div>
-                  <div class="row"><span>Descuentos</span><span>${fmt(corteSales.reduce((a,s)=>a+Number(s.descuento_total),0))}</span></div>
-                  <div class="dashed"></div>
-                  <div class="section">Por Método de Pago</div>
-                  ${METODOS_PAGO.map(p=>`<div class="row"><span>${p.emoji} ${p.label}</span><span>${fmt(corteByPago[p.id]||0)}</span></div>`).join('')}
-                  <div class="dashed"></div>
-                  <div class="section">Por Canal de Venta</div>
-                  ${CANALES.map(c=>`<div class="row"><span>${c.emoji} ${c.label}</span><span>${fmt(corteByCanal[c.id]||0)}</span></div>`).join('')}
-                  <div class="dashed"></div>
-                  <div class="total-row">
-                    <span class="total-label">TOTAL DEL DÍA</span>
-                    <span class="total-value">${fmt(corteTotal)}</span>
-                  </div>
-                  <div class="dashed"></div>
-                  <div style="margin-top:8mm;font-size:8pt">
-                    <div>Firma del cajero:</div>
-                    <div style="border-bottom:1px solid #aaa;margin-top:8mm;width:60mm"></div>
-                    <div style="margin-top:1mm;font-size:7pt;color:#888">${currentUser.nombre}</div>
-                  </div>
-                  <div class="footer">
-                    Todo en Cajas.com<br/>
-                    Cucurpe 44, Álvaro Obregón, CDMX<br/>
-                    WhatsApp: 55 2268 8744
-                  </div>
-                  </body></html>`);
+                  const win=window.open('','_blank','width=900,height=700');
+                  const fecha = fechaCorte;
+                  const ventasDelDia = corteSales;
+                  const rowsHtml = ventasDelDia.map(function(s,idx){
+                    var c = CANAL_MAP[s.canal]||{emoji:'',label:s.canal};
+                    var pg = PAGO_MAP[s.metodo_pago]||{emoji:'',label:s.metodo_pago};
+                    var bg = idx%2===0?'#fff':'#f9f9f9';
+                    return '<tr style="background:'+bg+'">'+
+                      '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt;font-weight:600;color:#E8681A">'+s.folio+'</td>'+
+                      '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt">'+s.cliente+'</td>'+
+                      '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt">'+c.emoji+' '+c.label+'</td>'+
+                      '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt">'+pg.emoji+' '+pg.label+'</td>'+
+                      '<td style="padding:7px 10px;border:1px solid #ddd;text-align:right;font-size:10pt;font-weight:600;color:'+(s.cancelada?'#aaa':s.devolucion?'#E8681A':'#111')+'">'+
+                      (s.cancelada?'CANCELADA':s.devolucion?'DEVOLUCION':('$'+Number(s.total).toFixed(2)))+'</td>'+
+                    '</tr>';
+                  }).join('');
+                  var pagoRows = METODOS_PAGO.map(function(p){
+                    var t = corteByPago[p.id]||0;
+                    return '<tr><td style="padding:6px 10px;border:1px solid #eee">'+p.emoji+' '+p.label+'</td>'+
+                      '<td style="padding:6px 10px;border:1px solid #eee;text-align:right;font-weight:600">$'+t.toFixed(2)+'</td></tr>';
+                  }).join('');
+                  var canalRows = CANALES.map(function(c){
+                    var t = corteByCanal[c.id]||0;
+                    return '<tr><td style="padding:6px 10px;border:1px solid #eee">'+c.emoji+' '+c.label+'</td>'+
+                      '<td style="padding:6px 10px;border:1px solid #eee;text-align:right;font-weight:600">$'+t.toFixed(2)+'</td></tr>';
+                  }).join('');
+                  var css = '*{box-sizing:border-box;margin:0;padding:0} body{font-family:Arial,sans-serif;padding:15mm;background:#fff;color:#111;font-size:11pt} @media print{.no-print{display:none}}';
+                  var parts = [];
+                  parts.push('<html><head><title>Corte '+fecha+'</title><style>'+css+'</style></head><body>');
+                  parts.push('<div class="no-print" style="text-align:center;margin-bottom:15px">');
+                  parts.push('<button onclick="window.print()" style="background:#E8681A;color:#fff;border:none;padding:10px 30px;font-size:14px;border-radius:6px;cursor:pointer;margin-right:10px">Imprimir / Guardar PDF</button>');
+                  parts.push('<button onclick="window.close()" style="background:#555;color:#fff;border:none;padding:10px 20px;font-size:14px;border-radius:6px;cursor:pointer">Cerrar</button></div>');
+                  parts.push('<table style="width:100%;margin-bottom:16px"><tr>');
+                  parts.push('<td><div style="font-size:20pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
+                  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon, CDMX | 55 2268 8744</div></td>');
+                  parts.push('<td style="text-align:right;vertical-align:top">');
+                  parts.push('<div style="font-size:16pt;font-weight:800">CORTE DE CAJA</div>');
+                  parts.push('<div style="font-size:12pt;color:#E8681A;font-weight:700">'+fecha+'</div>');
+                  parts.push('<div style="font-size:10pt;color:#666">Generado por: '+currentUser.nombre+'</div></td>');
+                  parts.push('</tr></table><hr style="border:2px solid #E8681A;margin-bottom:16px"/>');
+                  parts.push('<table style="width:100%;margin-bottom:20px"><tr>');
+                  parts.push('<td style="width:33%;text-align:center;padding:10px;background:#fff3e0;border-radius:8px;margin:4px">');
+                  parts.push('<div style="font-size:10pt;color:#888">TOTAL DEL DIA</div>');
+                  parts.push('<div style="font-size:20pt;font-weight:800;color:#E8681A">$'+corteTotal.toFixed(2)+'</div></td>');
+                  parts.push('<td style="width:4%"></td>');
+                  parts.push('<td style="width:30%;text-align:center;padding:10px;background:#f5f5f5;border-radius:8px">');
+                  parts.push('<div style="font-size:10pt;color:#888">TRANSACCIONES</div>');
+                  parts.push('<div style="font-size:20pt;font-weight:800">'+corteSales.length+'</div></td>');
+                  parts.push('<td style="width:4%"></td>');
+                  parts.push('<td style="width:30%;text-align:center;padding:10px;background:#f5f5f5;border-radius:8px">');
+                  parts.push('<div style="font-size:10pt;color:#888">TICKET PROMEDIO</div>');
+                  parts.push('<div style="font-size:20pt;font-weight:800">$'+(corteSales.length?corteTotal/corteSales.length:0).toFixed(2)+'</div></td>');
+                  parts.push('</tr></table>');
+                  parts.push('<table style="width:100%;margin-bottom:20px"><tr><td style="width:48%;vertical-align:top">');
+                  parts.push('<div style="font-weight:700;margin-bottom:8px;font-size:11pt">Por Metodo de Pago</div>');
+                  parts.push('<table style="width:100%;border-collapse:collapse">'+pagoRows+'</table></td>');
+                  parts.push('<td style="width:4%"></td>');
+                  parts.push('<td style="width:48%;vertical-align:top">');
+                  parts.push('<div style="font-weight:700;margin-bottom:8px;font-size:11pt">Por Canal de Venta</div>');
+                  parts.push('<table style="width:100%;border-collapse:collapse">'+canalRows+'</table></td></tr></table>');
+                  parts.push('<div style="font-weight:700;margin-bottom:8px;font-size:11pt">Detalle de Ventas del Dia</div>');
+                  parts.push('<table style="width:100%;border-collapse:collapse;margin-bottom:20px">');
+                  parts.push('<thead><tr style="background:#E8681A;color:#fff">');
+                  parts.push('<th style="padding:8px 10px;text-align:left;border:1px solid #ddd">Folio</th>');
+                  parts.push('<th style="padding:8px 10px;text-align:left;border:1px solid #ddd">Cliente</th>');
+                  parts.push('<th style="padding:8px 10px;text-align:left;border:1px solid #ddd">Canal</th>');
+                  parts.push('<th style="padding:8px 10px;text-align:left;border:1px solid #ddd">Forma de Pago</th>');
+                  parts.push('<th style="padding:8px 10px;text-align:right;border:1px solid #ddd">Total</th>');
+                  parts.push('</tr></thead><tbody>'+rowsHtml+'</tbody>');
+                  parts.push('<tfoot><tr style="background:#f0f0f0">');
+                  parts.push('<td colspan="4" style="padding:8px 10px;text-align:right;font-weight:800;border:1px solid #ddd">TOTAL:</td>');
+                  parts.push('<td style="padding:8px 10px;text-align:right;font-weight:800;color:#E8681A;font-size:13pt;border:1px solid #ddd">$'+corteTotal.toFixed(2)+'</td>');
+                  parts.push('</tr></tfoot></table>');
+                  parts.push('<table style="width:100%;margin-top:30px"><tr>');
+                  parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Firma responsable de caja</div></td>');
+                  parts.push('<td style="width:10%"></td>');
+                  parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Vo.Bo. Gerencia</div></td>');
+                  parts.push('</tr></table>');
+                  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - 55 2268 8744</p>');
+                  parts.push('</body></html>');
+                  win.document.write(parts.join(''));
                   win.document.close();
-                  setTimeout(()=>{win.focus();win.print();},400);
                 }}>🖨 Imprimir Corte</button>
               </div>
             </div>
@@ -1876,11 +1903,18 @@ export default function App(){
       {editOrden&&(
         <div className="overlay" onClick={()=>setEditOrden(null)}>
           <div className="modal anim-in" style={{maxWidth:560}} onClick={e=>e.stopPropagation()}>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:4}}>✏ Editar Orden {editOrden.folio}</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:14}}>Proveedor: {editOrden.proveedor}</div>
-            <div style={{marginBottom:12}}>
-              <div className="label" style={{marginBottom:6}}>Notas</div>
-              <input value={editOrden.nota||""} onChange={e=>setEditOrden(o=>({...o,nota:e.target.value}))} style={{width:"100%"}} placeholder="Notas opcionales"/>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:16}}>✏ Editar Orden {editOrden.folio}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Proveedor</div>
+                <select value={editOrden.proveedor} onChange={e=>setEditOrden(o=>({...o,proveedor:e.target.value}))} style={{width:"100%",background:"#1c1c1c",border:"1px solid #333",color:"#e8e0d0",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
+                  {proveedores.map(p=><option key={p.id} value={p.nombre}>{p.nombre}</option>)}
+                </select>
+              </div>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Notas</div>
+                <input value={editOrden.nota||""} onChange={e=>setEditOrden(o=>({...o,nota:e.target.value}))} style={{width:"100%"}} placeholder="Notas opcionales"/>
+              </div>
             </div>
             <div className="label" style={{marginBottom:8}}>Cantidades</div>
             <div style={{maxHeight:300,overflowY:"auto",marginBottom:16}}>
@@ -1943,11 +1977,18 @@ export default function App(){
       {editOrden&&(
         <div className="overlay" onClick={()=>setEditOrden(null)}>
           <div className="modal anim-in" style={{maxWidth:560}} onClick={e=>e.stopPropagation()}>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:4}}>✏ Editar Orden {editOrden.folio}</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:14}}>Proveedor: {editOrden.proveedor}</div>
-            <div style={{marginBottom:12}}>
-              <div className="label" style={{marginBottom:6}}>Notas</div>
-              <input value={editOrden.nota||""} onChange={e=>setEditOrden(o=>({...o,nota:e.target.value}))} style={{width:"100%"}} placeholder="Notas opcionales"/>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:16}}>✏ Editar Orden {editOrden.folio}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Proveedor</div>
+                <select value={editOrden.proveedor} onChange={e=>setEditOrden(o=>({...o,proveedor:e.target.value}))} style={{width:"100%",background:"#1c1c1c",border:"1px solid #333",color:"#e8e0d0",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
+                  {proveedores.map(p=><option key={p.id} value={p.nombre}>{p.nombre}</option>)}
+                </select>
+              </div>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Notas</div>
+                <input value={editOrden.nota||""} onChange={e=>setEditOrden(o=>({...o,nota:e.target.value}))} style={{width:"100%"}} placeholder="Notas opcionales"/>
+              </div>
             </div>
             <div className="label" style={{marginBottom:8}}>Cantidades</div>
             <div style={{maxHeight:300,overflowY:"auto",marginBottom:16}}>
