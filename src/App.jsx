@@ -23,6 +23,13 @@ const sb = {
     });
     return r.json();
   },
+  async delete(table, id) {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: "DELETE",
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Prefer": "return=minimal" }
+    });
+    return r.ok;
+  },
   async post(table, data) {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
       method: "POST",
@@ -1081,7 +1088,7 @@ export default function App(){
                       <td><span className="tag tag-blue">{p.categoria}</span></td>
                       <td style={{fontSize:11,color:"#666"}}>{p.proveedor||"—"}</td>
                       <td style={{color:"#E8681A",fontWeight:500}}>{fmt(p.precio)}</td>
-                      <td style={{fontSize:12,color:"#666"}}>{p.costo>0?fmt(p.costo):"—"}</td>
+                      {currentUser.rol==="admin"&&<td style={{fontSize:12,color:"#666"}}>{p.costo>0?fmt(p.costo):"—"}</td>}
                       <td style={{fontFamily:"'Syne',sans-serif",fontWeight:700}}>{p.stock}</td>
                       <td style={{fontSize:11,color:"#555"}}>{p.stock_min}</td>
                       <td><span className={`tag ${p.stock>p.stock_min?"tag-ok":p.stock>0?"tag-warn":"tag-danger"}`}>{p.stock>p.stock_min?"OK":p.stock>0?"Bajo":"Agotado"}</span></td>
@@ -1486,6 +1493,7 @@ export default function App(){
                           <button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>printOrden(o)}>🖨 PDF</button>
                           {!o.recibida&&!o.cancelada&&<button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setEditOrden({...o,items:[...o.items.map(i=>({...i}))]})}>✏ Editar</button>}
                           {!o.recibida&&!o.cancelada&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>{setShowCancelarOrden(o);setMotivoCancelOrden("");}}>✕ Cancelar</button>}
+                          {currentUser.rol==="admin"&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px",background:"#3a1010"}} onClick={()=>setConfirm({msg:"Eliminar la orden "+o.folio+" permanentemente?",onYes:async()=>{await sb.delete("ordenes_compra",o.id);setOrdenes(prev=>prev.filter(x=>x.id!==o.id));notify("Orden eliminada");}})}>🗑</button>}
                           {!o.recibida&&!o.cancelada&&<button className="btn btn-green" style={{fontSize:10,padding:"3px 9px",background:o.parcial?"#1a2e1a":"#153a15"}} onClick={()=>{
                             const init={};
                             o.items.filter(i=>i.cantidad>0).forEach(i=>{init[i.productoId]=i.cantidad;});
@@ -1516,7 +1524,10 @@ export default function App(){
                       <td>{e.proveedor}</td>
                       <td style={{fontSize:12,color:"#666"}}>{e.items.length} productos</td>
                       <td style={{fontSize:12,color:"#666"}}>{e.recibe}</td>
-                      <td><button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>printEntrada(e)}>🖨 Imprimir</button></td>
+                      <td style={{display:"flex",gap:5}}>
+                        <button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>printEntrada(e)}>🖨 PDF</button>
+                        {currentUser.rol==="admin"&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px",background:"#3a1010"}} onClick={()=>setConfirm({msg:"Eliminar la entrada "+e.folio+" permanentemente?",onYes:async()=>{await sb.delete("entradas_mercancia",e.id);setEntradas(prev=>prev.filter(x=>x.id!==e.id));notify("Entrada eliminada");}})}>🗑</button>}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
