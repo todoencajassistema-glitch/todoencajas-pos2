@@ -331,6 +331,10 @@ function PrintReceipt({sale, items, onClose}){
         </div>
       </div>
     </div>
+    </div>
+    </div>
+    </div>
+    </div>
   );
 }
 
@@ -2098,7 +2102,56 @@ export default function App(){
         </div>
       )}
 
-            {showUsers&&(
+            {showAnticipo&&cart.length>0&&(
+        <div className="overlay" onClick={()=>setShowAnticipo(false)}>
+          <div className="modal anim-in" style={{maxWidth:420}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:4}}>📋 Pedido con Anticipo</div>
+            <div style={{fontSize:12,color:"#555",marginBottom:18}}>Total del pedido: <strong style={{color:"#E8681A"}}>{fmt(cartTotal)}</strong></div>
+            <div style={{marginBottom:14}}>
+              <div className="label" style={{marginBottom:6}}>Porcentaje de anticipo</div>
+              <div style={{display:"flex",gap:8,marginBottom:8}}>
+                {[25,30,50,60,70].map(p=>(
+                  <button key={p} className="btn" onClick={()=>{setAnticipoPct(p);setAnticipoPmonto("");}}
+                    style={{background:anticipoPct===p?"#E8681A":"#1c1c1c",color:anticipoPct===p?"#fff":"#888",border:"1px solid #333",padding:"5px 10px",fontSize:12}}>
+                    {p}%
+                  </button>
+                ))}
+              </div>
+              <div style={{flex:1}}>
+                <div className="label" style={{marginBottom:5}}>O escribe el monto exacto</div>
+                <input type="number" value={anticipoMonto} onChange={e=>{setAnticipoPmonto(e.target.value);setAnticipoPct(0);}} placeholder={fmt(cartTotal*0.5)} style={{width:"100%"}}/>
+              </div>
+            </div>
+            <div style={{background:"#1a1a1a",borderRadius:7,padding:"12px 16px",marginBottom:14}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:13}}>
+                <span style={{color:"#666"}}>Total pedido</span><span>{fmt(cartTotal)}</span>
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:13,color:"#E8681A"}}>
+                <span style={{fontWeight:600}}>Anticipo a cobrar</span>
+                <span style={{fontWeight:700}}>{fmt(anticipoMonto?parseFloat(anticipoMonto)||0:cartTotal*(anticipoPct/100))}</span>
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:14,borderTop:"1px dashed #333",paddingTop:8,marginTop:4}}>
+                <span style={{fontWeight:600}}>Saldo pendiente</span>
+                <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,color:"#E8681A"}}>
+                  {fmt(cartTotal-(anticipoMonto?parseFloat(anticipoMonto)||0:cartTotal*(anticipoPct/100)))}
+                </span>
+              </div>
+            </div>
+            <div style={{marginBottom:16}}>
+              <div className="label" style={{marginBottom:6}}>Fecha estimada de entrega (opcional)</div>
+              <input type="date" value={anticipoEntrega} onChange={e=>setAnticipoEntrega(e.target.value)} style={{width:"100%"}}/>
+            </div>
+            <div style={{display:"flex",gap:10}}>
+              <button className="btn btn-gold" style={{flex:1,padding:"11px",fontFamily:"'Syne',sans-serif",fontWeight:700}} onClick={completePedido} disabled={loading}>
+                {loading?"PROCESANDO...":"REGISTRAR PEDIDO"}
+              </button>
+              <button className="btn btn-dark" style={{flex:1}} onClick={()=>setShowAnticipo(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showUsers&&(
         <div className="overlay" onClick={()=>setShowUsers(false)}>
           <div className="modal anim-in" style={{maxWidth:520}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:18}}>👥 Usuarios del Sistema</div>
@@ -2169,5 +2222,6 @@ export default function App(){
           </div>
         </div>
       )}
-
-      
+    </div>
+  );
+}
