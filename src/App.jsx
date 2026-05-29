@@ -1848,13 +1848,14 @@ export default function App(){
                 const itemsValidos=ordenItems.filter(i=>i.cantidad>0);
                 if(!itemsValidos.length){notify("Agrega al menos un producto","error");return;}
                 const folio=`ORD-${String(ordenes.length+1).padStart(4,"0")}`;
-                const nuevaOrden={id:Date.now(),folio,fecha:new Date().toISOString(),proveedor:ordenProv,nota:JSON.stringify({notas:ordenNota,contacto:ordenContacto,fechaEntrega:ordenFechaEntrega,iva:ordenIva}),items:itemsValidos,recibida:false,cancelada:false,subtotal:subtotalOrden,iva:ivaOrden,total:totalOrden};
                 const subtotalOrden = itemsValidos.reduce((a,i)=>a+i.cantidad*Number(i.costo),0);
                 const ivaOrden = ordenIva ? subtotalOrden*0.16 : 0;
                 const totalOrden = subtotalOrden + ivaOrden;
+                const metaNota = JSON.stringify({notas:ordenNota,contacto:ordenContacto,fechaEntrega:ordenFechaEntrega,iva:ordenIva});
+                const nuevaOrden={id:Date.now(),folio,fecha:new Date().toISOString(),proveedor:ordenProv,nota:metaNota,items:itemsValidos,recibida:false,cancelada:false,subtotal:subtotalOrden,iva:ivaOrden,total:totalOrden};
                 const savedOrden = await sb.post("ordenes_compra", {
                   folio, proveedor:ordenProv,
-                  nota:JSON.stringify({notas:ordenNota,contacto:ordenContacto,fechaEntrega:ordenFechaEntrega,iva:ordenIva}),
+                  nota:metaNota,
                   items: JSON.stringify(itemsValidos),
                   total: totalOrden,
                   recibida:false, cancelada:false, creado_por:currentUser.nombre
@@ -1863,6 +1864,7 @@ export default function App(){
                 const ordenFinal = ordenConId?.id ? {...nuevaOrden, id:ordenConId.id} : nuevaOrden;
                 setOrdenes(prev=>[ordenFinal,...prev]);
                 setShowNuevaOrden(false);
+                setOrdenContacto(""); setOrdenFechaEntrega(""); setOrdenNota(""); setOrdenIva(true);
                 notify("Orden " + folio + " creada");
                 setTimeout(()=>printOrden(ordenFinal),300);
               }}>Crear e Imprimir Orden</button>
