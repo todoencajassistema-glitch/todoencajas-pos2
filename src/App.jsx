@@ -1598,7 +1598,7 @@ export default function App(){
             <div style={{fontSize:32,marginBottom:12}}>⚠️</div>
             <div style={{fontSize:14,lineHeight:1.6,marginBottom:24,color:"#ccc"}}>{confirm.msg}</div>
             <div style={{display:"flex",gap:10}}>
-              <button className="btn btn-red" style={{flex:1,padding:"10px"}} onClick={confirm.onYes}>Confirmar</button>
+              <button className="btn btn-red" style={{flex:1,padding:"10px"}} onClick={async()=>{await confirm.onYes();setConfirm(null);}}>Confirmar</button>
               <button className="btn btn-dark" style={{flex:1,padding:"10px"}} onClick={()=>setConfirm(null)}>Cancelar</button>
             </div>
           </div>
