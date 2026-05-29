@@ -1079,7 +1079,7 @@ export default function App(){
             </div>
             <div className="card" style={{padding:0,overflow:"hidden"}}>
               <table>
-                <thead><tr><th>SKU</th><th>Producto</th><th>Categoria</th><th>Proveedor</th><th>Precio</th><th>Costo</th><th>Stock</th><th>Min</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <thead><tr><th>SKU</th><th>Producto</th><th>Categoria</th><th>Proveedor</th><th>Precio</th>{currentUser.rol==="admin"&&<th>Costo</th>}<th>Stock</th><th>Min</th><th>Estado</th><th>Acciones</th></tr></thead>
                 <tbody>
                   {products.map(p=>(
                     <tr key={p.id}>
