@@ -497,7 +497,7 @@ export default function App(){
           <button onClick={doLogin} disabled={loading} style={{width:"100%",background:"#E8681A",color:"#fff",border:"none",borderRadius:6,padding:"12px",fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer",letterSpacing:1,opacity:loading?.7:1}}>
             {loading?"Entrando...":"ENTRAR"}
           </button>
-          <div style={{fontSize:11,color:"#333",marginTop:16}}>usuario: admin · pin: 1234</div>
+          
         </div>
       </div>
     );
@@ -2098,40 +2098,76 @@ export default function App(){
         </div>
       )}
 
-      {showUsers&&(
+            {showUsers&&(
         <div className="overlay" onClick={()=>setShowUsers(false)}>
-          <div className="modal anim-in" style={{maxWidth:500}} onClick={e=>e.stopPropagation()}>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:18}}>Usuarios del Sistema</div>
+          <div className="modal anim-in" style={{maxWidth:520}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:18}}>👥 Usuarios del Sistema</div>
             <div style={{marginBottom:18}}>
               {dbUsers.map(u=>(
-                <div key={u.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 14px",background:"#1a1a1a",borderRadius:6,marginBottom:8}}>
-                  <div><div style={{fontSize:14,marginBottom:2}}>{u.nombre}</div><div style={{fontSize:11,color:"#555"}}>@{u.usuario}</div></div>
-                  <span className={`tag ${u.rol==="admin"?"tag-blue":"tag-ok"}`}>{ROLES[u.rol]}</span>
+                <div key={u.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid #1a1a1a"}}>
+                  <div>
+                    <div style={{fontSize:14,marginBottom:2}}>{u.nombre}</div>
+                    <div style={{fontSize:11,color:"#555"}}>@{u.usuario}</div>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span className={"tag "+(u.rol==="admin"?"tag-blue":"tag-ok")}>{ROLES[u.rol]}</span>
+                    <span className={"tag "+(u.activo?"tag-ok":"tag-danger")}>{u.activo?"Activo":"Inactivo"}</span>
+                    <button className="btn btn-dark" style={{fontSize:10,padding:"3px 8px"}} onClick={()=>setNewUser({...u,pin:"",editMode:true,editId:u.id})}>✏</button>
+                    {u.id!==currentUser.id&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 8px"}} onClick={()=>setConfirm({msg:"Eliminar usuario "+u.nombre+"?",onYes:async()=>{await sb.delete("usuarios",u.id);setDbUsers(prev=>prev.filter(x=>x.id!==u.id));notify("Usuario eliminado");}})}>🗑</button>}
+                  </div>
                 </div>
               ))}
             </div>
-            <div style={{background:"#1a1a1a",borderRadius:7,padding:"14px 16px",marginBottom:16}}>
-              <div style={{fontSize:11,color:"#555",marginBottom:12,letterSpacing:.5}}>AGREGAR USUARIO</div>
+            <div style={{background:"#1a1a1a",borderRadius:8,padding:16}}>
+              <div style={{fontSize:12,color:"#E8681A",letterSpacing:1,textTransform:"uppercase",marginBottom:12}}>
+                {newUser.editMode?"✏ Editar Usuario":"+ Nuevo Usuario"}
+              </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
-                <div><div className="label" style={{marginBottom:5}}>Nombre</div><input value={newUser.nombre} onChange={e=>setNewUser(u=>({...u,nombre:e.target.value}))} style={{width:"100%"}} placeholder="Nombre"/></div>
-                <div><div className="label" style={{marginBottom:5}}>Usuario</div><input value={newUser.usuario} onChange={e=>setNewUser(u=>({...u,usuario:e.target.value}))} style={{width:"100%"}} placeholder="usuario"/></div>
-                <div><div className="label" style={{marginBottom:5}}>PIN</div><input type="password" value={newUser.pin} onChange={e=>setNewUser(u=>({...u,pin:e.target.value}))} style={{width:"100%"}} placeholder="••••" maxLength={6}/></div>
-                <div><div className="label" style={{marginBottom:5}}>Rol</div>
-                  <select value={newUser.rol} onChange={e=>setNewUser(u=>({...u,rol:e.target.value}))} style={{width:"100%"}}>
-                    <option value="cajero">Cajero</option><option value="admin">Administrador</option>
+                <div>
+                  <div className="label" style={{marginBottom:5}}>Nombre</div>
+                  <input value={newUser.nombre} onChange={e=>setNewUser(u=>({...u,nombre:e.target.value}))} style={{width:"100%"}} placeholder="Nombre completo"/>
+                </div>
+                <div>
+                  <div className="label" style={{marginBottom:5}}>Usuario</div>
+                  <input value={newUser.usuario} onChange={e=>setNewUser(u=>({...u,usuario:e.target.value}))} style={{width:"100%"}} placeholder="usuario"/>
+                </div>
+                <div>
+                  <div className="label" style={{marginBottom:5}}>{newUser.editMode?"Nuevo PIN (dejar vacío para no cambiar)":"PIN"}</div>
+                  <input type="password" value={newUser.pin} onChange={e=>setNewUser(u=>({...u,pin:e.target.value}))} style={{width:"100%"}} placeholder={newUser.editMode?"Sin cambio":"••••"} maxLength={6}/>
+                </div>
+                <div>
+                  <div className="label" style={{marginBottom:5}}>Rol</div>
+                  <select value={newUser.rol} onChange={e=>setNewUser(u=>({...u,rol:e.target.value}))} style={{width:"100%",background:"#1c1c1c",border:"1px solid #333",color:"#e8e0d0",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
+                    <option value="cajero">Cajero</option>
+                    <option value="admin">Administrador</option>
                   </select>
                 </div>
               </div>
-              <button className="btn btn-gold" style={{width:"100%"}} onClick={async()=>{
-                if(!newUser.nombre||!newUser.usuario||!newUser.pin){notify("Completa todos los campos","error");return;}
-                await sb.post("usuarios",{...newUser,activo:true});
-                await loadData(); setNewUser({nombre:"",usuario:"",pin:"",rol:"cajero"}); notify("Usuario creado");
-              }}>Crear Usuario</button>
+              <div style={{display:"flex",gap:8}}>
+                <button className="btn btn-gold" style={{flex:1,padding:"9px"}} onClick={async()=>{
+                  if(!newUser.nombre||!newUser.usuario){notify("Nombre y usuario requeridos","error");return;}
+                  if(newUser.editMode){
+                    const upd={nombre:newUser.nombre,usuario:newUser.usuario,rol:newUser.rol,activo:newUser.activo!==false};
+                    if(newUser.pin) upd.pin=newUser.pin;
+                    await sb.patch("usuarios",newUser.editId,upd);
+                    setDbUsers(prev=>prev.map(u=>u.id===newUser.editId?{...u,...upd}:u));
+                    notify("Usuario actualizado");
+                  } else {
+                    if(!newUser.pin){notify("PIN requerido","error");return;}
+                    const saved=await sb.post("usuarios",{nombre:newUser.nombre,usuario:newUser.usuario,pin:newUser.pin,rol:newUser.rol,activo:true});
+                    const u=Array.isArray(saved)?saved[0]:saved;
+                    if(u?.id) setDbUsers(prev=>[...prev,u]);
+                    notify("Usuario creado");
+                  }
+                  setNewUser({nombre:"",usuario:"",pin:"",rol:"cajero"});
+                }}>
+                  {newUser.editMode?"Guardar Cambios":"Crear Usuario"}
+                </button>
+                {newUser.editMode&&<button className="btn btn-dark" style={{flex:1,padding:"9px"}} onClick={()=>setNewUser({nombre:"",usuario:"",pin:"",rol:"cajero"})}>Cancelar edición</button>}
+              </div>
             </div>
-            <button className="btn btn-dark" style={{width:"100%"}} onClick={()=>setShowUsers(false)}>Cerrar</button>
           </div>
         </div>
       )}
-    </div>
-  );
-}
+
+      
