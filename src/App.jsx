@@ -331,10 +331,6 @@ function PrintReceipt({sale, items, onClose}){
         </div>
       </div>
     </div>
-    </div>
-    </div>
-    </div>
-    </div>
   );
 }
 
