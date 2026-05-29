@@ -392,6 +392,9 @@ export default function App(){
   const [ordenItems,setOrdenItems]     = useState([]);
   const [ordenProv,setOrdenProv]       = useState("");
   const [ordenNota,setOrdenNota]       = useState("");
+  const [ordenContacto,setOrdenContacto] = useState("");
+  const [ordenFechaEntrega,setOrdenFechaEntrega] = useState("");
+  const [ordenIva,setOrdenIva] = useState(true);
   const [entradaItems,setEntradaItems] = useState({});
   const [entradaRecibe,setEntradaRecibe] = useState("");
   const [editOrden,setEditOrden] = useState(null);
