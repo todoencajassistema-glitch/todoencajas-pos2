@@ -398,6 +398,8 @@ export default function App(){
   const [ordenContacto,setOrdenContacto] = useState("");
   const [ordenFechaEntrega,setOrdenFechaEntrega] = useState("");
   const [ordenIva,setOrdenIva] = useState(true);
+  const [ordenTelContacto,setOrdenTelContacto] = useState("");
+  const [ordenCondiciones,setOrdenCondiciones] = useState("");
   const [entradaItems,setEntradaItems] = useState({});
   const [entradaRecibe,setEntradaRecibe] = useState("");
   const [editOrden,setEditOrden] = useState(null);
@@ -1469,7 +1471,11 @@ export default function App(){
         <div className="anim-in">
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
             <div className="section-title" style={{margin:0}}>Entradas de Mercancía</div>
-            <button className="btn btn-gold" onClick={()=>{setOrdenItems(products.map(p=>({productoId:p.id,nombre:p.nombre,sku:p.sku,cantidad:0,costo:p.costo||0})));setOrdenProv(proveedores[0]?.nombre||"");setOrdenNota("");setShowNuevaOrden(true);}}>
+            <button className="btn btn-gold" onClick={()=>{setOrdenItems(products.map(p=>({productoId:p.id,nombre:p.nombre,sku:p.sku,cantidad:0,costo:p.costo||0})));
+              setOrdenProv(proveedores[0]?.nombre||"");
+              setOrdenNota("");setOrdenContacto("");setOrdenTelContacto("");setOrdenCondiciones("");setOrdenFechaEntrega("");setOrdenIva(true);
+              const p0=proveedores[0];if(p0){setOrdenContacto(p0.contacto||"");setOrdenTelContacto(p0.tel||"");setOrdenCondiciones(p0.condiciones||"");}
+              setShowNuevaOrden(true);}}>
               + Nueva Orden de Compra
             </button>
           </div>
