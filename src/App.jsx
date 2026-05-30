@@ -241,7 +241,7 @@ const doPrint = () => {
       '<td style="padding:8px 10px;border:1px solid #ddd;font-size:10pt">'+item.nombre+'</td>'+
       '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt">'+item.cantidad+'</td>'+
       '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right;font-size:10pt">$'+precio.toFixed(2)+'</td>'+
-      (desc>0?'<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt;color:#E8681A">'+desc+'%</td>':'<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt;color:#aaa">—</td>')+
+      (desc>0?'<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt;color:#E8681A">'+Math.round(desc*100)/100+'%</td>':'<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt;color:#aaa">—</td>')+
       '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right;font-size:10pt;font-weight:600">$'+subtotalItem.toFixed(2)+'</td>'+
     '</tr>';
   }).join('');
@@ -300,10 +300,19 @@ const doPrint = () => {
 
 return(
   <div className="overlay" onClick={onClose}>
-    <div className="modal anim-in" style={{maxWidth:420}} onClick={e=>e.stopPropagation()}>
+    <div className="modal anim-in" style={{maxWidth:480}} onClick={e=>e.stopPropagation()}>
       <div style={{fontFamily:"'Syne',sans-serif",fontSize:15,fontWeight:700,color:"#E8681A",marginBottom:4}}>{sale.folio}</div>
-      <div style={{fontSize:12,color:"#555",marginBottom:16}}>{fmtDate(sale.fecha)} · {canal.emoji} {canal.label} · {pago.emoji} {pago.label}</div>
+      <div style={{fontSize:12,color:"#555",marginBottom:8}}>{fmtDate(sale.fecha)} · {canal.emoji} {canal.label} · {pago.emoji} {pago.label}</div>
       <div style={{fontSize:13,color:"#ccc",marginBottom:4}}>Cliente: {sale.cliente}</div>
+      <div style={{marginBottom:12,maxHeight:180,overflowY:"auto"}}>
+        {(items||[]).map((it,i)=>(
+          <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:"1px solid #1a1a1a",fontSize:12}}>
+            <span style={{color:"#888"}}>{it.sku} · {it.nombre}</span>
+            <span style={{color:"#ccc"}}>{it.cantidad} × {fmt(Number(it.precio_unitario||it.precioUnitario||0))}</span>
+          </div>
+        ))}
+        {(!items||items.length===0)&&<div style={{color:"#444",fontSize:12,textAlign:"center",padding:"8px 0"}}>Sin items</div>}
+      </div>
       <div style={{fontSize:13,marginBottom:16}}>
         <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:18,color:labelColor}}>
           {sale.cancelada?"CANCELADA":sale.devolucion?"DEVOLUCION":fmt(sale.total)}
@@ -998,7 +1007,7 @@ export default function App(){
                                   value={(item.precioUnitario*(item.descuento||0)/100).toFixed(2)}
                                   onChange={e=>{
                                     const descPesos=Math.max(0,parseFloat(e.target.value)||0);
-                                    const pct=item.precioUnitario>0?Math.min(100,(descPesos/item.precioUnitario)*100):0;
+                                    const pct=item.precioUnitario>0?Math.min(100,Math.round((descPesos/item.precioUnitario)*10000)/100):0;
                                     updateDesc(item.productoId,pct);
                                   }}
                                   min={0} max={item.precioUnitario} step={0.5}
