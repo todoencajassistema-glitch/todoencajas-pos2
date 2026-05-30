@@ -548,7 +548,8 @@ export default function App(){
     if(qty<=0){setCart(c=>c.filter(i=>i.productoId!==id));return;}
     setCart(c=>c.map(i=>i.productoId===id?{...i,cantidad:qty}:i));
   };
-  const updateDesc = (id,desc) => setCart(c=>c.map(i=>i.productoId===id?{...i,descuento:Math.round(Math.min(100,Math.max(0,desc))*100)/100}:i));
+  const updateDesc = (id,pct) => setCart(c=>c.map(i=>i.productoId===id?{...i,descuento:parseFloat(Math.min(100,Math.max(0,pct)).toFixed(4))}:i));
+  const updateDescPesos = (id,pesos) => setCart(c=>c.map(i=>i.productoId===id?{...i,descuentoPesos:parseFloat(Number(pesos).toFixed(2)),descuento:i.precioUnitario>0?parseFloat(Math.min(100,(pesos/i.precioUnitario)*100).toFixed(4)):0}:i));
 
   const cartSubtotal  = cart.reduce((a,i)=>a+i.cantidad*i.precioUnitario,0);
   const cartDescuento = cart.reduce((a,i)=>a+i.cantidad*i.precioUnitario*(i.descuento/100),0)+cartSubtotal*(descGlobal/100);
@@ -579,8 +580,8 @@ export default function App(){
         const itemsToSave = cart.map(i=>({
           venta_id:venta.id, producto_id:i.productoId,
           nombre:i.nombre, sku:i.sku, cantidad:i.cantidad,
-          precio_unitario:parseFloat(Number(i.precioUnitario).toFixed(2)),
-          descuento:parseFloat(Number(i.descuento||0).toFixed(2)),
+          precio_unitario:parseFloat(Number(i.precioUnitario||0).toFixed(2)),
+          descuento:parseFloat(Number(i.descuento||0).toFixed(4)),
         }));
         const itemsResult = await sb.post("venta_items", itemsToSave);
         console.log("items save result:", itemsResult);
@@ -1007,11 +1008,10 @@ export default function App(){
                               <div style={{display:"flex",alignItems:"center",gap:4}}>
                                 <span style={{fontSize:11,color:"#555"}}>$</span>
                                 <input type="number"
-                                  value={(item.precioUnitario*(item.descuento||0)/100).toFixed(2)}
+                                  value={item.descuentoPesos!==undefined?Number(item.descuentoPesos).toFixed(2):(item.precioUnitario*(item.descuento||0)/100).toFixed(2)}
                                   onChange={e=>{
                                     const descPesos=Math.max(0,parseFloat(e.target.value)||0);
-                                    const pct=item.precioUnitario>0?Math.min(100,Math.round((descPesos/item.precioUnitario)*10000)/100):0;
-                                    updateDesc(item.productoId,pct);
+                                    updateDescPesos(item.productoId,descPesos);
                                   }}
                                   min={0} max={item.precioUnitario} step={0.5}
                                   style={{width:58,padding:"3px 6px",fontSize:12,textAlign:"center"}}/>
