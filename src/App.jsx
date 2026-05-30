@@ -234,7 +234,7 @@ const doPrint = () => {
   var rowsHtml = (items||[]).map(function(item,idx){
     var bg = idx%2===0?'#fff':'#f9f9f9';
     var precio = Number(item.precio_unitario||item.precioUnitario||0);
-    var desc = Number(item.descuento||0);
+    var desc = Math.round(Number(item.descuento||0)*100)/100;
     var subtotalItem = item.cantidad * precio * (1-desc/100);
     return '<tr style="background:'+bg+'">'+
       '<td style="padding:8px 10px;border:1px solid #ddd;font-size:10pt">'+item.sku+'</td>'+
