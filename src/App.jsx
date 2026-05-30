@@ -570,7 +570,7 @@ export default function App(){
         await sb.post("venta_items", cart.map(i=>({
           venta_id:venta.id, producto_id:i.productoId,
           nombre:i.nombre, sku:i.sku, cantidad:i.cantidad,
-          precio_unitario:i.precioUnitario, descuento:i.descuento,
+          precio_unitario:i.precioUnitario, descuento:i.descuento, motivo_descuento:i.motivoDescuento||"",
         })));
         await Promise.all(cart.map(i=>{
           const prod=products.find(p=>p.id===i.productoId);
@@ -612,7 +612,7 @@ export default function App(){
         await sb.post("venta_items", cart.map(i=>({
           venta_id:pedido.id, producto_id:i.productoId,
           nombre:i.nombre, sku:i.sku, cantidad:i.cantidad,
-          precio_unitario:i.precioUnitario, descuento:i.descuento,
+          precio_unitario:i.precioUnitario, descuento:i.descuento, motivo_descuento:i.motivoDescuento||"",
         })));
         await loadData();
         // Print anticipo ticket
@@ -1344,6 +1344,7 @@ export default function App(){
                   parts.push('<th style="padding:8px 10px;text-align:left;border:1px solid #ddd">Cliente</th>');
                   parts.push('<th style="padding:8px 10px;text-align:left;border:1px solid #ddd">Canal</th>');
                   parts.push('<th style="padding:8px 10px;text-align:left;border:1px solid #ddd">Forma de Pago</th>');
+                  parts.push('<th style="padding:8px 10px;text-align:left;border:1px solid #ddd">Productos</th>');
                   parts.push('<th style="padding:8px 10px;text-align:right;border:1px solid #ddd">Total</th>');
                   parts.push('</tr></thead><tbody>'+rowsHtml+'</tbody>');
                   parts.push('<tfoot><tr style="background:#f0f0f0">');
