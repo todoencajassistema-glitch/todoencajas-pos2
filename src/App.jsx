@@ -1253,8 +1253,13 @@ export default function App(){
                         <td><span className={`tag ${estadoTag}`}>{estadoLabel}</span></td>
                         <td><div style={{display:"flex",gap:4}}>
                           <button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={async()=>{
-                            const its=await sb.get("venta_items","venta_id=eq."+s.id);
-                            setReceiptItems(Array.isArray(its)?its:[]); setShowReceipt(s);
+                            let its=[];
+                            try {
+                              const res=await sb.get("venta_items","venta_id=eq."+Number(s.id));
+                              its=Array.isArray(res)?res:[];
+                              console.log("items loaded:",its.length, its);
+                            } catch(e){ console.error("Error loading items:",e); }
+                            setReceiptItems(its); setShowReceipt(s);
                           }}>Ver</button>
                           {!s.cancelada&&!s.devolucion&&isAdmin&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>cancelSale(s)}>Cancelar</button>}
                           {!s.cancelada&&!s.devolucion&&<button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>initDevolucion(s)}>↩ Dev</button>}
