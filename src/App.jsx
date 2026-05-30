@@ -225,113 +225,95 @@ function exportCSV(sales) {
 
 // ─── PRINT RECEIPT ───────────────────────────────────────────────────────────
 function PrintReceipt({sale, items, onClose}){
-  const canal = CANAL_MAP[sale.canal]||{emoji:"",label:sale.canal};
-  const pago  = PAGO_MAP[sale.metodo_pago]||{emoji:"",label:sale.metodo_pago};
-  const labelColor = sale.cancelada?"#eb5757":sale.devolucion?"#f2c94c":"#E8681A";
+const canal = CANAL_MAP[sale.canal]||{emoji:"",label:sale.canal};
+const pago  = PAGO_MAP[sale.metodo_pago]||{emoji:"",label:sale.metodo_pago};
+const labelColor = sale.cancelada?"#eb5757":sale.devolucion?"#f2c94c":"#E8681A";
 
-  const doPrint = () => {
-    const win = window.open("","_blank","width=420,height=750");
-    win.document.write(`<html><head><title>Nota ${sale.folio}</title><style>
-      @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
-      *{margin:0;padding:0;box-sizing:border-box}
-      body{font-family:'DM Mono',monospace;width:80mm;margin:0 auto;padding:6mm;background:#fff;color:#111;font-size:9pt}
-      .center{text-align:center}.brand{font-family:'Syne',sans-serif;font-size:18pt;font-weight:800}
-      .folio{font-family:'Syne',sans-serif;font-size:14pt;font-weight:800;margin:3mm 0 1mm}
-      .dashed{border-top:1px dashed #aaa;margin:2mm 0}
-      .row{display:flex;justify-content:space-between;margin:1.5mm 0;font-size:8pt}
-      .total-row{display:flex;justify-content:space-between;margin-top:3mm}
-      .total-label{font-family:'Syne',sans-serif;font-weight:700;font-size:10pt}
-      .total-value{font-family:'Syne',sans-serif;font-weight:800;font-size:14pt}
-      .footer{text-align:center;font-size:7pt;color:#aaa;margin-top:4mm;border-top:1px dashed #aaa;padding-top:3mm}
-      .stamp{color:red;font-size:13pt;font-weight:800;text-align:center;border:2px solid red;padding:2mm;margin:3mm 0;letter-spacing:2px}
-      @media print{body{margin:0}}
-    </style></head><body>
-    <div class="center"><img src="${LOGO_SRC}" style="width:120px;height:auto;margin-bottom:2mm"/><div style="font-size:7pt;letter-spacing:3px;color:#666">NOTA DE VENTA</div></div>
-    <div class="dashed"></div>
-    <div class="center"><div class="folio">${sale.folio}</div><div style="font-size:8pt;color:#555">${fmtDate(sale.fecha)} · ${fmtTime(sale.fecha)}</div></div>
-    ${sale.cancelada?'<div class="stamp">CANCELADA</div>':""}
-    ${sale.devolucion?'<div class="stamp">DEVOLUCION</div>':""}
-    <div class="dashed"></div>
-    <div class="row"><span style="color:#888">Cliente</span><span>${sale.cliente}</span></div>
-    <div class="row"><span style="color:#888">Canal</span><span>${canal.emoji} ${canal.label}</span></div>
-    <div class="row"><span style="color:#888">Pago</span><span>${pago.emoji} ${pago.label}</span></div>
-    ${sale.cajero?`<div class="row"><span style="color:#888">Atendio</span><span>${sale.cajero}</span></div>`:""}
-    <div class="dashed"></div>
-    ${(items||[]).map(i=>`<div style="margin:2mm 0">
-      <div style="font-size:8pt;font-weight:500">${i.nombre}</div>
-      <div class="row"><span style="font-size:7pt;color:#666">${i.sku||""} · ${i.cantidad}×${fmt(i.precio_unitario)}${i.descuento?` (-${i.descuento}%)`:""}
-      </span><span>${fmt(i.cantidad*i.precio_unitario*(1-(i.descuento||0)/100))}</span></div>
-    </div>`).join("")}
-    <div class="dashed"></div>
-    <div class="row"><span>Subtotal</span><span>${fmt(sale.subtotal)}</span></div>
-    ${Number(sale.descuento_total)>0?`<div class="row"><span>Descuentos</span><span>-${fmt(sale.descuento_total)}</span></div>`:""}
-    <div class="total-row"><span class="total-label">TOTAL</span><span class="total-value">${fmt(sale.total)}</span></div>
-    ${sale.metodo_pago==="efectivo"&&Number(sale.cambio)>0?`<div class="row" style="margin-top:2mm"><span>Recibido</span><span>${fmt(sale.recibido)}</span></div><div class="row"><span style="font-weight:bold">Cambio</span><span style="font-weight:bold">${fmt(sale.cambio)}</span></div>`:""}
-    <div class="footer">
-      <div style="font-size:8pt;font-weight:600;margin-bottom:1mm">Gracias por su compra!</div>
-      <div>${EMPRESA.direccion}</div><div>${EMPRESA.colonia}, ${EMPRESA.ciudad}</div>
-      <div>📱 WhatsApp: ${EMPRESA.whatsapp}</div>
-      <div>🌐 ${EMPRESA.web} · 🎵 ${EMPRESA.tiktok}</div>
-      <div style="margin-top:2mm;font-size:7pt;color:#bbb">Conserve esta nota como comprobante</div>
-    </div>
-    </body></html>`);
-    win.document.close(); setTimeout(()=>{win.focus();win.print();},400);
-  };
+const doPrint = () => {
+  var win = window.open('','_blank','width=900,height=700');
+  var rowsHtml = (items||[]).map(function(item,idx){
+    var bg = idx%2===0?'#fff':'#f9f9f9';
+    var subtotalItem = item.cantidad * item.precioUnitario * (1-(item.descuento||0)/100);
+    return '<tr style="background:'+bg+'">'+
+      '<td style="padding:8px 10px;border:1px solid #ddd;font-size:10pt">'+item.sku+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ddd;font-size:10pt">'+item.nombre+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt">'+item.cantidad+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right;font-size:10pt">$'+Number(item.precioUnitario).toFixed(2)+'</td>'+
+      (Number(item.descuento)>0?'<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt;color:#E8681A">'+item.descuento+'%</td>':'<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt;color:#aaa">—</td>')+
+      '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right;font-size:10pt;font-weight:600">$'+subtotalItem.toFixed(2)+'</td>'+
+    '</tr>';
+  }).join('');
+  var descRow = Number(sale.descuento_total)>0 ? '<tr><td colspan="5" style="padding:6px 10px;text-align:right;border:1px solid #eee;color:#E8681A">Descuento total:</td><td style="padding:6px 10px;text-align:right;border:1px solid #eee;color:#E8681A;font-weight:600">-$'+Number(sale.descuento_total).toFixed(2)+'</td></tr>' : '';
+  var cambioRow = sale.metodo_pago==='efectivo' && Number(sale.cambio)>0 ? '<tr><td colspan="5" style="padding:6px 10px;text-align:right;border:1px solid #eee">Recibido:</td><td style="padding:6px 10px;text-align:right;border:1px solid #eee">$'+Number(sale.recibido).toFixed(2)+'</td></tr><tr><td colspan="5" style="padding:6px 10px;text-align:right;border:1px solid #eee;color:#6fcf97">Cambio:</td><td style="padding:6px 10px;text-align:right;border:1px solid #eee;color:#6fcf97;font-weight:600">$'+Number(sale.cambio).toFixed(2)+'</td></tr>' : '';
+  var estadoBadge = sale.cancelada ? '<span style="background:#fde;color:red;padding:3px 10px;border-radius:4px;font-size:10pt;font-weight:700">CANCELADA</span>' : sale.devolucion ? '<span style="background:#fff3e0;color:#E8681A;padding:3px 10px;border-radius:4px;font-size:10pt;font-weight:700">DEVOLUCION</span>' : '';
+  var css = '*{box-sizing:border-box;margin:0;padding:0} body{font-family:Arial,sans-serif;padding:15mm;background:#fff;color:#111;font-size:11pt} @media print{.no-print{display:none}}';
+  var parts = [];
+  parts.push('<html><head><title>Remision '+sale.folio+'</title><style>'+css+'</style></head><body>');
+  parts.push('<div class="no-print" style="text-align:center;margin-bottom:15px">');
+  parts.push('<button onclick="window.print()" style="background:#E8681A;color:#fff;border:none;padding:10px 30px;font-size:14px;border-radius:6px;cursor:pointer;margin-right:10px">Imprimir / Guardar PDF</button>');
+  parts.push('<button onclick="window.close()" style="background:#555;color:#fff;border:none;padding:10px 20px;font-size:14px;border-radius:6px;cursor:pointer">Cerrar</button></div>');
+  parts.push('<table style="width:100%;margin-bottom:16px"><tr>');
+  parts.push('<td style="width:55%"><div style="font-size:22pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
+  parts.push('<div style="font-size:10pt;color:#666">Soluciones de empaque a la medida de tus ideas</div>');
+  parts.push('<div style="font-size:10pt;color:#666;margin-top:2px">Cucurpe 44, Alvaro Obregon, Venustiano Carranza, 15990 CDMX</div>');
+  parts.push('<div style="font-size:10pt;color:#666">Tel: 55 2268 8744 | todoencajas.com | @tiendatodoencajas</div></td>');
+  parts.push('<td style="text-align:right;vertical-align:top">');
+  parts.push('<div style="font-size:18pt;font-weight:800;color:#333">REMISION DE VENTA</div>');
+  parts.push('<div style="font-size:16pt;color:#E8681A;font-weight:800">'+sale.folio+'</div>');
+  parts.push('<div style="font-size:10pt;color:#666">'+fmtDate(sale.fecha)+' '+fmtTime(sale.fecha)+'</div>');
+  parts.push(estadoBadge);
+  parts.push('</td></tr></table>');
+  parts.push('<hr style="border:2px solid #E8681A;margin-bottom:16px"/>');
+  parts.push('<table style="width:100%;margin-bottom:16px;border-collapse:collapse"><tr>');
+  parts.push('<td style="width:33%;padding:8px 10px;background:#f9f9f9;border:1px solid #eee"><div style="font-size:9pt;color:#888;margin-bottom:2px">CLIENTE</div><div style="font-weight:600">'+sale.cliente+'</div></td>');
+  parts.push('<td style="width:22%;padding:8px 10px;background:#f9f9f9;border:1px solid #eee"><div style="font-size:9pt;color:#888;margin-bottom:2px">CANAL</div><div>'+canal.emoji+' '+canal.label+'</div></td>');
+  parts.push('<td style="width:22%;padding:8px 10px;background:#f9f9f9;border:1px solid #eee"><div style="font-size:9pt;color:#888;margin-bottom:2px">FORMA DE PAGO</div><div>'+pago.emoji+' '+pago.label+'</div></td>');
+  parts.push('<td style="width:23%;padding:8px 10px;background:#f9f9f9;border:1px solid #eee"><div style="font-size:9pt;color:#888;margin-bottom:2px">ATENDIO</div><div>'+sale.cajero+'</div></td>');
+  parts.push('</tr></table>');
+  parts.push('<table style="width:100%;border-collapse:collapse;margin-bottom:16px">');
+  parts.push('<thead><tr style="background:#E8681A;color:#fff">');
+  parts.push('<th style="padding:9px 10px;text-align:left;border:1px solid #ddd">SKU</th>');
+  parts.push('<th style="padding:9px 10px;text-align:left;border:1px solid #ddd">Descripcion</th>');
+  parts.push('<th style="padding:9px 10px;text-align:center;border:1px solid #ddd">Cant.</th>');
+  parts.push('<th style="padding:9px 10px;text-align:right;border:1px solid #ddd">Precio Unit.</th>');
+  parts.push('<th style="padding:9px 10px;text-align:center;border:1px solid #ddd">Desc.</th>');
+  parts.push('<th style="padding:9px 10px;text-align:right;border:1px solid #ddd">Subtotal</th>');
+  parts.push('</tr></thead><tbody>'+rowsHtml+'</tbody>');
+  parts.push('<tfoot>');
+  parts.push(descRow);
+  parts.push('<tr style="background:#f9f9f9"><td colspan="5" style="padding:8px 10px;text-align:right;border:1px solid #ddd;font-size:11pt">Subtotal:</td><td style="padding:8px 10px;text-align:right;border:1px solid #ddd">$'+Number(sale.subtotal).toFixed(2)+'</td></tr>');
+  parts.push('<tr style="background:#f0f0f0"><td colspan="5" style="padding:10px;text-align:right;border:1px solid #ddd;font-weight:800;font-size:13pt">TOTAL:</td><td style="padding:10px;text-align:right;border:1px solid #ddd;font-weight:800;font-size:16pt;color:#E8681A">$'+Number(sale.total).toFixed(2)+'</td></tr>');
+  parts.push(cambioRow);
+  parts.push('</tfoot></table>');
+  parts.push('<table style="width:100%;margin-top:30px"><tr>');
+  parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Firma de conformidad del cliente</div></td>');
+  parts.push('<td style="width:10%"></td>');
+  parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Atendio: '+sale.cajero+'</div></td>');
+  parts.push('</tr></table>');
+  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:16px">Gracias por su compra | Todo en Cajas.com | 55 2268 8744 | todoencajas.com</p>');
+  parts.push('</body></html>');
+  win.document.write(parts.join(''));
+  win.document.close();
+};
 
-  return(
-    <div className="overlay" onClick={onClose}>
-      <div className="modal anim-in" style={{maxWidth:460}} onClick={e=>e.stopPropagation()}>
-        {(sale.cancelada||sale.devolucion)&&(
-          <div style={{background:sale.cancelada?"#3a1010":"#2a2a10",border:"1px solid "+labelColor,borderRadius:6,padding:"8px 16px",textAlign:"center",fontSize:13,color:labelColor,marginBottom:16,letterSpacing:1}}>
-            {sale.cancelada?"⚠ VENTA CANCELADA":"↩ DEVOLUCION"}
-          </div>
-        )}
-        <div style={{textAlign:"center",marginBottom:16}}>
-          <div style={{fontSize:11,color:"#555",letterSpacing:3,marginBottom:6}}>NOTA DE VENTA</div>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:30,fontWeight:800,color:labelColor}}>{sale.folio}</div>
-          <div style={{fontSize:12,color:"#666",marginTop:3}}>{fmtDate(sale.fecha)} · {fmtTime(sale.fecha)}</div>
-        </div>
-        <div style={{background:"#1a1a1a",borderRadius:8,padding:"12px 16px",marginBottom:14,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
-          <div><div style={{fontSize:10,color:"#444",letterSpacing:1,marginBottom:3}}>CLIENTE</div><div style={{fontSize:12}}>{sale.cliente}</div></div>
-          <div><div style={{fontSize:10,color:"#444",letterSpacing:1,marginBottom:3}}>CANAL</div>
-            <span className="canal-chip" style={{background:canal.bg,color:canal.color,border:"1px solid "+canal.color+"33",fontSize:10}}>{canal.emoji} {canal.label}</span>
-          </div>
-          <div><div style={{fontSize:10,color:"#444",letterSpacing:1,marginBottom:3}}>PAGO</div><div style={{fontSize:12}}>{pago.emoji} {pago.label}</div></div>
-        </div>
-        <div style={{borderTop:"1px dashed #2a2a2a",borderBottom:"1px dashed #2a2a2a",padding:"12px 0",marginBottom:14}}>
-          {(items||[]).map((item,i)=>(
-            <div key={i} style={{display:"flex",justifyContent:"space-between",marginBottom:8,fontSize:13}}>
-              <div>
-                <div style={{color:"#ccc",marginBottom:1}}>{item.nombre}</div>
-                <div style={{color:"#444",fontSize:11}}>{item.sku} · {item.cantidad}×{fmt(item.precio_unitario)}
-                  {item.descuento?<span style={{color:"#f2c94c"}}> -{item.descuento}%</span>:null}
-                </div>
-              </div>
-              <div style={{color:"#E8681A",fontWeight:600,paddingLeft:12}}>{fmt(item.cantidad*item.precio_unitario*(1-(item.descuento||0)/100))}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{marginBottom:16}}>
-          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:13,color:"#666"}}><span>Subtotal</span><span>{fmt(sale.subtotal)}</span></div>
-          {Number(sale.descuento_total)>0&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:13,color:"#f2c94c"}}><span>Descuentos</span><span>-{fmt(sale.descuento_total)}</span></div>}
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
-            <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:16,color:"#888"}}>TOTAL</span>
-            <span style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:26,color:labelColor}}>{fmt(sale.total)}</span>
-          </div>
-          {sale.metodo_pago==="efectivo"&&Number(sale.cambio)>0&&(
-            <div style={{background:"#1a2e1a",borderRadius:6,padding:"8px 12px",marginTop:8,fontSize:13,display:"flex",justifyContent:"space-between"}}>
-              <span style={{color:"#888"}}>Recibido: {fmt(sale.recibido)}</span>
-              <span style={{color:"#6fcf97",fontWeight:600}}>Cambio: {fmt(sale.cambio)}</span>
-            </div>
-          )}
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-          <button className="btn btn-gold" style={{padding:"10px 0",fontSize:12}} onClick={doPrint}>🖨 Imprimir</button>
-          <button className="btn btn-dark" style={{padding:"10px 0",fontSize:12}} onClick={onClose}>Cerrar</button>
-        </div>
+return(
+  <div className="overlay" onClick={onClose}>
+    <div className="modal anim-in" style={{maxWidth:420}} onClick={e=>e.stopPropagation()}>
+      <div style={{fontFamily:"'Syne',sans-serif",fontSize:15,fontWeight:700,color:"#E8681A",marginBottom:4}}>{sale.folio}</div>
+      <div style={{fontSize:12,color:"#555",marginBottom:16}}>{fmtDate(sale.fecha)} · {canal.emoji} {canal.label} · {pago.emoji} {pago.label}</div>
+      <div style={{fontSize:13,color:"#ccc",marginBottom:4}}>Cliente: {sale.cliente}</div>
+      <div style={{fontSize:13,marginBottom:16}}>
+        <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:18,color:labelColor}}>
+          {sale.cancelada?"CANCELADA":sale.devolucion?"DEVOLUCION":fmt(sale.total)}
+        </span>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+        <button className="btn btn-gold" style={{padding:"10px 0",fontSize:13}} onClick={doPrint}>🖨 Imprimir Remision PDF</button>
+        <button className="btn btn-dark" style={{padding:"10px 0",fontSize:12}} onClick={onClose}>Cerrar</button>
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1006,9 +988,15 @@ export default function App(){
                               <span style={{minWidth:22,textAlign:"center"}}>{item.cantidad}</span>
                               <button className="btn btn-dark" style={{padding:"2px 9px",fontSize:15}} onClick={()=>updateQty(item.productoId,item.cantidad+1)}>+</button>
                             </div>
-                            <div style={{display:"flex",alignItems:"center",gap:5}}>
-                              <input type="number" value={item.descuento} onChange={e=>updateDesc(item.productoId,parseInt(e.target.value)||0)} min={0} max={100} style={{width:48,padding:"3px 6px",fontSize:11,textAlign:"center"}}/>
-                              <span style={{fontSize:10,color:"#555"}}>%</span>
+                            <div style={{display:"flex",flexDirection:"column",gap:3,alignItems:"flex-end"}}>
+                              <div style={{display:"flex",alignItems:"center",gap:4}}>
+                                <span style={{fontSize:9,color:"#555"}}>%</span>
+                                <input type="number" value={item.descuento} onChange={e=>{const pct=Math.min(100,Math.max(0,parseInt(e.target.value)||0));updateDesc(item.productoId,pct);}} min={0} max={100} style={{width:42,padding:"2px 5px",fontSize:11,textAlign:"center"}}/>
+                              </div>
+                              <div style={{display:"flex",alignItems:"center",gap:4}}>
+                                <span style={{fontSize:9,color:"#555"}}>$</span>
+                                <input type="number" value={item.descuento>0?(item.precioUnitario*(1-item.descuento/100)).toFixed(2):item.precioUnitario} onChange={e=>{const precio=parseFloat(e.target.value)||0;const pct=item.precioUnitario>0?Math.max(0,Math.round((1-precio/item.precioUnitario)*100)):0;updateDesc(item.productoId,pct);}} min={0} step={0.5} style={{width:58,padding:"2px 5px",fontSize:11,textAlign:"center"}}/>
+                              </div>
                             </div>
                             <div style={{color:"#E8681A",fontWeight:600,fontSize:13}}>{fmt(item.cantidad*item.precioUnitario*(1-item.descuento/100))}</div>
                           </div>
