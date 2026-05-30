@@ -10,7 +10,6 @@ const EMPRESA = {
   direccion: "Cucurpe 44, Alvaro Obregon",
   colonia: "Venustiano Carranza, 15990",
   ciudad: "Ciudad de Mexico, CDMX",
-  tel: "55 9824 1503",
   whatsapp: "55 2268 8744",
   web: "todoencajas.com",
   tiktok: "@tiendatodoencajas",
@@ -103,7 +102,7 @@ function printOrden(orden) {
   parts.push('<td style="width:55%"><div style="font-size:22pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
   parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon</div>');
   parts.push('<div style="font-size:10pt;color:#666">Venustiano Carranza, 15990 CDMX</div>');
-  parts.push('<div style="font-size:10pt;color:#666">Tel: 55 9824 1503 | WA: 55 2268 8744 | todoencajas.com</div></td>');
+  parts.push('<div style="font-size:10pt;color:#666">Tel: 55 2268 8744 | todoencajas.com</div></td>');
   parts.push('<td style="text-align:right;vertical-align:top">');
   parts.push('<div style="font-size:18pt;font-weight:800;color:#333">ORDEN DE COMPRA</div>');
   parts.push('<div style="font-size:14pt;color:#E8681A;font-weight:800">'+orden.folio+'</div>');
@@ -117,8 +116,6 @@ function printOrden(orden) {
   parts.push('<div style="font-weight:700;margin-bottom:6px;color:#E8681A">PROVEEDOR</div>');
   parts.push('<div style="font-size:12pt;font-weight:700">'+orden.proveedor+'</div>');
   if(meta.contacto) parts.push('<div style="font-size:10pt;color:#666;margin-top:4px">Contacto: '+meta.contacto+'</div>');
-  if(meta.tel) parts.push('<div style="font-size:10pt;color:#666">Tel: '+meta.tel+'</div>');
-  if(meta.condiciones) parts.push('<div style="font-size:10pt;color:#555;margin-top:4px;font-style:italic">Condiciones: '+meta.condiciones+'</div>');
   parts.push('</td>');
   parts.push('<td style="width:50%;padding:10px;background:#f9f9f9;border:1px solid #eee;vertical-align:top">');
   parts.push('<div style="font-weight:700;margin-bottom:6px;color:#E8681A">DETALLES</div>');
@@ -143,7 +140,7 @@ function printOrden(orden) {
   parts.push('<td style="width:10%"></td>');
   parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Firma proveedor: '+orden.proveedor+'</div></td>');
   parts.push('</tr></table>');
-  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - Tel: 55 9824 1503 | WA: 55 2268 8744</p>');
+  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - 55 2268 8744</p>');
   parts.push('</body></html>');
   win.document.write(parts.join(''));
   win.document.close();
@@ -168,7 +165,7 @@ function printEntrada(entrada) {
   parts.push('<button onclick="window.close()" style="background:#555;color:#fff;border:none;padding:10px 20px;font-size:14px;border-radius:6px;cursor:pointer">Cerrar</button></div>');
   parts.push('<table style="width:100%;margin-bottom:16px"><tr>');
   parts.push('<td><div style="font-size:20pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
-  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon, CDMX | Tel: 55 9824 1503 | WhatsApp: 55 2268 8744</div></td>');
+  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon, CDMX | 55 2268 8744</div></td>');
   parts.push('<td style="text-align:right;vertical-align:top">');
   parts.push('<div style="font-size:16pt;font-weight:800">ENTRADA DE MERCANCIA</div>');
   parts.push('<div style="font-size:14pt;color:#E8681A;font-weight:800">'+entrada.folio+'</div>');
@@ -199,7 +196,7 @@ function printEntrada(entrada) {
   parts.push('<td style="width:10%"></td>');
   parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Firma quien recibe: '+entrada.recibe+'</div></td>');
   parts.push('</tr></table>');
-  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - Tel: 55 9824 1503 | WA: 55 2268 8744</p>');
+  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - 55 2268 8744</p>');
   parts.push('</body></html>');
   win.document.write(parts.join(''));
   win.document.close();
@@ -261,7 +258,7 @@ const doPrint = () => {
   parts.push('<td style="width:55%"><div style="font-size:22pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
   parts.push('<div style="font-size:10pt;color:#666">Soluciones de empaque a la medida de tus ideas</div>');
   parts.push('<div style="font-size:10pt;color:#666;margin-top:2px">Cucurpe 44, Alvaro Obregon, Venustiano Carranza, 15990 CDMX</div>');
-  parts.push('<div style="font-size:10pt;color:#666">Tel: 55 9824 1503 | WA: 55 2268 8744 | todoencajas.com | @tiendatodoencajas</div></td>');
+  parts.push('<div style="font-size:10pt;color:#666">Tel: 55 2268 8744 | todoencajas.com | @tiendatodoencajas</div></td>');
   parts.push('<td style="text-align:right;vertical-align:top">');
   parts.push('<div style="font-size:18pt;font-weight:800;color:#333">REMISION DE VENTA</div>');
   parts.push('<div style="font-size:16pt;color:#E8681A;font-weight:800">'+sale.folio+'</div>');
@@ -398,8 +395,6 @@ export default function App(){
   const [ordenContacto,setOrdenContacto] = useState("");
   const [ordenFechaEntrega,setOrdenFechaEntrega] = useState("");
   const [ordenIva,setOrdenIva] = useState(true);
-  const [ordenTelContacto,setOrdenTelContacto] = useState("");
-  const [ordenCondiciones,setOrdenCondiciones] = useState("");
   const [entradaItems,setEntradaItems] = useState({});
   const [entradaRecibe,setEntradaRecibe] = useState("");
   const [editOrden,setEditOrden] = useState(null);
@@ -654,7 +649,7 @@ export default function App(){
           '<div class="row" style="color:#E8681A"><span style="font-weight:600">Anticipo recibido</span><span style="font-weight:700">'+fmt(montoAnticipo)+'</span></div>'+
           '<div class="saldo"><div style="font-size:7pt;color:#888;margin-bottom:1mm">SALDO PENDIENTE AL RECOGER</div>'+
           '<div class="big" style="color:#E8681A">'+fmt(saldoPendiente)+'</div></div>'+
-          '<div class="footer">Conserve este comprobante.<br/>Todo en Cajas.com - Tel: 55 9824 1503 | WA: 55 2268 8744<br/>Cucurpe 44, Alvaro Obregon, CDMX</div>'+
+          '<div class="footer">Conserve este comprobante.<br/>Todo en Cajas.com - 55 2268 8744<br/>Cucurpe 44, Alvaro Obregon, CDMX</div>'+
           '</body></html>';
         win.document.write(htmlAnticipo);
         win.document.close();
@@ -1333,7 +1328,7 @@ export default function App(){
                   parts.push('<button onclick="window.close()" style="background:#555;color:#fff;border:none;padding:10px 20px;font-size:14px;border-radius:6px;cursor:pointer">Cerrar</button></div>');
                   parts.push('<table style="width:100%;margin-bottom:16px"><tr>');
                   parts.push('<td><div style="font-size:20pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
-                  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon, CDMX | Tel: 55 9824 1503 | WhatsApp: 55 2268 8744</div></td>');
+                  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon, CDMX | 55 2268 8744</div></td>');
                   parts.push('<td style="text-align:right;vertical-align:top">');
                   parts.push('<div style="font-size:16pt;font-weight:800">CORTE DE CAJA</div>');
                   parts.push('<div style="font-size:12pt;color:#E8681A;font-weight:700">'+fecha+'</div>');
@@ -1378,7 +1373,7 @@ export default function App(){
                   parts.push('<td style="width:10%"></td>');
                   parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Vo.Bo. Gerencia</div></td>');
                   parts.push('</tr></table>');
-                  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - Tel: 55 9824 1503 | WA: 55 2268 8744</p>');
+                  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - 55 2268 8744</p>');
                   parts.push('</body></html>');
                   win.document.write(parts.join(''));
                   win.document.close();
@@ -1471,11 +1466,7 @@ export default function App(){
         <div className="anim-in">
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
             <div className="section-title" style={{margin:0}}>Entradas de Mercancía</div>
-            <button className="btn btn-gold" onClick={()=>{setOrdenItems(products.map(p=>({productoId:p.id,nombre:p.nombre,sku:p.sku,cantidad:0,costo:p.costo||0})));
-              setOrdenProv(proveedores[0]?.nombre||"");
-              setOrdenNota("");setOrdenContacto("");setOrdenTelContacto("");setOrdenCondiciones("");setOrdenFechaEntrega("");setOrdenIva(true);
-              const p0=proveedores[0];if(p0){setOrdenContacto(p0.contacto||"");setOrdenTelContacto(p0.tel||"");setOrdenCondiciones(p0.condiciones||"");}
-              setShowNuevaOrden(true);}}>
+            <button className="btn btn-gold" onClick={()=>{setOrdenItems(products.map(p=>({productoId:p.id,nombre:p.nombre,sku:p.sku,cantidad:0,costo:p.costo||0})));setOrdenProv(proveedores[0]?.nombre||"");setOrdenNota("");setShowNuevaOrden(true);}}>
               + Nueva Orden de Compra
             </button>
           </div>
@@ -1842,7 +1833,7 @@ export default function App(){
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
               <div>
                 <div className="label" style={{marginBottom:6}}>Proveedor</div>
-                <select value={ordenProv} onChange={e=>{setOrdenProv(e.target.value);const p=proveedores.find(pv=>pv.nombre===e.target.value);if(p){setOrdenContacto(p.contacto||"");setOrdenTelContacto(p.tel||"");setOrdenCondiciones(p.condiciones||"");}}} style={{width:"100%",background:"#1c1c1c",border:"1px solid #333",color:"#e8e0d0",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
+                <select value={ordenProv} onChange={e=>{setOrdenProv(e.target.value);const p=proveedores.find(pv=>pv.nombre===e.target.value);if(p)setOrdenContacto(p.contacto||"");}} style={{width:"100%",background:"#1c1c1c",border:"1px solid #333",color:"#e8e0d0",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
                   {proveedores.map(p=><option key={p.id} value={p.nombre}>{p.nombre}</option>)}
                 </select>
               </div>
@@ -1857,14 +1848,6 @@ export default function App(){
               <div>
                 <div className="label" style={{marginBottom:6}}>Notas adicionales</div>
                 <input value={ordenNota} onChange={e=>setOrdenNota(e.target.value)} placeholder="Instrucciones, urgente, etc." style={{width:"100%"}}/>
-              </div>
-              <div>
-                <div className="label" style={{marginBottom:6}}>Teléfono contacto</div>
-                <input value={ordenTelContacto} onChange={e=>setOrdenTelContacto(e.target.value)} placeholder="55 1234 5678" style={{width:"100%"}}/>
-              </div>
-              <div style={{gridColumn:"1/-1"}}>
-                <div className="label" style={{marginBottom:6}}>Condiciones comerciales</div>
-                <input value={ordenCondiciones} onChange={e=>setOrdenCondiciones(e.target.value)} placeholder="Ej: Pago a 30 días, crédito $50,000, descuento por volumen..." style={{width:"100%"}}/>
               </div>
             </div>
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12,padding:"8px 12px",background:"#1a1a1a",borderRadius:6}}>
@@ -1901,7 +1884,7 @@ export default function App(){
                 const subtotalOrden = itemsValidos.reduce((a,i)=>a+i.cantidad*Number(i.costo),0);
                 const ivaOrden = ordenIva ? subtotalOrden*0.16 : 0;
                 const totalOrden = subtotalOrden + ivaOrden;
-                const metaNota = JSON.stringify({notas:ordenNota,contacto:ordenContacto,tel:ordenTelContacto,condiciones:ordenCondiciones,fechaEntrega:ordenFechaEntrega,iva:ordenIva});
+                const metaNota = JSON.stringify({notas:ordenNota,contacto:ordenContacto,fechaEntrega:ordenFechaEntrega,iva:ordenIva});
                 const nuevaOrden={id:Date.now(),folio,fecha:new Date().toISOString(),proveedor:ordenProv,nota:metaNota,items:itemsValidos,recibida:false,cancelada:false,subtotal:subtotalOrden,iva:ivaOrden,total:totalOrden};
                 const savedOrden = await sb.post("ordenes_compra", {
                   folio, proveedor:ordenProv,
@@ -1914,7 +1897,7 @@ export default function App(){
                 const ordenFinal = ordenConId?.id ? {...nuevaOrden, id:ordenConId.id} : nuevaOrden;
                 setOrdenes(prev=>[ordenFinal,...prev]);
                 setShowNuevaOrden(false);
-                setOrdenContacto(""); setOrdenTelContacto(""); setOrdenCondiciones(""); setOrdenFechaEntrega(""); setOrdenNota(""); setOrdenIva(true);
+                setOrdenContacto(""); setOrdenFechaEntrega(""); setOrdenNota(""); setOrdenIva(true);
                 notify("Orden " + folio + " creada");
                 setTimeout(()=>printOrden(ordenFinal),300);
               }}>Crear e Imprimir Orden</button>
