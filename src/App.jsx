@@ -576,11 +576,14 @@ export default function App(){
       ]);
       const venta = Array.isArray(ventaArr)?ventaArr[0]:ventaArr;
       if(venta?.id){
-        await sb.post("venta_items", cart.map(i=>({
+        const itemsToSave = cart.map(i=>({
           venta_id:venta.id, producto_id:i.productoId,
           nombre:i.nombre, sku:i.sku, cantidad:i.cantidad,
-          precio_unitario:i.precioUnitario, descuento:Math.round((i.descuento||0)*100)/100,
-        })));
+          precio_unitario:parseFloat(Number(i.precioUnitario).toFixed(2)),
+          descuento:parseFloat(Number(i.descuento||0).toFixed(2)),
+        }));
+        const itemsResult = await sb.post("venta_items", itemsToSave);
+        console.log("items save result:", itemsResult);
         await Promise.all(cart.map(i=>{
           const prod=products.find(p=>p.id===i.productoId);
           return sb.patch("productos",i.productoId,{stock:prod.stock-i.cantidad});
