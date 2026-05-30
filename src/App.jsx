@@ -570,7 +570,7 @@ export default function App(){
         await sb.post("venta_items", cart.map(i=>({
           venta_id:venta.id, producto_id:i.productoId,
           nombre:i.nombre, sku:i.sku, cantidad:i.cantidad,
-          precio_unitario:i.precioUnitario, descuento:i.descuento, motivo_descuento:i.motivoDescuento||"",
+          precio_unitario:i.precioUnitario, descuento:i.descuento,
         })));
         await Promise.all(cart.map(i=>{
           const prod=products.find(p=>p.id===i.productoId);
@@ -612,7 +612,7 @@ export default function App(){
         await sb.post("venta_items", cart.map(i=>({
           venta_id:pedido.id, producto_id:i.productoId,
           nombre:i.nombre, sku:i.sku, cantidad:i.cantidad,
-          precio_unitario:i.precioUnitario, descuento:i.descuento, motivo_descuento:i.motivoDescuento||"",
+          precio_unitario:i.precioUnitario, descuento:i.descuento,
         })));
         await loadData();
         // Print anticipo ticket
