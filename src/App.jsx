@@ -464,7 +464,7 @@ export default function App(){
   if(!currentUser){
     const doLogin = async () => {
       setLoading(true);
-      const users = await sb.get("usuarios",`usuario=eq.${loginUser}&pin=eq.${loginPin}&activo=eq.true`);
+      const users = await sb.get("usuarios","usuario=eq."+loginUser+"&pin=eq."+loginPin+"&activo=eq.true");
       setLoading(false);
       if(Array.isArray(users)&&users.length>0) { setCurrentUser(users[0]); setLoginError(""); }
       else setLoginError("Usuario o PIN incorrecto");
@@ -662,7 +662,7 @@ export default function App(){
   const cancelSale = sale => {
     setConfirm({msg:"Cancelar la venta " + sale.folio + "? El stock se reintegrara.", onYes:async()=>{
       await sb.patch("ventas",sale.id,{cancelada:true});
-      const items=await sb.get("venta_items",`venta_id=eq.${sale.id}`);
+      const items=await sb.get("venta_items","venta_id=eq."+sale.id);
       if(Array.isArray(items)) await Promise.all(items.map(i=>{
         const prod=products.find(p=>p.id===i.producto_id);
         return prod?sb.patch("productos",i.producto_id,{stock:prod.stock+i.cantidad}):null;
@@ -672,7 +672,7 @@ export default function App(){
   };
 
   const initDevolucion = async sale => {
-    const items=await sb.get("venta_items",`venta_id=eq.${sale.id}`);
+    const items=await sb.get("venta_items","venta_id=eq."+sale.id);
     const init={};
     if(Array.isArray(items)) items.forEach(i=>{init[i.producto_id]=0;});
     setDevItems(init); setShowDevolucion({...sale, _items: Array.isArray(items)?items:[]});
@@ -1253,7 +1253,7 @@ export default function App(){
                         <td><span className={`tag ${estadoTag}`}>{estadoLabel}</span></td>
                         <td><div style={{display:"flex",gap:4}}>
                           <button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={async()=>{
-                            const its=await sb.get("venta_items",`venta_id=eq.${s.id}`);
+                            const its=await sb.get("venta_items","venta_id=eq."+s.id);
                             setReceiptItems(Array.isArray(its)?its:[]); setShowReceipt(s);
                           }}>Ver</button>
                           {!s.cancelada&&!s.devolucion&&isAdmin&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>cancelSale(s)}>Cancelar</button>}
