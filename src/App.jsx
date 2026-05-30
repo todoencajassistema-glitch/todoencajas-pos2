@@ -233,13 +233,15 @@ const doPrint = () => {
   var win = window.open('','_blank','width=900,height=700');
   var rowsHtml = (items||[]).map(function(item,idx){
     var bg = idx%2===0?'#fff':'#f9f9f9';
-    var subtotalItem = item.cantidad * item.precioUnitario * (1-(item.descuento||0)/100);
+    var precio = Number(item.precio_unitario||item.precioUnitario||0);
+    var desc = Number(item.descuento||0);
+    var subtotalItem = item.cantidad * precio * (1-desc/100);
     return '<tr style="background:'+bg+'">'+
       '<td style="padding:8px 10px;border:1px solid #ddd;font-size:10pt">'+item.sku+'</td>'+
       '<td style="padding:8px 10px;border:1px solid #ddd;font-size:10pt">'+item.nombre+'</td>'+
       '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt">'+item.cantidad+'</td>'+
-      '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right;font-size:10pt">$'+Number(item.precioUnitario).toFixed(2)+'</td>'+
-      (Number(item.descuento)>0?'<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt;color:#E8681A">'+item.descuento+'%</td>':'<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt;color:#aaa">—</td>')+
+      '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right;font-size:10pt">$'+precio.toFixed(2)+'</td>'+
+      (desc>0?'<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt;color:#E8681A">'+desc+'%</td>':'<td style="padding:8px 10px;border:1px solid #ddd;text-align:center;font-size:10pt;color:#aaa">—</td>')+
       '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right;font-size:10pt;font-weight:600">$'+subtotalItem.toFixed(2)+'</td>'+
     '</tr>';
   }).join('');
@@ -1260,17 +1262,23 @@ export default function App(){
               </div>
               <div style={{display:"flex",gap:8}}>
                 <button className="btn btn-dark" style={{fontSize:12}} onClick={loadData}>↻ Actualizar</button>
-                <button className="btn btn-gold" style={{fontSize:12}} onClick={()=>{
+                <button className="btn btn-gold" style={{fontSize:12}} onClick={async ()=>{
                   const win=window.open('','_blank','width=900,height=700');
                   const fecha = fechaCorte;
                   const ventasDelDia = corteSales;
+                  const saleItemsMap = {};
+                  await Promise.all(ventasDelDia.map(async s=>{
+                    try{const its=await sb.get("venta_items","venta_id=eq."+s.id);if(Array.isArray(its))saleItemsMap[s.id]=its;}catch(e){}
+                  }));
                   const rowsHtml = ventasDelDia.map(function(s,idx){
                     var c = CANAL_MAP[s.canal]||{emoji:'',label:s.canal};
                     var pg = PAGO_MAP[s.metodo_pago]||{emoji:'',label:s.metodo_pago};
                     var bg = idx%2===0?'#fff':'#f9f9f9';
+                    var itemsVenta = (saleItemsMap[s.id]||[]).map(function(it){return it.sku+' x'+it.cantidad;}).join(', ') || '—';
                     return '<tr style="background:'+bg+'">'+
                       '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt;font-weight:600;color:#E8681A">'+s.folio+'</td>'+
                       '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt">'+s.cliente+'</td>'+
+                      '<td style="padding:7px 10px;border:1px solid #ddd;font-size:9pt;color:#555">'+itemsVenta+'</td>'+
                       '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt">'+c.emoji+' '+c.label+'</td>'+
                       '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt">'+pg.emoji+' '+pg.label+'</td>'+
                       '<td style="padding:7px 10px;border:1px solid #ddd;text-align:right;font-size:10pt;font-weight:600;color:'+(s.cancelada?'#aaa':s.devolucion?'#E8681A':'#111')+'">'+
@@ -1331,7 +1339,7 @@ export default function App(){
                   parts.push('<th style="padding:8px 10px;text-align:right;border:1px solid #ddd">Total</th>');
                   parts.push('</tr></thead><tbody>'+rowsHtml+'</tbody>');
                   parts.push('<tfoot><tr style="background:#f0f0f0">');
-                  parts.push('<td colspan="4" style="padding:8px 10px;text-align:right;font-weight:800;border:1px solid #ddd">TOTAL:</td>');
+                  parts.push('<td colspan="5" style="padding:8px 10px;text-align:right;font-weight:800;border:1px solid #ddd">TOTAL:</td>');
                   parts.push('<td style="padding:8px 10px;text-align:right;font-weight:800;color:#E8681A;font-size:13pt;border:1px solid #ddd">$'+corteTotal.toFixed(2)+'</td>');
                   parts.push('</tr></tfoot></table>');
                   parts.push('<table style="width:100%;margin-top:30px"><tr>');
