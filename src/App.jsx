@@ -10,6 +10,7 @@ const EMPRESA = {
   direccion: "Cucurpe 44, Alvaro Obregon",
   colonia: "Venustiano Carranza, 15990",
   ciudad: "Ciudad de Mexico, CDMX",
+  tel: "55 9824 1503",
   whatsapp: "55 2268 8744",
   web: "todoencajas.com",
   tiktok: "@tiendatodoencajas",
@@ -102,7 +103,7 @@ function printOrden(orden) {
   parts.push('<td style="width:55%"><div style="font-size:22pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
   parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon</div>');
   parts.push('<div style="font-size:10pt;color:#666">Venustiano Carranza, 15990 CDMX</div>');
-  parts.push('<div style="font-size:10pt;color:#666">Tel: 55 2268 8744 | todoencajas.com</div></td>');
+  parts.push('<div style="font-size:10pt;color:#666">Tel: 55 9824 1503 | WA: 55 2268 8744 | todoencajas.com</div></td>');
   parts.push('<td style="text-align:right;vertical-align:top">');
   parts.push('<div style="font-size:18pt;font-weight:800;color:#333">ORDEN DE COMPRA</div>');
   parts.push('<div style="font-size:14pt;color:#E8681A;font-weight:800">'+orden.folio+'</div>');
@@ -116,6 +117,8 @@ function printOrden(orden) {
   parts.push('<div style="font-weight:700;margin-bottom:6px;color:#E8681A">PROVEEDOR</div>');
   parts.push('<div style="font-size:12pt;font-weight:700">'+orden.proveedor+'</div>');
   if(meta.contacto) parts.push('<div style="font-size:10pt;color:#666;margin-top:4px">Contacto: '+meta.contacto+'</div>');
+  if(meta.tel) parts.push('<div style="font-size:10pt;color:#666">Tel: '+meta.tel+'</div>');
+  if(meta.condiciones) parts.push('<div style="font-size:10pt;color:#555;margin-top:4px;font-style:italic">Condiciones: '+meta.condiciones+'</div>');
   parts.push('</td>');
   parts.push('<td style="width:50%;padding:10px;background:#f9f9f9;border:1px solid #eee;vertical-align:top">');
   parts.push('<div style="font-weight:700;margin-bottom:6px;color:#E8681A">DETALLES</div>');
@@ -140,7 +143,7 @@ function printOrden(orden) {
   parts.push('<td style="width:10%"></td>');
   parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Firma proveedor: '+orden.proveedor+'</div></td>');
   parts.push('</tr></table>');
-  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - 55 2268 8744</p>');
+  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - Tel: 55 9824 1503 | WA: 55 2268 8744</p>');
   parts.push('</body></html>');
   win.document.write(parts.join(''));
   win.document.close();
@@ -165,7 +168,7 @@ function printEntrada(entrada) {
   parts.push('<button onclick="window.close()" style="background:#555;color:#fff;border:none;padding:10px 20px;font-size:14px;border-radius:6px;cursor:pointer">Cerrar</button></div>');
   parts.push('<table style="width:100%;margin-bottom:16px"><tr>');
   parts.push('<td><div style="font-size:20pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
-  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon, CDMX | 55 2268 8744</div></td>');
+  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon, CDMX | Tel: 55 9824 1503 | WhatsApp: 55 2268 8744</div></td>');
   parts.push('<td style="text-align:right;vertical-align:top">');
   parts.push('<div style="font-size:16pt;font-weight:800">ENTRADA DE MERCANCIA</div>');
   parts.push('<div style="font-size:14pt;color:#E8681A;font-weight:800">'+entrada.folio+'</div>');
@@ -196,7 +199,7 @@ function printEntrada(entrada) {
   parts.push('<td style="width:10%"></td>');
   parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Firma quien recibe: '+entrada.recibe+'</div></td>');
   parts.push('</tr></table>');
-  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - 55 2268 8744</p>');
+  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - Tel: 55 9824 1503 | WA: 55 2268 8744</p>');
   parts.push('</body></html>');
   win.document.write(parts.join(''));
   win.document.close();
@@ -258,7 +261,7 @@ const doPrint = () => {
   parts.push('<td style="width:55%"><div style="font-size:22pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
   parts.push('<div style="font-size:10pt;color:#666">Soluciones de empaque a la medida de tus ideas</div>');
   parts.push('<div style="font-size:10pt;color:#666;margin-top:2px">Cucurpe 44, Alvaro Obregon, Venustiano Carranza, 15990 CDMX</div>');
-  parts.push('<div style="font-size:10pt;color:#666">Tel: 55 2268 8744 | todoencajas.com | @tiendatodoencajas</div></td>');
+  parts.push('<div style="font-size:10pt;color:#666">Tel: 55 9824 1503 | WA: 55 2268 8744 | todoencajas.com | @tiendatodoencajas</div></td>');
   parts.push('<td style="text-align:right;vertical-align:top">');
   parts.push('<div style="font-size:18pt;font-weight:800;color:#333">REMISION DE VENTA</div>');
   parts.push('<div style="font-size:16pt;color:#E8681A;font-weight:800">'+sale.folio+'</div>');
@@ -302,16 +305,16 @@ return(
   <div className="overlay" onClick={onClose}>
     <div className="modal anim-in" style={{maxWidth:480}} onClick={e=>e.stopPropagation()}>
       <div style={{fontFamily:"'Syne',sans-serif",fontSize:15,fontWeight:700,color:"#E8681A",marginBottom:4}}>{sale.folio}</div>
-      <div style={{fontSize:12,color:"#555",marginBottom:8}}>{fmtDate(sale.fecha)} · {canal.emoji} {canal.label} · {pago.emoji} {pago.label}</div>
-      <div style={{fontSize:13,color:"#ccc",marginBottom:4}}>Cliente: {sale.cliente}</div>
+      <div style={{fontSize:12,color:"#777",marginBottom:8}}>{fmtDate(sale.fecha)} · {canal.emoji} {canal.label} · {pago.emoji} {pago.label}</div>
+      <div style={{fontSize:13,color:"#777",marginBottom:4}}>Cliente: {sale.cliente}</div>
       <div style={{marginBottom:12,maxHeight:180,overflowY:"auto"}}>
         {(items||[]).map((it,i)=>(
-          <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:"1px solid #1a1a1a",fontSize:12}}>
-            <span style={{color:"#888"}}>{it.sku} · {it.nombre}</span>
-            <span style={{color:"#ccc"}}>{it.cantidad} × {fmt(Number(it.precio_unitario||it.precioUnitario||0))}</span>
+          <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:"1px solid #f0ede8",fontSize:12}}>
+            <span style={{color:"#777"}}>{it.sku} · {it.nombre}</span>
+            <span style={{color:"#777"}}>{it.cantidad} × {fmt(Number(it.precio_unitario||it.precioUnitario||0))}</span>
           </div>
         ))}
-        {(!items||items.length===0)&&<div style={{color:"#444",fontSize:12,textAlign:"center",padding:"8px 0"}}>Sin items</div>}
+        {(!items||items.length===0)&&<div style={{color:"#888",fontSize:12,textAlign:"center",padding:"8px 0"}}>Sin items</div>}
       </div>
       <div style={{fontSize:13,marginBottom:16}}>
         <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:18,color:labelColor}}>
@@ -395,6 +398,8 @@ export default function App(){
   const [ordenContacto,setOrdenContacto] = useState("");
   const [ordenFechaEntrega,setOrdenFechaEntrega] = useState("");
   const [ordenIva,setOrdenIva] = useState(true);
+  const [ordenTelContacto,setOrdenTelContacto] = useState("");
+  const [ordenCondiciones,setOrdenCondiciones] = useState("");
   const [entradaItems,setEntradaItems] = useState({});
   const [entradaRecibe,setEntradaRecibe] = useState("");
   const [editOrden,setEditOrden] = useState(null);
@@ -470,20 +475,20 @@ export default function App(){
       else setLoginError("Usuario o PIN incorrecto");
     };
     return(
-      <div style={{fontFamily:"'DM Mono',monospace",background:"#0f0f0f",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",color:"#e8e0d0"}}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');*{box-sizing:border-box;margin:0;padding:0}input,select{font-family:inherit;background:#1c1c1c;border:1px solid #333;color:#e8e0d0;padding:10px 14px;border-radius:6px;outline:none;width:100%;transition:border .2s}input:focus,select:focus{border-color:#E8681A}`}</style>
-        <div style={{background:"#161616",border:"1px solid #2a2a2a",borderRadius:14,padding:40,width:340,textAlign:"center"}}>
+      <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f8f7f4",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",color:"#222"}}>
+        <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');*{box-sizing:border-box;margin:0;padding:0}input,select{font-family:inherit;background:#fff;border:1px solid #333;color:#e8e0d0;padding:10px 14px;border-radius:6px;outline:none;width:100%;transition:border .2s}input:focus,select:focus{border-color:#E8681A}`}</style>
+        <div style={{background:"#fff",border:"1px solid #e8e4df",borderRadius:14,padding:40,width:340,textAlign:"center"}}>
           <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:220,height:"auto",marginBottom:8}}/>
-          <div style={{fontSize:11,color:"#555",letterSpacing:3,marginBottom:4}}>PUNTO DE VENTA</div>
-          <div style={{fontSize:11,color:"#444",marginBottom:2}}>{EMPRESA.direccion}</div>
-          <div style={{fontSize:11,color:"#444",marginBottom:2}}>{EMPRESA.colonia}, {EMPRESA.ciudad}</div>
-          <div style={{fontSize:11,color:"#555",marginBottom:24}}>📱 {EMPRESA.whatsapp} · 🎵 {EMPRESA.tiktok}</div>
+          <div style={{fontSize:11,color:"#777",letterSpacing:3,marginBottom:4}}>PUNTO DE VENTA</div>
+          <div style={{fontSize:11,color:"#888",marginBottom:2}}>{EMPRESA.direccion}</div>
+          <div style={{fontSize:11,color:"#888",marginBottom:2}}>{EMPRESA.colonia}, {EMPRESA.ciudad}</div>
+          <div style={{fontSize:11,color:"#777",marginBottom:24}}>📱 {EMPRESA.whatsapp} · 🎵 {EMPRESA.tiktok}</div>
           <div style={{textAlign:"left",marginBottom:12}}>
-            <div style={{fontSize:11,color:"#555",letterSpacing:1,marginBottom:6,textTransform:"uppercase"}}>Usuario</div>
+            <div style={{fontSize:11,color:"#777",letterSpacing:1,marginBottom:6,textTransform:"uppercase"}}>Usuario</div>
             <input value={loginUser} onChange={e=>setLoginUser(e.target.value)} placeholder="usuario" onKeyDown={e=>e.key==="Enter"&&doLogin()}/>
           </div>
           <div style={{textAlign:"left",marginBottom:18}}>
-            <div style={{fontSize:11,color:"#555",letterSpacing:1,marginBottom:6,textTransform:"uppercase"}}>PIN</div>
+            <div style={{fontSize:11,color:"#777",letterSpacing:1,marginBottom:6,textTransform:"uppercase"}}>PIN</div>
             <input type="password" value={loginPin} onChange={e=>setLoginPin(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doLogin()} placeholder="••••" maxLength={6}/>
           </div>
           {loginError&&<div style={{color:"#eb5757",fontSize:12,marginBottom:12}}>{loginError}</div>}
@@ -497,7 +502,7 @@ export default function App(){
   }
 
   if(!dataLoaded) return(
-    <div style={{fontFamily:"'DM Mono',monospace",background:"#0f0f0f",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",color:"#E8681A"}}>
+    <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f8f7f4",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",color:"#E8681A"}}>
       <div style={{textAlign:"center"}}>
         <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:180,marginBottom:20}}/>
         <div style={{fontSize:14,letterSpacing:2,marginBottom:16}}>Cargando sistema...</div>
@@ -649,7 +654,7 @@ export default function App(){
           '<div class="row" style="color:#E8681A"><span style="font-weight:600">Anticipo recibido</span><span style="font-weight:700">'+fmt(montoAnticipo)+'</span></div>'+
           '<div class="saldo"><div style="font-size:7pt;color:#888;margin-bottom:1mm">SALDO PENDIENTE AL RECOGER</div>'+
           '<div class="big" style="color:#E8681A">'+fmt(saldoPendiente)+'</div></div>'+
-          '<div class="footer">Conserve este comprobante.<br/>Todo en Cajas.com - 55 2268 8744<br/>Cucurpe 44, Alvaro Obregon, CDMX</div>'+
+          '<div class="footer">Conserve este comprobante.<br/>Todo en Cajas.com - Tel: 55 9824 1503 | WA: 55 2268 8744<br/>Cucurpe 44, Alvaro Obregon, CDMX</div>'+
           '</body></html>';
         win.document.write(htmlAnticipo);
         win.document.close();
@@ -779,54 +784,47 @@ export default function App(){
 
   // ═══ RENDER ════════════════════════════════════════════════════════════════
   return(
-    <div style={{fontFamily:"'DM Mono',monospace",background:"#0f0f0f",minHeight:"100vh",color:"#e8e0d0"}}>
+    <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f8f7f4",minHeight:"100vh",color:"#222"}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
-        ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#1a1a1a}::-webkit-scrollbar-thumb{background:#E8681A;border-radius:2px}
-        input,select,textarea{font-family:inherit;background:#1c1c1c;border:1px solid #333;color:#e8e0d0;padding:8px 12px;border-radius:4px;outline:none;transition:border .2s;font-size:13px}
-        input:focus,select:focus,textarea:focus{border-color:#E8681A}
+        body,div,span,input,select,textarea,button{font-family:'Inter',system-ui,-apple-system,sans-serif}
+        ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#f0ede8}::-webkit-scrollbar-thumb{background:#E8681A;border-radius:2px}
+        input,select,textarea{font-family:inherit;background:#fff;border:1px solid #e0dbd4;color:#222;padding:8px 12px;border-radius:7px;outline:none;font-size:13px}
+        input:focus,select:focus,textarea:focus{border-color:#E8681A;box-shadow:0 0 0 3px rgba(232,104,26,0.12)}
         textarea{resize:vertical}
-        .btn{font-family:inherit;cursor:pointer;border:none;border-radius:4px;padding:8px 18px;font-size:13px;transition:all .15s;letter-spacing:.3px}
-        .btn-gold{background:#E8681A;color:#fff;font-weight:500}.btn-gold:hover{background:#f07830;transform:translateY(-1px)}
-        .btn-dark{background:#252525;color:#e8e0d0;border:1px solid #2a2a2a}.btn-dark:hover{background:#2e2e2e}
-        .btn-red{background:#3a1515;color:#eb5757;border:1px solid #5a2a2a}.btn-red:hover{background:#4a1a1a}
-        .btn-green{background:#153a15;color:#6fcf97;border:1px solid #2a5a2a}.btn-green:hover{background:#1a4a1a}
-        .card{background:#161616;border:1px solid #252525;border-radius:8px;padding:20px}
-        .tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;letter-spacing:.5px}
-        .tag-ok{background:#1a2e1a;color:#6fcf97;border:1px solid #2a4a2a}
-        .tag-warn{background:#2e2a1a;color:#f2c94c;border:1px solid #4a3a1a}
-        .tag-danger{background:#2e1a1a;color:#eb5757;border:1px solid #4a2a2a}
-        .tag-blue{background:#1a1e2e;color:#7eb3f7;border:1px solid #2a3050}
-        .overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
-        .modal{background:#161616;border:1px solid #2a2a2a;border-radius:10px;padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
-        .anim-in{animation:fadeIn .18s ease}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-        .notif{position:fixed;top:20px;right:20px;z-index:300;padding:12px 20px;border-radius:6px;font-size:13px;animation:fadeIn .2s ease}
-        .notif-success{background:#1a3a1a;color:#6fcf97;border:1px solid #2a5a2a}
-        .notif-error{background:#3a1a1a;color:#eb5757;border:1px solid #5a2a2a}
+        .btn{font-family:inherit;cursor:pointer;border:none;border-radius:8px;padding:8px 18px;font-size:13px;transition:all .15s;font-weight:600}
+        .btn-gold{background:#E8681A;color:#fff}.btn-gold:hover{background:#d45c14;transform:translateY(-1px);box-shadow:0 2px 8px rgba(232,104,26,0.3)}
+        .btn-dark{background:#fff;color:#555;border:1px solid #e0dbd4}.btn-dark:hover{background:#faf9f7}
+        .btn-red{background:#fff0f0;color:#c0392b;border:1px solid #f5c0c0}.btn-red:hover{background:#ffe8e8}
+        .btn-green{background:#f0faf4;color:#27ae60;border:1px solid #b8e8c8}.btn-green:hover{background:#e0f5e8}
+        .card{background:#fff;border:1px solid #ece9e4;border-radius:10px;padding:20px}
+        .section-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:18px;color:#222}
+        .label{font-size:11px;color:#aaa;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+        .tag{display:inline-block;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600}
+        .tag-ok{background:#f0faf4;color:#27ae60;border:1px solid #b8e8c8}
+        .tag-warn{background:#fff8e6;color:#d4811a;border:1px solid #f5d99a}
+        .tag-blue{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe}
+        .tag-danger{background:#fff0f0;color:#c0392b;border:1px solid #f5c0c0}
+        .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+        .modal{background:#fff;border:1px solid #ece9e4;border-radius:14px;padding:28px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.12)}
+        .anim-in{animation:fadeIn .2s ease}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
         table{width:100%;border-collapse:collapse;font-size:13px}
-        th{text-align:left;padding:10px 14px;color:#666;font-weight:400;font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid #222}
-        td{padding:10px 14px;border-bottom:1px solid #1a1a1a;vertical-align:middle}
-        tr:hover td{background:#111}
-        .canal-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:500}
-        .canal-btn{cursor:pointer;padding:5px 12px;border-radius:5px;font-size:12px;font-family:inherit;border:1px solid;transition:all .15s;font-weight:500;background:#1c1c1c;color:#555;border-color:#2a2a2a}
-        .canal-btn:hover{color:#999;border-color:#444}
-        .label{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
-        .section-title{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;margin-bottom:20px;letter-spacing:.3px}
-        .sync-dot{width:7px;height:7px;border-radius:50%;background:#6fcf97;display:inline-block;margin-right:5px;animation:pulse 2s infinite}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+        th{text-align:left;padding:10px 14px;color:#999;font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid #ece9e4;background:#faf9f7}
+        td{padding:10px 14px;border-bottom:1px solid #f0ede8;color:#333}
+        tr:hover td{background:#faf9f7}
       `}</style>
 
       {notification&&<div className={`notif notif-${notification.type}`}>{notification.msg}</div>}
       {loading&&<div style={{position:"fixed",top:0,left:0,right:0,height:3,background:"#E8681A",zIndex:400,animation:"fadeIn .2s"}}/>}
 
       {/* HEADER */}
-      <div style={{borderBottom:"1px solid #1e1e1e",padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:56,position:"sticky",top:0,background:"#0f0f0f",zIndex:50}}>
+      <div style={{borderBottom:"1px solid #ece9e4",padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:56,position:"sticky",top:0,background:"#f8f7f4",zIndex:50}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
           <img src={LOGO_SRC} alt="Todo en Cajas" style={{height:42,width:"auto",objectFit:"contain"}}/>
-          <div style={{borderLeft:"1px solid #222",paddingLeft:10}}>
-            <div style={{fontSize:9,color:"#555",letterSpacing:2}}>PUNTO DE VENTA</div>
+          <div style={{borderLeft:"1px solid #ece9e4",paddingLeft:10}}>
+            <div style={{fontSize:9,color:"#777",letterSpacing:2}}>PUNTO DE VENTA</div>
             <div style={{fontSize:9,color:"#333",marginTop:1}}><span className="sync-dot"/>EN LINEA</div>
           </div>
         </div>
@@ -839,7 +837,7 @@ export default function App(){
           ))}
         </nav>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <span style={{fontSize:12,color:"#555"}}>{currentUser.nombre}</span>
+          <span style={{fontSize:12,color:"#777"}}>{currentUser.nombre}</span>
           <span className={`tag ${isAdmin?"tag-blue":"tag-ok"}`}>{ROLES[currentUser.rol]}</span>
           {isAdmin&&<button className="btn btn-dark" style={{fontSize:11,padding:"4px 10px"}} onClick={()=>setShowUsers(true)}>👤 Usuarios</button>}
           <button className="btn btn-dark" style={{fontSize:11,padding:"4px 10px"}} onClick={()=>setCurrentUser(null)}>Salir</button>
@@ -860,47 +858,47 @@ export default function App(){
                 {label:"Stock Total", value:products.reduce((a,p)=>a+p.stock,0)+" uds", sub:`${lowStock.length} con stock bajo`},
               ].map((k,i)=>(
                 <div key={i} className="card">
-                  <div style={{fontSize:10,color:"#555",letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>{k.label}</div>
+                  <div style={{fontSize:10,color:"#777",letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>{k.label}</div>
                   <div style={{fontFamily:"'Syne',sans-serif",fontSize:24,fontWeight:800,color:"#E8681A",marginBottom:4}}>{k.value}</div>
-                  <div style={{fontSize:11,color:"#444"}}>{k.sub}</div>
+                  <div style={{fontSize:11,color:"#888"}}>{k.sub}</div>
                 </div>
               ))}
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr",gap:12,marginBottom:12}}>
               <div className="card">
-                <div style={{fontSize:10,color:"#555",letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Ventas ultimos 7 dias</div>
+                <div style={{fontSize:10,color:"#777",letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Ventas ultimos 7 dias</div>
                 <div style={{display:"flex",alignItems:"flex-end",gap:8,height:120}}>
                   {dailySales.map((d,i)=>(
                     <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
-                      <div style={{fontSize:9,color:"#666"}}>{d.total>0?fmt(d.total).replace("$",""):""}</div>
+                      <div style={{fontSize:9,color:"#777"}}>{d.total>0?fmt(d.total).replace("$",""):""}</div>
                       <div style={{width:"100%",height:100,display:"flex",flexDirection:"column",justifyContent:"flex-end",gap:1}}>
                         {CANALES.map(c=>{const h=d.total>0?(d.byCanal[c.id]/maxDaily)*100:0;return h>0?(
                           <div key={c.id} title={`${c.label}: ${fmt(d.byCanal[c.id])}`}
                             style={{width:"100%",height:`${h}%`,background:c.color+"88",borderRadius:"2px 2px 0 0",minHeight:3}}/>
                         ):null;})}
                       </div>
-                      <div style={{fontSize:9,color:"#444"}}>{d.label}</div>
+                      <div style={{fontSize:9,color:"#888"}}>{d.label}</div>
                     </div>
                   ))}
                 </div>
                 <div style={{display:"flex",gap:10,marginTop:10,flexWrap:"wrap"}}>
-                  {CANALES.map(c=><div key={c.id} style={{display:"flex",alignItems:"center",gap:4,fontSize:10,color:"#666"}}>
+                  {CANALES.map(c=><div key={c.id} style={{display:"flex",alignItems:"center",gap:4,fontSize:10,color:"#777"}}>
                     <div style={{width:7,height:7,borderRadius:2,background:c.color}}/>{c.label}
                   </div>)}
                 </div>
               </div>
               <div className="card">
-                <div style={{fontSize:10,color:"#555",letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Top productos</div>
+                <div style={{fontSize:10,color:"#777",letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Top productos</div>
                 {(() => {
                   const map={};
                   activeSales.forEach(s=>{ /* no items in sales list */ });
-                  return sales.length===0?<div style={{fontSize:12,color:"#444"}}>Sin datos aun</div>:null;
+                  return sales.length===0?<div style={{fontSize:12,color:"#888"}}>Sin datos aun</div>:null;
                 })()}
-                <div style={{fontSize:12,color:"#555",textAlign:"center",padding:"20px 0"}}>Los datos de top productos<br/>se calculan con el historial</div>
+                <div style={{fontSize:12,color:"#777",textAlign:"center",padding:"20px 0"}}>Los datos de top productos<br/>se calculan con el historial</div>
               </div>
             </div>
             <div className="card" style={{marginBottom:12}}>
-              <div style={{fontSize:10,color:"#555",letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Ventas por canal — este mes</div>
+              <div style={{fontSize:10,color:"#777",letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Ventas por canal — este mes</div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
                 {canalStats.map(c=>(
                   <div key={c.id} style={{background:c.bg,border:"1px solid "+c.color+"22",borderRadius:8,padding:"14px 16px"}}>
@@ -921,7 +919,7 @@ export default function App(){
                 <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
                   {lowStock.map(p=>(
                     <div key={p.id} style={{background:"#1e1010",border:"1px solid #4a2020",borderRadius:5,padding:"5px 12px",fontSize:12}}>
-                      <span style={{color:"#eb5757",marginRight:5}}>●</span>{p.nombre}<strong style={{color:"#eb5757",marginLeft:5}}>{p.stock}</strong><span style={{color:"#444"}}>/{p.stock_min}</span>
+                      <span style={{color:"#eb5757",marginRight:5}}>●</span>{p.nombre}<strong style={{color:"#eb5757",marginLeft:5}}>{p.stock}</strong><span style={{color:"#888"}}>/{p.stock_min}</span>
                     </div>
                   ))}
                 </div>
@@ -954,7 +952,7 @@ export default function App(){
                   <div style={{display:"flex",gap:7}}>
                     {CANALES.map(c=>(
                       <button key={c.id} className="canal-btn" onClick={()=>setCanal(c.id)}
-                        style={{background:canal===c.id?c.bg:"#1c1c1c",color:canal===c.id?c.color:"#555",borderColor:canal===c.id?c.color:"#2a2a2a",padding:"6px 14px"}}>
+                        style={{background:canal===c.id?c.bg:"#fff",color:canal===c.id?c.color:"#777",borderColor:canal===c.id?c.color:"#e8e4df",padding:"6px 14px"}}>
                         {c.emoji} {c.label}
                       </button>
                     ))}
@@ -967,10 +965,10 @@ export default function App(){
                 <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:9}}>
                   {products.filter(p=>p.nombre.toLowerCase().includes(searchProd.toLowerCase())||p.sku.toLowerCase().includes(searchProd.toLowerCase())).map(p=>(
                     <div key={p.id} onClick={()=>addToCart(p)} className="card"
-                      style={{cursor:p.stock>0?"pointer":"not-allowed",border:"1px solid #222",padding:12,opacity:p.stock<=0?.4:1,transition:"border .12s"}}
+                      style={{cursor:p.stock>0?"pointer":"not-allowed",border:"1px solid #ece9e4",padding:12,opacity:p.stock<=0?.4:1,transition:"border .12s"}}
                       onMouseEnter={e=>{if(p.stock>0)e.currentTarget.style.borderColor="#E8681A"}}
                       onMouseLeave={e=>e.currentTarget.style.borderColor="#222"}>
-                      <div style={{fontSize:10,color:"#555",marginBottom:3}}>{p.sku}</div>
+                      <div style={{fontSize:10,color:"#777",marginBottom:3}}>{p.sku}</div>
                       <div style={{fontSize:13,marginBottom:6,lineHeight:1.4}}>{p.nombre}</div>
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                         <span style={{color:"#E8681A",fontFamily:"'Syne',sans-serif",fontWeight:700}}>{fmt(p.precio)}</span>
@@ -995,8 +993,8 @@ export default function App(){
                   <>
                     <div style={{display:"flex",flexDirection:"column",gap:8,maxHeight:280,overflowY:"auto",marginBottom:12}}>
                       {cart.map(item=>(
-                        <div key={item.productoId} style={{background:"#1c1c1c",borderRadius:6,padding:"10px 11px"}}>
-                          <div style={{fontSize:12,marginBottom:6,color:"#ccc"}}>{item.nombre}</div>
+                        <div key={item.productoId} style={{background:"#faf9f7",borderRadius:6,padding:"10px 11px"}}>
+                          <div style={{fontSize:12,marginBottom:6,color:"#777"}}>{item.nombre}</div>
                           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}>
                             <div style={{display:"flex",alignItems:"center",gap:5}}>
                               <button className="btn btn-dark" style={{padding:"2px 9px",fontSize:15}} onClick={()=>updateQty(item.productoId,item.cantidad-1)}>−</button>
@@ -1004,9 +1002,9 @@ export default function App(){
                               <button className="btn btn-dark" style={{padding:"2px 9px",fontSize:15}} onClick={()=>updateQty(item.productoId,item.cantidad+1)}>+</button>
                             </div>
                             <div style={{display:"flex",flexDirection:"column",gap:3,alignItems:"flex-end"}}>
-                              <div style={{fontSize:9,color:"#555",textAlign:"right"}}>Desc. por pieza</div>
+                              <div style={{fontSize:9,color:"#777",textAlign:"right"}}>Desc. por pieza</div>
                               <div style={{display:"flex",alignItems:"center",gap:4}}>
-                                <span style={{fontSize:11,color:"#555"}}>$</span>
+                                <span style={{fontSize:11,color:"#777"}}>$</span>
                                 <input type="number"
                                   value={item.descuentoPesos!==undefined?Number(item.descuentoPesos).toFixed(2):(item.precioUnitario*(item.descuento||0)/100).toFixed(2)}
                                   onChange={e=>{
@@ -1016,7 +1014,7 @@ export default function App(){
                                   min={0} max={item.precioUnitario} step={0.5}
                                   style={{width:58,padding:"3px 6px",fontSize:12,textAlign:"center"}}/>
                               </div>
-                              <div style={{fontSize:9,color:"#555"}}>
+                              <div style={{fontSize:9,color:"#777"}}>
                                 Precio: {fmt(item.precioUnitario*(1-(item.descuento||0)/100))}/pza
                               </div>
                             </div>
@@ -1025,13 +1023,13 @@ export default function App(){
                         </div>
                       ))}
                     </div>
-                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,padding:"8px 10px",background:"#1a1a1a",borderRadius:6}}>
-                      <span style={{fontSize:11,color:"#666",flex:1}}>Descuento global</span>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,padding:"8px 10px",background:"#f5f3ef",borderRadius:6}}>
+                      <span style={{fontSize:11,color:"#777",flex:1}}>Descuento global</span>
                       <input type="number" value={descGlobal} onChange={e=>setDescGlobal(Math.max(0,Math.min(100,parseInt(e.target.value)||0)))} min={0} max={100} style={{width:48,padding:"3px 6px",fontSize:11,textAlign:"center"}}/>
-                      <span style={{fontSize:11,color:"#666"}}>%</span>
+                      <span style={{fontSize:11,color:"#777"}}>%</span>
                     </div>
-                    <div style={{borderTop:"1px solid #222",paddingTop:10,marginBottom:12}}>
-                      <div style={{display:"flex",justifyContent:"space-between",fontSize:12,color:"#555",marginBottom:4}}><span>Subtotal</span><span>{fmt(cartSubtotal)}</span></div>
+                    <div style={{borderTop:"1px solid #ece9e4",paddingTop:10,marginBottom:12}}>
+                      <div style={{display:"flex",justifyContent:"space-between",fontSize:12,color:"#777",marginBottom:4}}><span>Subtotal</span><span>{fmt(cartSubtotal)}</span></div>
                       {cartDescuento>0&&<div style={{display:"flex",justifyContent:"space-between",fontSize:12,color:"#f2c94c",marginBottom:4}}><span>Descuentos</span><span>-{fmt(cartDescuento)}</span></div>}
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                         <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15}}>TOTAL</span>
@@ -1043,7 +1041,7 @@ export default function App(){
                       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5,marginBottom:8}}>
                         {METODOS_PAGO.map(p=>(
                           <button key={p.id} className="canal-btn" onClick={()=>setMetodoPago(p.id)}
-                            style={{background:metodoPago===p.id?"#1a2e1a":"#1c1c1c",color:metodoPago===p.id?"#6fcf97":"#555",borderColor:metodoPago===p.id?"#2a5a2a":"#2a2a2a",padding:"7px 8px",textAlign:"center"}}>
+                            style={{background:metodoPago===p.id?"#1a2e1a":"#fff",color:metodoPago===p.id?"#6fcf97":"#555",borderColor:metodoPago===p.id?"#2a5a2a":"#e8e4df",padding:"7px 8px",textAlign:"center"}}>
                             {p.emoji} {p.label}
                           </button>
                         ))}
@@ -1055,7 +1053,7 @@ export default function App(){
                             <input type="number" value={efectivoRecibido} onChange={e=>setEfectivoRecibido(e.target.value)} placeholder={fmt(cartTotal)} style={{width:"100%"}}/>
                           </div>
                           {cambio>0&&(
-                            <div style={{background:"#1a2e1a",border:"1px solid #2a5a2a",borderRadius:6,padding:"8px 12px",textAlign:"center",minWidth:90}}>
+                            <div style={{background:"#f0faf4",border:"1px solid #2a5a2a",borderRadius:6,padding:"8px 12px",textAlign:"center",minWidth:90}}>
                               <div style={{fontSize:10,color:"#6fcf97",marginBottom:2}}>CAMBIO</div>
                               <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,color:"#6fcf97",fontSize:16}}>{fmt(cambio)}</div>
                             </div>
@@ -1093,14 +1091,14 @@ export default function App(){
                 <tbody>
                   {products.map(p=>(
                     <tr key={p.id}>
-                      <td style={{color:"#555",fontSize:11}}>{p.sku}</td>
+                      <td style={{color:"#777",fontSize:11}}>{p.sku}</td>
                       <td style={{fontWeight:500}}>{p.nombre}</td>
                       <td><span className="tag tag-blue">{p.categoria}</span></td>
-                      <td style={{fontSize:11,color:"#666"}}>{p.proveedor||"—"}</td>
+                      <td style={{fontSize:11,color:"#777"}}>{p.proveedor||"—"}</td>
                       <td style={{color:"#E8681A",fontWeight:500}}>{fmt(p.precio)}</td>
-                      {currentUser.rol==="admin"&&<td style={{fontSize:12,color:"#666"}}>{p.costo>0?fmt(p.costo):"—"}</td>}
+                      {currentUser.rol==="admin"&&<td style={{fontSize:12,color:"#777"}}>{p.costo>0?fmt(p.costo):"—"}</td>}
                       <td style={{fontFamily:"'Syne',sans-serif",fontWeight:700}}>{p.stock}</td>
-                      <td style={{fontSize:11,color:"#555"}}>{p.stock_min}</td>
+                      <td style={{fontSize:11,color:"#777"}}>{p.stock_min}</td>
                       <td><span className={`tag ${p.stock>p.stock_min?"tag-ok":p.stock>0?"tag-warn":"tag-danger"}`}>{p.stock>p.stock_min?"OK":p.stock>0?"Bajo":"Agotado"}</span></td>
                       <td><div style={{display:"flex",gap:5}}>
                         <button className="btn btn-green" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setShowEntrada(p)}>+ Stock</button>
@@ -1129,15 +1127,15 @@ export default function App(){
                   <div key={c.id} className="card" style={{display:"grid",gridTemplateColumns:"1fr auto",gap:16,alignItems:"center"}}>
                     <div>
                       <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,marginBottom:5}}>{c.nombre}</div>
-                      <div style={{fontSize:12,color:"#555",display:"flex",gap:18,marginBottom:4}}>
+                      <div style={{fontSize:12,color:"#777",display:"flex",gap:18,marginBottom:4}}>
                         {c.tel&&<span>📞 {c.tel}</span>}{c.email&&<span>✉ {c.email}</span>}
                       </div>
-                      {c.notas&&<div style={{fontSize:11,color:"#444"}}>{c.notas}</div>}
+                      {c.notas&&<div style={{fontSize:11,color:"#888"}}>{c.notas}</div>}
                     </div>
                     <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                      <div style={{textAlign:"center",background:"#1a1a1a",borderRadius:7,padding:"8px 14px"}}>
+                      <div style={{textAlign:"center",background:"#f5f3ef",borderRadius:7,padding:"8px 14px"}}>
                         <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:18,color:"#E8681A"}}>{fmt(total)}</div>
-                        <div style={{fontSize:10,color:"#444"}}>{hist.length} compras</div>
+                        <div style={{fontSize:10,color:"#888"}}>{hist.length} compras</div>
                       </div>
                       <div style={{display:"flex",flexDirection:"column",gap:5}}>
                         <button className="btn btn-dark" style={{fontSize:11,padding:"4px 10px"}} onClick={()=>setClienteDetalle(c)}>Ver</button>
@@ -1165,17 +1163,17 @@ export default function App(){
                   <div key={p.id} className="card" style={{display:"grid",gridTemplateColumns:"1fr auto auto",gap:16,alignItems:"center"}}>
                     <div>
                       <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:15,marginBottom:5}}>{p.nombre}</div>
-                      <div style={{fontSize:12,color:"#555",display:"flex",gap:18,marginBottom:4}}>
+                      <div style={{fontSize:12,color:"#777",display:"flex",gap:18,marginBottom:4}}>
                         {p.contacto&&<span>👤 {p.contacto}</span>}{p.tel&&<span>📞 {p.tel}</span>}{p.email&&<span>✉ {p.email}</span>}
                       </div>
-                      <div style={{fontSize:11,color:"#444",marginBottom:6}}>Condiciones: <span style={{color:"#E8681A"}}>{p.condiciones||"—"}</span></div>
+                      <div style={{fontSize:11,color:"#888",marginBottom:6}}>Condiciones: <span style={{color:"#E8681A"}}>{p.condiciones||"—"}</span></div>
                       <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                         {prods.map(pr=><span key={pr.id} className="tag tag-blue" style={{fontSize:10}}>{pr.sku}</span>)}
                       </div>
                     </div>
-                    <div style={{textAlign:"center",background:"#1a1a1a",borderRadius:7,padding:"8px 14px"}}>
+                    <div style={{textAlign:"center",background:"#f5f3ef",borderRadius:7,padding:"8px 14px"}}>
                       <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:20,color:"#E8681A"}}>{prods.length}</div>
-                      <div style={{fontSize:10,color:"#444"}}>productos</div>
+                      <div style={{fontSize:10,color:"#888"}}>productos</div>
                     </div>
                     {isAdmin&&<button className="btn btn-dark" style={{fontSize:11,padding:"5px 12px"}} onClick={()=>setEditProv({...p})}>Editar</button>}
                   </div>
@@ -1199,22 +1197,22 @@ export default function App(){
               <div>
                 <div className="label">Canal</div>
                 <div style={{display:"flex",gap:5}}>
-                  <button className="canal-btn" onClick={()=>setFiltroCanal("todos")} style={{background:filtroCanal==="todos"?"#2a2a2a":"#1c1c1c",color:filtroCanal==="todos"?"#e8e0d0":"#555",borderColor:filtroCanal==="todos"?"#666":"#2a2a2a"}}>Todos</button>
-                  {CANALES.map(c=><button key={c.id} className="canal-btn" onClick={()=>setFiltroCanal(c.id)} style={{background:filtroCanal===c.id?c.bg:"#1c1c1c",color:filtroCanal===c.id?c.color:"#555",borderColor:filtroCanal===c.id?c.color:"#2a2a2a"}}>{c.emoji} {c.label}</button>)}
+                  <button className="canal-btn" onClick={()=>setFiltroCanal("todos")} style={{background:filtroCanal==="todos"?"#e8e4df":"#fff",color:filtroCanal==="todos"?"#222":"#555",borderColor:filtroCanal==="todos"?"#666":"#e8e4df"}}>Todos</button>
+                  {CANALES.map(c=><button key={c.id} className="canal-btn" onClick={()=>setFiltroCanal(c.id)} style={{background:filtroCanal===c.id?c.bg:"#fff",color:filtroCanal===c.id?c.color:"#777",borderColor:filtroCanal===c.id?c.color:"#e8e4df"}}>{c.emoji} {c.label}</button>)}
                 </div>
               </div>
               <div>
                 <div className="label">Pago</div>
                 <div style={{display:"flex",gap:5}}>
-                  <button className="canal-btn" onClick={()=>setFiltroPago("todos")} style={{background:filtroPago==="todos"?"#2a2a2a":"#1c1c1c",color:filtroPago==="todos"?"#e8e0d0":"#555",borderColor:filtroPago==="todos"?"#666":"#2a2a2a"}}>Todos</button>
-                  {METODOS_PAGO.map(p=><button key={p.id} className="canal-btn" onClick={()=>setFiltroPago(p.id)} style={{background:filtroPago===p.id?"#1a2e1a":"#1c1c1c",color:filtroPago===p.id?"#6fcf97":"#555",borderColor:filtroPago===p.id?"#2a5a2a":"#2a2a2a"}}>{p.emoji} {p.label}</button>)}
+                  <button className="canal-btn" onClick={()=>setFiltroPago("todos")} style={{background:filtroPago==="todos"?"#e8e4df":"#fff",color:filtroPago==="todos"?"#222":"#555",borderColor:filtroPago==="todos"?"#666":"#e8e4df"}}>Todos</button>
+                  {METODOS_PAGO.map(p=><button key={p.id} className="canal-btn" onClick={()=>setFiltroPago(p.id)} style={{background:filtroPago===p.id?"#1a2e1a":"#fff",color:filtroPago===p.id?"#6fcf97":"#555",borderColor:filtroPago===p.id?"#2a5a2a":"#e8e4df"}}>{p.emoji} {p.label}</button>)}
                 </div>
               </div>
               <div>
                 <div className="label">Estado</div>
                 <div style={{display:"flex",gap:5}}>
                   {[["todos","Todos"],["activa","Activas"],["cancelada","Canceladas"],["devolucion","Devoluciones"]].map(([v,l])=>(
-                    <button key={v} className="canal-btn" onClick={()=>setFiltroEstado(v)} style={{background:filtroEstado===v?"#2a2a2a":"#1c1c1c",color:filtroEstado===v?"#e8e0d0":"#555",borderColor:filtroEstado===v?"#666":"#2a2a2a"}}>{l}</button>
+                    <button key={v} className="canal-btn" onClick={()=>setFiltroEstado(v)} style={{background:filtroEstado===v?"#e8e4df":"#fff",color:filtroEstado===v?"#222":"#555",borderColor:filtroEstado===v?"#666":"#e8e4df"}}>{l}</button>
                   ))}
                 </div>
               </div>
@@ -1234,24 +1232,24 @@ export default function App(){
                 <button className="btn btn-dark" style={{fontSize:11}} onClick={()=>{setFiltroFechaDesde("");setFiltroFechaHasta("");}}>✕ Limpiar fechas</button>
               </div>
             </div>
-            <div style={{fontSize:11,color:"#444",marginBottom:10}}>{filteredSales.length} registros · {fmt(filteredSales.filter(s=>!s.cancelada&&!s.devolucion).reduce((a,s)=>a+Number(s.total),0))} total</div>
+            <div style={{fontSize:11,color:"#888",marginBottom:10}}>{filteredSales.length} registros · {fmt(filteredSales.filter(s=>!s.cancelada&&!s.devolucion).reduce((a,s)=>a+Number(s.total),0))} total</div>
             <div className="card" style={{padding:0,overflow:"hidden"}}>
               <table>
                 <thead><tr><th>Folio</th><th>Fecha</th><th>Canal</th><th>Pago</th><th>Cliente</th><th>Cajero</th><th>Total</th><th>Estado</th><th>Acciones</th></tr></thead>
                 <tbody>
                   {filteredSales.slice(0,80).map(s=>{
-                    const c=CANAL_MAP[s.canal]||{emoji:"",label:s.canal,bg:"#222",color:"#888"};
+                    const c=CANAL_MAP[s.canal]||{emoji:"",label:s.canal,bg:"#222",color:"#777"};
                     const pg=PAGO_MAP[s.metodo_pago]||{emoji:"",label:s.metodo_pago};
                     const estadoTag=s.cancelada?"tag-danger":s.devolucion?"tag-warn":"tag-ok";
                     const estadoLabel=s.cancelada?"Cancelada":s.devolucion?"Devolucion":"Activa";
                     return(
                       <tr key={s.id} style={{opacity:s.cancelada?.5:1}}>
                         <td style={{color:"#E8681A",fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12}}>{s.folio}</td>
-                        <td style={{fontSize:11,color:"#555"}}>{fmtDate(s.fecha)}</td>
+                        <td style={{fontSize:11,color:"#777"}}>{fmtDate(s.fecha)}</td>
                         <td><span className="canal-chip" style={{background:c.bg,color:c.color,border:"1px solid "+c.color+"33",fontSize:10}}>{c.emoji} {c.label}</span></td>
-                        <td style={{fontSize:12,color:"#666"}}>{pg.emoji} {pg.label}</td>
+                        <td style={{fontSize:12,color:"#777"}}>{pg.emoji} {pg.label}</td>
                         <td style={{fontSize:12}}>{s.cliente}</td>
-                        <td style={{fontSize:11,color:"#555"}}>{s.cajero||"—"}</td>
+                        <td style={{fontSize:11,color:"#777"}}>{s.cajero||"—"}</td>
                         <td style={{fontWeight:700,color:s.cancelada?"#444":s.devolucion?"#f2c94c":"#E8681A"}}>{fmt(s.total)}</td>
                         <td><span className={`tag ${estadoTag}`}>{estadoLabel}</span></td>
                         <td><div style={{display:"flex",gap:4}}>
@@ -1328,7 +1326,7 @@ export default function App(){
                   parts.push('<button onclick="window.close()" style="background:#555;color:#fff;border:none;padding:10px 20px;font-size:14px;border-radius:6px;cursor:pointer">Cerrar</button></div>');
                   parts.push('<table style="width:100%;margin-bottom:16px"><tr>');
                   parts.push('<td><div style="font-size:20pt;font-weight:800;color:#E8681A">TODO EN CAJAS.COM</div>');
-                  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon, CDMX | 55 2268 8744</div></td>');
+                  parts.push('<div style="font-size:10pt;color:#666">Cucurpe 44, Alvaro Obregon, CDMX | Tel: 55 9824 1503 | WhatsApp: 55 2268 8744</div></td>');
                   parts.push('<td style="text-align:right;vertical-align:top">');
                   parts.push('<div style="font-size:16pt;font-weight:800">CORTE DE CAJA</div>');
                   parts.push('<div style="font-size:12pt;color:#E8681A;font-weight:700">'+fecha+'</div>');
@@ -1373,7 +1371,7 @@ export default function App(){
                   parts.push('<td style="width:10%"></td>');
                   parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Vo.Bo. Gerencia</div></td>');
                   parts.push('</tr></table>');
-                  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - 55 2268 8744</p>');
+                  parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - Tel: 55 9824 1503 | WA: 55 2268 8744</p>');
                   parts.push('</body></html>');
                   win.document.write(parts.join(''));
                   win.document.close();
@@ -1394,8 +1392,8 @@ export default function App(){
                   ["Ticket promedio",corteSales.length?fmt(corteTotal/corteSales.length):fmt(0)],
                   ["Descuentos",fmt(corteSales.reduce((a,s)=>a+Number(s.descuento_total),0))],
                 ].map(([l,v])=>(
-                  <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:13,color:"#666",marginBottom:7}}>
-                    <span>{l}</span><span style={{color:"#ccc"}}>{v}</span>
+                  <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:13,color:"#777",marginBottom:7}}>
+                    <span>{l}</span><span style={{color:"#777"}}>{v}</span>
                   </div>
                 ))}
               </div>
@@ -1409,10 +1407,10 @@ export default function App(){
                         <span style={{fontSize:13}}>{p.emoji} {p.label}</span>
                         <span style={{fontSize:13,color:"#E8681A",fontWeight:600}}>{fmt(t)}</span>
                       </div>
-                      <div style={{background:"#1e1e1e",borderRadius:3,height:5,overflow:"hidden"}}>
+                      <div style={{background:"#faf9f7",borderRadius:3,height:5,overflow:"hidden"}}>
                         <div style={{background:"#E8681A",height:"100%",width:`${pct}%`}}/>
                       </div>
-                      <div style={{fontSize:10,color:"#444",marginTop:2}}>{pct.toFixed(0)}%</div>
+                      <div style={{fontSize:10,color:"#888",marginTop:2}}>{pct.toFixed(0)}%</div>
                     </div>
                   );
                 })}
@@ -1435,21 +1433,21 @@ export default function App(){
               </div>
             </div>
             <div className="card" style={{padding:0,overflow:"hidden"}}>
-              <div style={{padding:"14px 16px",borderBottom:"1px solid #1e1e1e",fontSize:11,color:"#555",letterSpacing:1}}>VENTAS DEL DIA ({corteSales.length})</div>
+              <div style={{padding:"14px 16px",borderBottom:"1px solid #ece9e4",fontSize:11,color:"#777",letterSpacing:1}}>VENTAS DEL DIA ({corteSales.length})</div>
               <table>
                 <thead><tr><th>Folio</th><th>Hora</th><th>Canal</th><th>Pago</th><th>Cliente</th><th>Cajero</th><th>Total</th></tr></thead>
                 <tbody>
                   {corteSales.map(s=>{
-                    const c=CANAL_MAP[s.canal]||{emoji:"",label:s.canal,bg:"#222",color:"#888"};
+                    const c=CANAL_MAP[s.canal]||{emoji:"",label:s.canal,bg:"#222",color:"#777"};
                     const pg=PAGO_MAP[s.metodo_pago]||{emoji:"",label:s.metodo_pago};
                     return(
                       <tr key={s.id}>
                         <td style={{color:"#E8681A",fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12}}>{s.folio}</td>
-                        <td style={{fontSize:11,color:"#555"}}>{fmtTime(s.fecha)}</td>
+                        <td style={{fontSize:11,color:"#777"}}>{fmtTime(s.fecha)}</td>
                         <td><span className="canal-chip" style={{background:c.bg,color:c.color,border:"1px solid "+c.color+"33",fontSize:10}}>{c.emoji} {c.label}</span></td>
-                        <td style={{fontSize:11,color:"#666"}}>{pg.emoji} {pg.label}</td>
+                        <td style={{fontSize:11,color:"#777"}}>{pg.emoji} {pg.label}</td>
                         <td style={{fontSize:12}}>{s.cliente}</td>
-                        <td style={{fontSize:11,color:"#555"}}>{s.cajero||"—"}</td>
+                        <td style={{fontSize:11,color:"#777"}}>{s.cajero||"—"}</td>
                         <td style={{fontWeight:600,color:"#E8681A"}}>{fmt(s.total)}</td>
                       </tr>
                     );
@@ -1466,27 +1464,31 @@ export default function App(){
         <div className="anim-in">
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
             <div className="section-title" style={{margin:0}}>Entradas de Mercancía</div>
-            <button className="btn btn-gold" onClick={()=>{setOrdenItems(products.map(p=>({productoId:p.id,nombre:p.nombre,sku:p.sku,cantidad:0,costo:p.costo||0})));setOrdenProv(proveedores[0]?.nombre||"");setOrdenNota("");setShowNuevaOrden(true);}}>
+            <button className="btn btn-gold" onClick={()=>{setOrdenItems(products.map(p=>({productoId:p.id,nombre:p.nombre,sku:p.sku,cantidad:0,costo:p.costo||0})));
+              setOrdenProv(proveedores[0]?.nombre||"");
+              setOrdenNota("");setOrdenContacto("");setOrdenTelContacto("");setOrdenCondiciones("");setOrdenFechaEntrega("");setOrdenIva(true);
+              const p0=proveedores[0];if(p0){setOrdenContacto(p0.contacto||"");setOrdenTelContacto(p0.tel||"");setOrdenCondiciones(p0.condiciones||"");}
+              setShowNuevaOrden(true);}}>
               + Nueva Orden de Compra
             </button>
           </div>
 
           {/* ALERTAS REORDEN */}
           {lowStock.length>0&&(
-            <div className="card" style={{borderColor:"#E8681A44",marginBottom:14}}>
+            <div className="card" style={{borderColor:"#f5c89a",marginBottom:14}}>
               <div style={{fontSize:11,color:"#E8681A",letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>
                 🔔 Productos que necesitan reorden ({lowStock.length})
               </div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8}}>
                 {lowStock.map(p=>(
-                  <div key={p.id} style={{background:"#1e1408",border:"1px solid #E8681A33",borderRadius:6,padding:"8px 12px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div key={p.id} style={{background:"#fff8f4",border:"1px solid #f5c89a",borderRadius:6,padding:"8px 12px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                     <div>
-                      <div style={{fontSize:12,color:"#ccc"}}>{p.nombre}</div>
-                      <div style={{fontSize:11,color:"#555"}}>{p.sku} · Proveedor: {p.proveedor||"—"}</div>
+                      <div style={{fontSize:12,color:"#777"}}>{p.nombre}</div>
+                      <div style={{fontSize:11,color:"#777"}}>{p.sku} · Proveedor: {p.proveedor||"—"}</div>
                     </div>
                     <div style={{textAlign:"right"}}>
                       <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,color:"#E8681A",fontSize:16}}>{p.stock}</div>
-                      <div style={{fontSize:10,color:"#555"}}>mín: {p.stock_min}</div>
+                      <div style={{fontSize:10,color:"#777"}}>mín: {p.stock_min}</div>
                     </div>
                   </div>
                 ))}
@@ -1496,7 +1498,7 @@ export default function App(){
 
           {/* ÓRDENES DE COMPRA */}
           <div className="card" style={{marginBottom:14}}>
-            <div style={{fontSize:11,color:"#555",letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Órdenes de Compra</div>
+            <div style={{fontSize:11,color:"#777",letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Órdenes de Compra</div>
             {ordenes.length===0?(
               <div style={{textAlign:"center",padding:"30px 0",color:"#333",fontSize:13}}>Sin órdenes de compra. Crea una para pedirle a tu proveedor.</div>
             ):(
@@ -1506,9 +1508,9 @@ export default function App(){
                   {ordenes.map(o=>(
                     <tr key={o.id}>
                       <td style={{color:"#E8681A",fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12}}>{o.folio}</td>
-                      <td style={{fontSize:11,color:"#555"}}>{fmtDate(o.fecha)}</td>
+                      <td style={{fontSize:11,color:"#777"}}>{fmtDate(o.fecha)}</td>
                       <td>{o.proveedor}</td>
-                      <td style={{fontSize:12,color:"#666"}}>{o.items.filter(i=>i.cantidad>0).length} productos</td>
+                      <td style={{fontSize:12,color:"#777"}}>{o.items.filter(i=>i.cantidad>0).length} productos</td>
                       <td><span className={`tag ${o.recibida?"tag-ok":o.cancelada?"tag-danger":o.parcial?"tag-blue":"tag-warn"}`}>{o.recibida?"✓ Recibida":o.cancelada?"✕ Cancelada":o.parcial?"📦 Parcial":"⏳ Pendiente"}</span></td>
                       <td>
                         <div style={{display:"flex",gap:5}}>
@@ -1532,7 +1534,7 @@ export default function App(){
 
           {/* HISTORIAL DE ENTRADAS */}
           <div className="card" style={{padding:0,overflow:"hidden"}}>
-            <div style={{padding:"14px 16px",borderBottom:"1px solid #1e1e1e",fontSize:11,color:"#555",letterSpacing:1}}>HISTORIAL DE ENTRADAS ({entradas.length})</div>
+            <div style={{padding:"14px 16px",borderBottom:"1px solid #ece9e4",fontSize:11,color:"#777",letterSpacing:1}}>HISTORIAL DE ENTRADAS ({entradas.length})</div>
             {entradas.length===0?(
               <div style={{textAlign:"center",padding:"30px 0",color:"#333",fontSize:13}}>Sin entradas registradas aún.</div>
             ):(
@@ -1542,10 +1544,10 @@ export default function App(){
                   {entradas.map(e=>(
                     <tr key={e.id}>
                       <td style={{color:"#E8681A",fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:12}}>{e.folio}</td>
-                      <td style={{fontSize:11,color:"#555"}}>{fmtDate(e.fecha)}</td>
+                      <td style={{fontSize:11,color:"#777"}}>{fmtDate(e.fecha)}</td>
                       <td>{e.proveedor}</td>
-                      <td style={{fontSize:12,color:"#666"}}>{e.items.length} productos</td>
-                      <td style={{fontSize:12,color:"#666"}}>{e.recibe}</td>
+                      <td style={{fontSize:12,color:"#777"}}>{e.items.length} productos</td>
+                      <td style={{fontSize:12,color:"#777"}}>{e.recibe}</td>
                       <td style={{display:"flex",gap:5}}>
                         <button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>printEntrada(e)}>🖨 PDF</button>
                         {currentUser.rol==="admin"&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px",background:"#3a1010"}} onClick={()=>setConfirm({msg:"Eliminar la entrada "+e.folio+" permanentemente?",onYes:async()=>{await sb.delete("entradas_mercancia",e.id);setEntradas(prev=>prev.filter(x=>x.id!==e.id));notify("Entrada eliminada");}})}>🗑</button>}
@@ -1566,13 +1568,13 @@ export default function App(){
         <div className="overlay" onClick={()=>setShowAnticipo(false)}>
           <div className="modal anim-in" style={{maxWidth:420}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:4}}>📋 Pedido con Anticipo</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:18}}>Total del pedido: <strong style={{color:"#E8681A"}}>{fmt(cartTotal)}</strong></div>
+            <div style={{fontSize:12,color:"#777",marginBottom:18}}>Total del pedido: <strong style={{color:"#E8681A"}}>{fmt(cartTotal)}</strong></div>
             <div style={{marginBottom:14}}>
               <div className="label" style={{marginBottom:6}}>Porcentaje de anticipo</div>
               <div style={{display:"flex",gap:8,marginBottom:8}}>
                 {[25,30,50,60,70].map(p=>(
                   <button key={p} className="btn" onClick={()=>{setAnticipoPct(p);setAnticipoPmonto("");}}
-                    style={{background:anticipoPct===p?"#E8681A":"#1c1c1c",color:anticipoPct===p?"#fff":"#888",border:"1px solid #333",padding:"5px 10px",fontSize:12}}>
+                    style={{background:anticipoPct===p?"#E8681A":"#fff",color:anticipoPct===p?"#fff":"#888",border:"1px solid #e0dbd4",padding:"5px 10px",fontSize:12}}>
                     {p}%
                   </button>
                 ))}
@@ -1584,16 +1586,16 @@ export default function App(){
                 </div>
               </div>
             </div>
-            <div style={{background:"#1a1a1a",borderRadius:7,padding:"12px 16px",marginBottom:14}}>
+            <div style={{background:"#f5f3ef",borderRadius:7,padding:"12px 16px",marginBottom:14}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:13}}>
-                <span style={{color:"#666"}}>Total pedido</span>
+                <span style={{color:"#777"}}>Total pedido</span>
                 <span>{fmt(cartTotal)}</span>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:13,color:"#E8681A"}}>
                 <span style={{fontWeight:600}}>Anticipo a cobrar</span>
                 <span style={{fontWeight:700}}>{fmt(anticipoMonto?parseFloat(anticipoMonto)||0:cartTotal*(anticipoPct/100))}</span>
               </div>
-              <div style={{display:"flex",justifyContent:"space-between",fontSize:14,borderTop:"1px dashed #333",paddingTop:8,marginTop:4}}>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:14,borderTop:"1px dashed #e0dbd4",paddingTop:8,marginTop:4}}>
                 <span style={{fontWeight:600}}>Saldo pendiente</span>
                 <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,color:"#E8681A"}}>
                   {fmt(cartTotal-(anticipoMonto?parseFloat(anticipoMonto)||0:cartTotal*(anticipoPct/100)))}
@@ -1618,7 +1620,7 @@ export default function App(){
         <div className="overlay" onClick={()=>setConfirm(null)}>
           <div className="modal anim-in" style={{maxWidth:360,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
             <div style={{fontSize:32,marginBottom:12}}>⚠️</div>
-            <div style={{fontSize:14,lineHeight:1.6,marginBottom:24,color:"#ccc"}}>{confirm.msg}</div>
+            <div style={{fontSize:14,lineHeight:1.6,marginBottom:24,color:"#777"}}>{confirm.msg}</div>
             <div style={{display:"flex",gap:10}}>
               <button className="btn btn-red" style={{flex:1,padding:"10px"}} onClick={async()=>{await confirm.onYes();setConfirm(null);}}>Confirmar</button>
               <button className="btn btn-dark" style={{flex:1,padding:"10px"}} onClick={()=>setConfirm(null)}>Cancelar</button>
@@ -1631,16 +1633,16 @@ export default function App(){
         <div className="overlay" onClick={()=>setShowDevolucion(null)}>
           <div className="modal anim-in" style={{maxWidth:480}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:4}}>↩ Registrar Devolucion</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:18}}>Ref: {showDevolucion.folio} · {showDevolucion.cliente}</div>
+            <div style={{fontSize:12,color:"#777",marginBottom:18}}>Ref: {showDevolucion.folio} · {showDevolucion.cliente}</div>
             <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:18}}>
               {(showDevolucion._items||[]).map(item=>(
-                <div key={item.producto_id} style={{background:"#1c1c1c",borderRadius:6,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div key={item.producto_id} style={{background:"#faf9f7",borderRadius:6,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div>
-                    <div style={{fontSize:13,color:"#ccc",marginBottom:2}}>{item.nombre}</div>
-                    <div style={{fontSize:11,color:"#555"}}>Comprado: {item.cantidad} · {fmt(item.precio_unitario)}/ud</div>
+                    <div style={{fontSize:13,color:"#777",marginBottom:2}}>{item.nombre}</div>
+                    <div style={{fontSize:11,color:"#777"}}>Comprado: {item.cantidad} · {fmt(item.precio_unitario)}/ud</div>
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <span style={{fontSize:11,color:"#555"}}>Devolver:</span>
+                    <span style={{fontSize:11,color:"#777"}}>Devolver:</span>
                     <input type="number" min={0} max={item.cantidad}
                       value={devItems[item.producto_id]||0}
                       onChange={e=>setDevItems(prev=>({...prev,[item.producto_id]:Math.min(item.cantidad,Math.max(0,parseInt(e.target.value)||0))}))}
@@ -1649,8 +1651,8 @@ export default function App(){
                 </div>
               ))}
             </div>
-            <div style={{background:"#1a1a1a",borderRadius:6,padding:"10px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",fontSize:14}}>
-              <span style={{color:"#666"}}>Monto a devolver</span>
+            <div style={{background:"#f5f3ef",borderRadius:6,padding:"10px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",fontSize:14}}>
+              <span style={{color:"#777"}}>Monto a devolver</span>
               <span style={{color:"#f2c94c",fontFamily:"'Syne',sans-serif",fontWeight:700}}>
                 {fmt((showDevolucion._items||[]).filter(i=>devItems[i.producto_id]>0).reduce((a,i)=>a+devItems[i.producto_id]*Number(i.precio_unitario)*(1-(i.descuento||0)/100),0))}
               </span>
@@ -1667,16 +1669,16 @@ export default function App(){
         <div className="overlay" onClick={()=>setClienteDetalle(null)}>
           <div className="modal anim-in" style={{maxWidth:520}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:4}}>{clienteDetalle.nombre}</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:16}}>{clienteDetalle.tel} · {clienteDetalle.email}</div>
+            <div style={{fontSize:12,color:"#777",marginBottom:16}}>{clienteDetalle.tel} · {clienteDetalle.email}</div>
             {(()=>{
               const ch=sales.filter(s=>s.cliente_id===clienteDetalle.id&&!s.cancelada&&!s.devolucion);
               const ct=ch.reduce((a,s)=>a+Number(s.total),0);
               return(<>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}}>
                   {[["Total compras",fmt(ct)],["Visitas",ch.length],["Ticket prom.",ch.length?fmt(ct/ch.length):fmt(0)]].map(([l,v])=>(
-                    <div key={l} style={{background:"#1a1a1a",borderRadius:6,padding:"10px 12px",textAlign:"center"}}>
+                    <div key={l} style={{background:"#f5f3ef",borderRadius:6,padding:"10px 12px",textAlign:"center"}}>
                       <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,color:"#E8681A",fontSize:16}}>{v}</div>
-                      <div style={{fontSize:10,color:"#444",marginTop:2}}>{l}</div>
+                      <div style={{fontSize:10,color:"#888",marginTop:2}}>{l}</div>
                     </div>
                   ))}
                 </div>
@@ -1684,10 +1686,10 @@ export default function App(){
                   <table>
                     <thead><tr><th>Folio</th><th>Fecha</th><th>Canal</th><th>Total</th></tr></thead>
                     <tbody>
-                      {ch.slice(0,20).map(s=>{const c=CANAL_MAP[s.canal]||{emoji:"",label:s.canal,bg:"#222",color:"#888"};return(
+                      {ch.slice(0,20).map(s=>{const c=CANAL_MAP[s.canal]||{emoji:"",label:s.canal,bg:"#222",color:"#777"};return(
                         <tr key={s.id}>
                           <td style={{color:"#E8681A",fontSize:12,fontFamily:"'Syne',sans-serif",fontWeight:700}}>{s.folio}</td>
-                          <td style={{fontSize:11,color:"#555"}}>{fmtDate(s.fecha)}</td>
+                          <td style={{fontSize:11,color:"#777"}}>{fmtDate(s.fecha)}</td>
                           <td><span className="canal-chip" style={{background:c.bg,color:c.color,border:"1px solid "+c.color+"33",fontSize:10}}>{c.emoji} {c.label}</span></td>
                           <td style={{color:"#E8681A",fontWeight:600}}>{fmt(s.total)}</td>
                         </tr>
@@ -1706,7 +1708,7 @@ export default function App(){
         <div className="overlay" onClick={()=>setShowEntrada(null)}>
           <div className="modal anim-in" style={{maxWidth:360}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:4}}>Entrada de Mercancia</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:18}}>{showEntrada.nombre} · Stock actual: <strong style={{color:"#E8681A"}}>{showEntrada.stock}</strong></div>
+            <div style={{fontSize:12,color:"#777",marginBottom:18}}>{showEntrada.nombre} · Stock actual: <strong style={{color:"#E8681A"}}>{showEntrada.stock}</strong></div>
             <div className="label" style={{marginBottom:8}}>Cantidad a ingresar</div>
             <input type="number" value={entradaCant} onChange={e=>setEntradaCant(e.target.value)} placeholder="0" style={{width:"100%",marginBottom:20,fontSize:18,textAlign:"center"}} autoFocus/>
             <div style={{display:"flex",gap:10}}>
@@ -1833,7 +1835,7 @@ export default function App(){
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
               <div>
                 <div className="label" style={{marginBottom:6}}>Proveedor</div>
-                <select value={ordenProv} onChange={e=>{setOrdenProv(e.target.value);const p=proveedores.find(pv=>pv.nombre===e.target.value);if(p)setOrdenContacto(p.contacto||"");}} style={{width:"100%",background:"#1c1c1c",border:"1px solid #333",color:"#e8e0d0",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
+                <select value={ordenProv} onChange={e=>{setOrdenProv(e.target.value);const p=proveedores.find(pv=>pv.nombre===e.target.value);if(p){setOrdenContacto(p.contacto||"");setOrdenTelContacto(p.tel||"");setOrdenCondiciones(p.condiciones||"");}}} style={{width:"100%",background:"#faf9f7",border:"1px solid #e0dbd4",color:"#222",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
                   {proveedores.map(p=><option key={p.id} value={p.nombre}>{p.nombre}</option>)}
                 </select>
               </div>
@@ -1849,8 +1851,16 @@ export default function App(){
                 <div className="label" style={{marginBottom:6}}>Notas adicionales</div>
                 <input value={ordenNota} onChange={e=>setOrdenNota(e.target.value)} placeholder="Instrucciones, urgente, etc." style={{width:"100%"}}/>
               </div>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Teléfono contacto</div>
+                <input value={ordenTelContacto} onChange={e=>setOrdenTelContacto(e.target.value)} placeholder="55 1234 5678" style={{width:"100%"}}/>
+              </div>
+              <div style={{gridColumn:"1/-1"}}>
+                <div className="label" style={{marginBottom:6}}>Condiciones comerciales</div>
+                <input value={ordenCondiciones} onChange={e=>setOrdenCondiciones(e.target.value)} placeholder="Ej: Pago a 30 días, crédito $50,000, descuento por volumen..." style={{width:"100%"}}/>
+              </div>
             </div>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12,padding:"8px 12px",background:"#1a1a1a",borderRadius:6}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12,padding:"8px 12px",background:"#f5f3ef",borderRadius:6}}>
               <input type="checkbox" id="ordenIva" checked={ordenIva} onChange={e=>setOrdenIva(e.target.checked)} style={{width:16,height:16,accentColor:"#E8681A"}}/>
               <label htmlFor="ordenIva" style={{fontSize:13,cursor:"pointer"}}>Aplicar IVA 16%</label>
               {ordenIva&&<span style={{marginLeft:"auto",color:"#E8681A",fontSize:12,fontWeight:600}}>Subtotal + 16% IVA</span>}
@@ -1858,13 +1868,13 @@ export default function App(){
             <div className="label" style={{marginBottom:8}}>Productos a solicitar</div>
             <div style={{maxHeight:300,overflowY:"auto",marginBottom:16}}>
               {ordenItems.map((item,idx)=>(
-                <div key={item.productoId} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #1a1a1a"}}>
+                <div key={item.productoId} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #f0ede8"}}>
                   <div style={{flex:1}}>
-                    <div style={{fontSize:12,color:"#ccc"}}>{item.nombre}</div>
-                    <div style={{fontSize:10,color:"#555"}}>{item.sku} · Costo: ${Number(item.costo).toFixed(2)}</div>
+                    <div style={{fontSize:12,color:"#777"}}>{item.nombre}</div>
+                    <div style={{fontSize:10,color:"#777"}}>{item.sku} · Costo: ${Number(item.costo).toFixed(2)}</div>
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:6}}>
-                    <span style={{fontSize:11,color:"#555"}}>Cantidad:</span>
+                    <span style={{fontSize:11,color:"#777"}}>Cantidad:</span>
                     <input type="number" min={0} value={item.cantidad}
                       onChange={e=>setOrdenItems(prev=>prev.map((i,ix)=>ix===idx?{...i,cantidad:parseInt(e.target.value)||0}:i))}
                       style={{width:64,textAlign:"center",padding:"4px 8px"}}/>
@@ -1872,8 +1882,8 @@ export default function App(){
                 </div>
               ))}
             </div>
-            <div style={{background:"#1a1a1a",borderRadius:6,padding:"10px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",fontSize:13}}>
-              <span style={{color:"#666"}}>Total estimado</span>
+            <div style={{background:"#f5f3ef",borderRadius:6,padding:"10px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",fontSize:13}}>
+              <span style={{color:"#777"}}>Total estimado</span>
               <span style={{color:"#E8681A",fontWeight:600}}>${ordenItems.reduce((a,i)=>a+i.cantidad*Number(i.costo),0).toFixed(2)}</span>
             </div>
             <div style={{display:"flex",gap:10}}>
@@ -1884,7 +1894,7 @@ export default function App(){
                 const subtotalOrden = itemsValidos.reduce((a,i)=>a+i.cantidad*Number(i.costo),0);
                 const ivaOrden = ordenIva ? subtotalOrden*0.16 : 0;
                 const totalOrden = subtotalOrden + ivaOrden;
-                const metaNota = JSON.stringify({notas:ordenNota,contacto:ordenContacto,fechaEntrega:ordenFechaEntrega,iva:ordenIva});
+                const metaNota = JSON.stringify({notas:ordenNota,contacto:ordenContacto,tel:ordenTelContacto,condiciones:ordenCondiciones,fechaEntrega:ordenFechaEntrega,iva:ordenIva});
                 const nuevaOrden={id:Date.now(),folio,fecha:new Date().toISOString(),proveedor:ordenProv,nota:metaNota,items:itemsValidos,recibida:false,cancelada:false,subtotal:subtotalOrden,iva:ivaOrden,total:totalOrden};
                 const savedOrden = await sb.post("ordenes_compra", {
                   folio, proveedor:ordenProv,
@@ -1897,7 +1907,7 @@ export default function App(){
                 const ordenFinal = ordenConId?.id ? {...nuevaOrden, id:ordenConId.id} : nuevaOrden;
                 setOrdenes(prev=>[ordenFinal,...prev]);
                 setShowNuevaOrden(false);
-                setOrdenContacto(""); setOrdenFechaEntrega(""); setOrdenNota(""); setOrdenIva(true);
+                setOrdenContacto(""); setOrdenTelContacto(""); setOrdenCondiciones(""); setOrdenFechaEntrega(""); setOrdenNota(""); setOrdenIva(true);
                 notify("Orden " + folio + " creada");
                 setTimeout(()=>printOrden(ordenFinal),300);
               }}>Crear e Imprimir Orden</button>
@@ -1912,19 +1922,19 @@ export default function App(){
         <div className="overlay" onClick={()=>setShowNuevaEntrada(null)}>
           <div className="modal anim-in" style={{maxWidth:500}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:4}}>📥 Registrar Entrada de Mercancía</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:16}}>Orden: {showNuevaEntrada.folio} · {showNuevaEntrada.proveedor}</div>
+            <div style={{fontSize:12,color:"#777",marginBottom:16}}>Orden: {showNuevaEntrada.folio} · {showNuevaEntrada.proveedor}</div>
             <div className="label" style={{marginBottom:8}}>Quién recibe</div>
             <input value={entradaRecibe} onChange={e=>setEntradaRecibe(e.target.value)} style={{width:"100%",marginBottom:14}} placeholder="Nombre de quien recibe"/>
             <div className="label" style={{marginBottom:8}}>Cantidades recibidas</div>
             <div style={{maxHeight:280,overflowY:"auto",marginBottom:14}}>
               {showNuevaEntrada.items.map(item=>(
-                <div key={item.productoId} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #1a1a1a"}}>
+                <div key={item.productoId} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #f0ede8"}}>
                   <div style={{flex:1}}>
-                    <div style={{fontSize:12,color:"#ccc"}}>{item.nombre}</div>
-                    <div style={{fontSize:10,color:"#555"}}>{item.sku} · Solicitado: {item.cantidad} uds</div>
+                    <div style={{fontSize:12,color:"#777"}}>{item.nombre}</div>
+                    <div style={{fontSize:10,color:"#777"}}>{item.sku} · Solicitado: {item.cantidad} uds</div>
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:6}}>
-                    <span style={{fontSize:11,color:"#555"}}>Recibido:</span>
+                    <span style={{fontSize:11,color:"#777"}}>Recibido:</span>
                     <input type="number" min={0}
                       value={entradaItems[item.productoId]||0}
                       onChange={e=>setEntradaItems(prev=>({...prev,[item.productoId]:parseInt(e.target.value)||0}))}
@@ -1980,7 +1990,7 @@ export default function App(){
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
               <div>
                 <div className="label" style={{marginBottom:6}}>Proveedor</div>
-                <select value={editOrden.proveedor} onChange={e=>setEditOrden(o=>({...o,proveedor:e.target.value}))} style={{width:"100%",background:"#1c1c1c",border:"1px solid #333",color:"#e8e0d0",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
+                <select value={editOrden.proveedor} onChange={e=>setEditOrden(o=>({...o,proveedor:e.target.value}))} style={{width:"100%",background:"#faf9f7",border:"1px solid #e0dbd4",color:"#222",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
                   {proveedores.map(p=><option key={p.id} value={p.nombre}>{p.nombre}</option>)}
                 </select>
               </div>
@@ -1992,10 +2002,10 @@ export default function App(){
             <div className="label" style={{marginBottom:8}}>Cantidades</div>
             <div style={{maxHeight:300,overflowY:"auto",marginBottom:16}}>
               {editOrden.items.map((item,idx)=>(
-                <div key={item.productoId} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #1a1a1a"}}>
+                <div key={item.productoId} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #f0ede8"}}>
                   <div style={{flex:1}}>
-                    <div style={{fontSize:12,color:"#ccc"}}>{item.nombre}</div>
-                    <div style={{fontSize:10,color:"#555"}}>{item.sku} · ${Number(item.costo).toFixed(2)}/ud</div>
+                    <div style={{fontSize:12,color:"#777"}}>{item.nombre}</div>
+                    <div style={{fontSize:10,color:"#777"}}>{item.sku} · ${Number(item.costo).toFixed(2)}/ud</div>
                   </div>
                   <input type="number" min={0} value={item.cantidad}
                     onChange={e=>setEditOrden(o=>({...o,items:o.items.map((it,ix)=>ix===idx?{...it,cantidad:parseInt(e.target.value)||0}:it)}))}
@@ -2003,8 +2013,8 @@ export default function App(){
                 </div>
               ))}
             </div>
-            <div style={{background:"#1a1a1a",borderRadius:6,padding:"10px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",fontSize:13}}>
-              <span style={{color:"#666"}}>Total estimado</span>
+            <div style={{background:"#f5f3ef",borderRadius:6,padding:"10px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",fontSize:13}}>
+              <span style={{color:"#777"}}>Total estimado</span>
               <span style={{color:"#E8681A",fontWeight:600}}>${editOrden.items.reduce((a,i)=>a+i.cantidad*Number(i.costo),0).toFixed(2)}</span>
             </div>
             <div style={{display:"flex",gap:10}}>
@@ -2029,7 +2039,7 @@ export default function App(){
           <div className="modal anim-in" style={{maxWidth:400,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
             <div style={{fontSize:32,marginBottom:12}}>⚠️</div>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:16,fontWeight:700,marginBottom:8}}>Cancelar Orden {showCancelarOrden.folio}</div>
-            <div style={{fontSize:13,color:"#666",marginBottom:16}}>Esta acción no se puede deshacer.</div>
+            <div style={{fontSize:13,color:"#777",marginBottom:16}}>Esta acción no se puede deshacer.</div>
             <div style={{textAlign:"left",marginBottom:16}}>
               <div className="label" style={{marginBottom:6}}>Motivo de cancelación</div>
               <input value={motivoCancelOrden} onChange={e=>setMotivoCancelOrden(e.target.value)} placeholder="Ej: Precio muy alto, cambio de proveedor..." style={{width:"100%"}}/>
@@ -2054,7 +2064,7 @@ export default function App(){
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
               <div>
                 <div className="label" style={{marginBottom:6}}>Proveedor</div>
-                <select value={editOrden.proveedor} onChange={e=>setEditOrden(o=>({...o,proveedor:e.target.value}))} style={{width:"100%",background:"#1c1c1c",border:"1px solid #333",color:"#e8e0d0",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
+                <select value={editOrden.proveedor} onChange={e=>setEditOrden(o=>({...o,proveedor:e.target.value}))} style={{width:"100%",background:"#faf9f7",border:"1px solid #e0dbd4",color:"#222",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
                   {proveedores.map(p=><option key={p.id} value={p.nombre}>{p.nombre}</option>)}
                 </select>
               </div>
@@ -2066,10 +2076,10 @@ export default function App(){
             <div className="label" style={{marginBottom:8}}>Cantidades</div>
             <div style={{maxHeight:300,overflowY:"auto",marginBottom:16}}>
               {editOrden.items.map((item,idx)=>(
-                <div key={item.productoId} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #1a1a1a"}}>
+                <div key={item.productoId} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #f0ede8"}}>
                   <div style={{flex:1}}>
-                    <div style={{fontSize:12,color:"#ccc"}}>{item.nombre}</div>
-                    <div style={{fontSize:10,color:"#555"}}>{item.sku} · ${Number(item.costo).toFixed(2)}/ud</div>
+                    <div style={{fontSize:12,color:"#777"}}>{item.nombre}</div>
+                    <div style={{fontSize:10,color:"#777"}}>{item.sku} · ${Number(item.costo).toFixed(2)}/ud</div>
                   </div>
                   <input type="number" min={0} value={item.cantidad}
                     onChange={e=>setEditOrden(o=>({...o,items:o.items.map((it,ix)=>ix===idx?{...it,cantidad:parseInt(e.target.value)||0}:it)}))}
@@ -2077,8 +2087,8 @@ export default function App(){
                 </div>
               ))}
             </div>
-            <div style={{background:"#1a1a1a",borderRadius:6,padding:"10px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",fontSize:13}}>
-              <span style={{color:"#666"}}>Total estimado</span>
+            <div style={{background:"#f5f3ef",borderRadius:6,padding:"10px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",fontSize:13}}>
+              <span style={{color:"#777"}}>Total estimado</span>
               <span style={{color:"#E8681A",fontWeight:600}}>${editOrden.items.reduce((a,i)=>a+i.cantidad*Number(i.costo),0).toFixed(2)}</span>
             </div>
             <div style={{display:"flex",gap:10}}>
@@ -2103,7 +2113,7 @@ export default function App(){
           <div className="modal anim-in" style={{maxWidth:400,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
             <div style={{fontSize:32,marginBottom:12}}>⚠️</div>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:16,fontWeight:700,marginBottom:8}}>Cancelar Orden {showCancelarOrden.folio}</div>
-            <div style={{fontSize:13,color:"#666",marginBottom:16}}>Esta accion no se puede deshacer.</div>
+            <div style={{fontSize:13,color:"#777",marginBottom:16}}>Esta accion no se puede deshacer.</div>
             <div style={{textAlign:"left",marginBottom:16}}>
               <div className="label" style={{marginBottom:6}}>Motivo de cancelacion</div>
               <input value={motivoCancelOrden} onChange={e=>setMotivoCancelOrden(e.target.value)} placeholder="Ej: Precio muy alto, cambio de proveedor..." style={{width:"100%"}}/>
@@ -2124,13 +2134,13 @@ export default function App(){
         <div className="overlay" onClick={()=>setShowAnticipo(false)}>
           <div className="modal anim-in" style={{maxWidth:420}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:4}}>📋 Pedido con Anticipo</div>
-            <div style={{fontSize:12,color:"#555",marginBottom:18}}>Total del pedido: <strong style={{color:"#E8681A"}}>{fmt(cartTotal)}</strong></div>
+            <div style={{fontSize:12,color:"#777",marginBottom:18}}>Total del pedido: <strong style={{color:"#E8681A"}}>{fmt(cartTotal)}</strong></div>
             <div style={{marginBottom:14}}>
               <div className="label" style={{marginBottom:6}}>Porcentaje de anticipo</div>
               <div style={{display:"flex",gap:8,marginBottom:8}}>
                 {[25,30,50,60,70].map(p=>(
                   <button key={p} className="btn" onClick={()=>{setAnticipoPct(p);setAnticipoPmonto("");}}
-                    style={{background:anticipoPct===p?"#E8681A":"#1c1c1c",color:anticipoPct===p?"#fff":"#888",border:"1px solid #333",padding:"5px 10px",fontSize:12}}>
+                    style={{background:anticipoPct===p?"#E8681A":"#fff",color:anticipoPct===p?"#fff":"#888",border:"1px solid #e0dbd4",padding:"5px 10px",fontSize:12}}>
                     {p}%
                   </button>
                 ))}
@@ -2140,15 +2150,15 @@ export default function App(){
                 <input type="number" value={anticipoMonto} onChange={e=>{setAnticipoPmonto(e.target.value);setAnticipoPct(0);}} placeholder={fmt(cartTotal*0.5)} style={{width:"100%"}}/>
               </div>
             </div>
-            <div style={{background:"#1a1a1a",borderRadius:7,padding:"12px 16px",marginBottom:14}}>
+            <div style={{background:"#f5f3ef",borderRadius:7,padding:"12px 16px",marginBottom:14}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:13}}>
-                <span style={{color:"#666"}}>Total pedido</span><span>{fmt(cartTotal)}</span>
+                <span style={{color:"#777"}}>Total pedido</span><span>{fmt(cartTotal)}</span>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:13,color:"#E8681A"}}>
                 <span style={{fontWeight:600}}>Anticipo a cobrar</span>
                 <span style={{fontWeight:700}}>{fmt(anticipoMonto?parseFloat(anticipoMonto)||0:cartTotal*(anticipoPct/100))}</span>
               </div>
-              <div style={{display:"flex",justifyContent:"space-between",fontSize:14,borderTop:"1px dashed #333",paddingTop:8,marginTop:4}}>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:14,borderTop:"1px dashed #e0dbd4",paddingTop:8,marginTop:4}}>
                 <span style={{fontWeight:600}}>Saldo pendiente</span>
                 <span style={{fontFamily:"'Syne',sans-serif",fontWeight:700,color:"#E8681A"}}>
                   {fmt(cartTotal-(anticipoMonto?parseFloat(anticipoMonto)||0:cartTotal*(anticipoPct/100)))}
@@ -2175,10 +2185,10 @@ export default function App(){
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:18}}>👥 Usuarios del Sistema</div>
             <div style={{marginBottom:18}}>
               {dbUsers.map(u=>(
-                <div key={u.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid #1a1a1a"}}>
+                <div key={u.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid #f0ede8"}}>
                   <div>
                     <div style={{fontSize:14,marginBottom:2}}>{u.nombre}</div>
-                    <div style={{fontSize:11,color:"#555"}}>@{u.usuario}</div>
+                    <div style={{fontSize:11,color:"#777"}}>@{u.usuario}</div>
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
                     <span className={"tag "+(u.rol==="admin"?"tag-blue":"tag-ok")}>{ROLES[u.rol]}</span>
@@ -2189,7 +2199,7 @@ export default function App(){
                 </div>
               ))}
             </div>
-            <div style={{background:"#1a1a1a",borderRadius:8,padding:16}}>
+            <div style={{background:"#f5f3ef",borderRadius:8,padding:16}}>
               <div style={{fontSize:12,color:"#E8681A",letterSpacing:1,textTransform:"uppercase",marginBottom:12}}>
                 {newUser.editMode?"✏ Editar Usuario":"+ Nuevo Usuario"}
               </div>
@@ -2208,7 +2218,7 @@ export default function App(){
                 </div>
                 <div>
                   <div className="label" style={{marginBottom:5}}>Rol</div>
-                  <select value={newUser.rol} onChange={e=>setNewUser(u=>({...u,rol:e.target.value}))} style={{width:"100%",background:"#1c1c1c",border:"1px solid #333",color:"#e8e0d0",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
+                  <select value={newUser.rol} onChange={e=>setNewUser(u=>({...u,rol:e.target.value}))} style={{width:"100%",background:"#faf9f7",border:"1px solid #e0dbd4",color:"#222",padding:"8px 12px",borderRadius:6,fontFamily:"inherit",fontSize:13}}>
                     <option value="cajero">Cajero</option>
                     <option value="admin">Administrador</option>
                   </select>
