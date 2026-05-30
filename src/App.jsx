@@ -51,10 +51,10 @@ const sb = {
 
 // ─── CONSTANTES ──────────────────────────────────────────────────────────────
 const CANALES = [
-  { id:"tienda", label:"Tienda",        emoji:"🏪", color:"#E8681A", bg:"#2a1408" },
-  { id:"tiktok", label:"TikTok",        emoji:"🎵", color:"#69C9D0", bg:"#0d2325" },
-  { id:"meli",   label:"Mercado Libre", emoji:"🛍️", color:"#FFE600", bg:"#252200" },
-  { id:"amazon", label:"Amazon",        emoji:"📦", color:"#FF9900", bg:"#251800" },
+  { id:"tienda", label:"Tienda",        emoji:"🏪", color:"#E8681A", bg:"#fff8f4" },
+  { id:"tiktok", label:"TikTok",        emoji:"🎵", color:"#0095A8", bg:"#e8f7f9" },
+  { id:"meli",   label:"Mercado Libre", emoji:"🛍️", color:"#c47c0a", bg:"#fff8ec" },
+  { id:"amazon", label:"Amazon",        emoji:"📦", color:"#c45c00", bg:"#fff3e8" },
 ];
 const CANAL_MAP = Object.fromEntries(CANALES.map(c=>[c.id,c]));
 
@@ -505,6 +505,11 @@ textarea{resize:vertical}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;backdrop-filter:blur(2px)}
 .modal{background:#fff;border:1.5px solid #ede8e0;border-radius:18px;padding:28px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.15)}
 .anim-in{animation:fadeIn .18s ease}
+.canal-btn{font-family:'Inter',system-ui,sans-serif;cursor:pointer;border:1.5px solid #e5e0d8;border-radius:99px;padding:5px 14px;font-size:12px;font-weight:600;transition:all .15s;white-space:nowrap}
+.canal-btn:hover{border-color:#E8681A;color:#E8681A}
+.filter-btn{font-family:'Inter',system-ui,sans-serif;cursor:pointer;border:1.5px solid #e5e0d8;border-radius:99px;padding:5px 14px;font-size:12px;font-weight:600;transition:all .15s;background:#fff;color:#888}
+.filter-btn:hover{border-color:#E8681A;color:#E8681A}
+.filter-btn.active{background:#E8681A;color:#fff;border-color:#E8681A}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;padding:11px 14px;color:#b0a898;font-weight:600;font-size:11px;letter-spacing:0.8px;text-transform:uppercase;background:#faf8f5;border-bottom:1.5px solid #ede8e0}
@@ -513,7 +518,7 @@ tr:last-child td{border-bottom:none}
 tr:hover td{background:#fdfcfa}
 `}</style>
         <div style={{background:"#fff",border:"1px solid #e8e4df",borderRadius:14,padding:40,width:340,textAlign:"center"}}>
-          <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:220,height:"auto",marginBottom:8}}/>
+          <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:220,height:"auto",marginBottom:8,filter:"invert(1)"}}/>
           <div style={{fontSize:11,color:"#777",letterSpacing:3,marginBottom:4}}>PUNTO DE VENTA</div>
           <div style={{fontSize:11,color:"#888",marginBottom:2}}>{EMPRESA.direccion}</div>
           <div style={{fontSize:11,color:"#888",marginBottom:2}}>{EMPRESA.colonia}, {EMPRESA.ciudad}</div>
@@ -539,7 +544,7 @@ tr:hover td{background:#fdfcfa}
   if(!dataLoaded) return(
     <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f5f5f0",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",color:"#E8681A"}}>
       <div style={{textAlign:"center"}}>
-        <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:180,marginBottom:20}}/>
+        <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:180,marginBottom:20,filter:"invert(1)"}}/>
         <div style={{fontSize:14,letterSpacing:2,marginBottom:16}}>Cargando sistema...</div>
         <button onClick={loadData} style={{background:"#E8681A",color:"#fff",border:"none",borderRadius:6,padding:"10px 20px",fontFamily:"inherit",cursor:"pointer",fontSize:13}}>
           Reintentar conexion
@@ -1232,22 +1237,22 @@ tr:hover td{background:#fdfcfa}
               <div>
                 <div className="label">Canal</div>
                 <div style={{display:"flex",gap:5}}>
-                  <button className="canal-btn" onClick={()=>setFiltroCanal("todos")} style={{background:filtroCanal==="todos"?"#e8e4df":"#fff",color:filtroCanal==="todos"?"#222":"#555",borderColor:filtroCanal==="todos"?"#666":"#e8e4df"}}>Todos</button>
-                  {CANALES.map(c=><button key={c.id} className="canal-btn" onClick={()=>setFiltroCanal(c.id)} style={{background:filtroCanal===c.id?c.bg:"#fff",color:filtroCanal===c.id?c.color:"#777",borderColor:filtroCanal===c.id?c.color:"#e8e4df"}}>{c.emoji} {c.label}</button>)}
+                  <button className="canal-btn" onClick={()=>setFiltroCanal("todos")} style={{background:filtroCanal==="todos"?"#E8681A":"#fff",color:filtroCanal==="todos"?"#fff":"#888",borderColor:filtroCanal==="todos"?"#E8681A":"#e5e0d8"}}>Todos</button>
+                  {CANALES.map(c=><button key={c.id} className="canal-btn" onClick={()=>setFiltroCanal(c.id)} style={{background:filtroCanal===c.id?c.bg:"#fff",color:filtroCanal===c.id?c.color:"#888",borderColor:filtroCanal===c.id?c.color:"#e5e0d8"}}>{c.emoji} {c.label}</button>)}
                 </div>
               </div>
               <div>
                 <div className="label">Pago</div>
                 <div style={{display:"flex",gap:5}}>
-                  <button className="canal-btn" onClick={()=>setFiltroPago("todos")} style={{background:filtroPago==="todos"?"#e8e4df":"#fff",color:filtroPago==="todos"?"#222":"#555",borderColor:filtroPago==="todos"?"#666":"#e8e4df"}}>Todos</button>
-                  {METODOS_PAGO.map(p=><button key={p.id} className="canal-btn" onClick={()=>setFiltroPago(p.id)} style={{background:filtroPago===p.id?"#1a2e1a":"#fff",color:filtroPago===p.id?"#6fcf97":"#555",borderColor:filtroPago===p.id?"#2a5a2a":"#e8e4df"}}>{p.emoji} {p.label}</button>)}
+                  <button className="canal-btn" onClick={()=>setFiltroPago("todos")} style={{background:filtroPago==="todos"?"#E8681A":"#fff",color:filtroPago==="todos"?"#fff":"#888",borderColor:filtroPago==="todos"?"#E8681A":"#e5e0d8"}}>Todos</button>
+                  {METODOS_PAGO.map(p=><button key={p.id} className="canal-btn" onClick={()=>setFiltroPago(p.id)} style={{background:filtroPago===p.id?"#E8681A":"#fff",color:filtroPago===p.id?"#fff":"#888",borderColor:filtroPago===p.id?"#E8681A":"#e5e0d8"}}>{p.emoji} {p.label}</button>)}
                 </div>
               </div>
               <div>
                 <div className="label">Estado</div>
                 <div style={{display:"flex",gap:5}}>
                   {[["todos","Todos"],["activa","Activas"],["cancelada","Canceladas"],["devolucion","Devoluciones"]].map(([v,l])=>(
-                    <button key={v} className="canal-btn" onClick={()=>setFiltroEstado(v)} style={{background:filtroEstado===v?"#e8e4df":"#fff",color:filtroEstado===v?"#222":"#555",borderColor:filtroEstado===v?"#666":"#e8e4df"}}>{l}</button>
+                    <button key={v} className="canal-btn" onClick={()=>setFiltroEstado(v)} style={{background:filtroEstado===v?"#E8681A":"#fff",color:filtroEstado===v?"#fff":"#888",borderColor:filtroEstado===v?"#666":"#e8e4df"}}>{l}</button>
                   ))}
                 </div>
               </div>
