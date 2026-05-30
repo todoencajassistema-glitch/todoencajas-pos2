@@ -548,7 +548,7 @@ export default function App(){
     if(qty<=0){setCart(c=>c.filter(i=>i.productoId!==id));return;}
     setCart(c=>c.map(i=>i.productoId===id?{...i,cantidad:qty}:i));
   };
-  const updateDesc = (id,desc) => setCart(c=>c.map(i=>i.productoId===id?{...i,descuento:Math.min(100,Math.max(0,desc))}:i));
+  const updateDesc = (id,desc) => setCart(c=>c.map(i=>i.productoId===id?{...i,descuento:Math.round(Math.min(100,Math.max(0,desc))*100)/100}:i));
 
   const cartSubtotal  = cart.reduce((a,i)=>a+i.cantidad*i.precioUnitario,0);
   const cartDescuento = cart.reduce((a,i)=>a+i.cantidad*i.precioUnitario*(i.descuento/100),0)+cartSubtotal*(descGlobal/100);
@@ -579,14 +579,14 @@ export default function App(){
         await sb.post("venta_items", cart.map(i=>({
           venta_id:venta.id, producto_id:i.productoId,
           nombre:i.nombre, sku:i.sku, cantidad:i.cantidad,
-          precio_unitario:i.precioUnitario, descuento:Math.round((i.descuento||0)*10000)/10000,
+          precio_unitario:i.precioUnitario, descuento:Math.round((i.descuento||0)*100)/100,
         })));
         await Promise.all(cart.map(i=>{
           const prod=products.find(p=>p.id===i.productoId);
           return sb.patch("productos",i.productoId,{stock:prod.stock-i.cantidad});
         }));
         await loadData();
-        const itemsForReceipt=cart.map(i=>({nombre:i.nombre,sku:i.sku,cantidad:i.cantidad,precio_unitario:i.precioUnitario,descuento:i.descuento}));
+        const itemsForReceipt=cart.map(i=>({nombre:i.nombre,sku:i.sku,cantidad:i.cantidad,precio_unitario:i.precioUnitario,descuento:Math.round((i.descuento||0)*100)/100}));
         setShowReceipt(venta); setReceiptItems(itemsForReceipt);
         setCart([]); setClienteId(""); setClienteNombre(""); setCanal("tienda");
         setMetodoPago("efectivo"); setEfectivoRecibido(""); setDescGlobal(0);
@@ -621,7 +621,7 @@ export default function App(){
         await sb.post("venta_items", cart.map(i=>({
           venta_id:pedido.id, producto_id:i.productoId,
           nombre:i.nombre, sku:i.sku, cantidad:i.cantidad,
-          precio_unitario:i.precioUnitario, descuento:Math.round((i.descuento||0)*10000)/10000,
+          precio_unitario:i.precioUnitario, descuento:Math.round((i.descuento||0)*100)/100,
         })));
         await loadData();
         // Print anticipo ticket
