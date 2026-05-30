@@ -991,16 +991,24 @@ export default function App(){
                               <button className="btn btn-dark" style={{padding:"2px 9px",fontSize:15}} onClick={()=>updateQty(item.productoId,item.cantidad+1)}>+</button>
                             </div>
                             <div style={{display:"flex",flexDirection:"column",gap:3,alignItems:"flex-end"}}>
+                              <div style={{fontSize:9,color:"#555",textAlign:"right"}}>Desc. por pieza</div>
                               <div style={{display:"flex",alignItems:"center",gap:4}}>
-                                <span style={{fontSize:9,color:"#555"}}>%</span>
-                                <input type="number" value={item.descuento} onChange={e=>{const pct=Math.min(100,Math.max(0,parseInt(e.target.value)||0));updateDesc(item.productoId,pct);}} min={0} max={100} style={{width:42,padding:"2px 5px",fontSize:11,textAlign:"center"}}/>
+                                <span style={{fontSize:11,color:"#555"}}>$</span>
+                                <input type="number"
+                                  value={(item.precioUnitario*(item.descuento||0)/100).toFixed(2)}
+                                  onChange={e=>{
+                                    const descPesos=Math.max(0,parseFloat(e.target.value)||0);
+                                    const pct=item.precioUnitario>0?Math.min(100,(descPesos/item.precioUnitario)*100):0;
+                                    updateDesc(item.productoId,pct);
+                                  }}
+                                  min={0} max={item.precioUnitario} step={0.5}
+                                  style={{width:58,padding:"3px 6px",fontSize:12,textAlign:"center"}}/>
                               </div>
-                              <div style={{display:"flex",alignItems:"center",gap:4}}>
-                                <span style={{fontSize:9,color:"#555"}}>$</span>
-                                <input type="number" value={item.descuento>0?(item.precioUnitario*(1-item.descuento/100)).toFixed(2):item.precioUnitario} onChange={e=>{const precio=parseFloat(e.target.value)||0;const pct=item.precioUnitario>0?Math.max(0,Math.round((1-precio/item.precioUnitario)*100)):0;updateDesc(item.productoId,pct);}} min={0} step={0.5} style={{width:58,padding:"2px 5px",fontSize:11,textAlign:"center"}}/>
+                              <div style={{fontSize:9,color:"#555"}}>
+                                Precio: {fmt(item.precioUnitario*(1-(item.descuento||0)/100))}/pza
                               </div>
                             </div>
-                            <div style={{color:"#E8681A",fontWeight:600,fontSize:13}}>{fmt(item.cantidad*item.precioUnitario*(1-item.descuento/100))}</div>
+                            <div style={{color:"#E8681A",fontWeight:600,fontSize:13}}>{fmt(item.cantidad*item.precioUnitario*(1-(item.descuento||0)/100))}</div>
                           </div>
                         </div>
                       ))}
@@ -1278,9 +1286,9 @@ export default function App(){
                     return '<tr style="background:'+bg+'">'+
                       '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt;font-weight:600;color:#E8681A">'+s.folio+'</td>'+
                       '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt">'+s.cliente+'</td>'+
-                      '<td style="padding:7px 10px;border:1px solid #ddd;font-size:9pt;color:#555">'+itemsVenta+'</td>'+
                       '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt">'+c.emoji+' '+c.label+'</td>'+
                       '<td style="padding:7px 10px;border:1px solid #ddd;font-size:10pt">'+pg.emoji+' '+pg.label+'</td>'+
+                      '<td style="padding:7px 10px;border:1px solid #ddd;font-size:9pt;color:#555">'+itemsVenta+'</td>'+
                       '<td style="padding:7px 10px;border:1px solid #ddd;text-align:right;font-size:10pt;font-weight:600;color:'+(s.cancelada?'#aaa':s.devolucion?'#E8681A':'#111')+'">'+
                       (s.cancelada?'CANCELADA':s.devolucion?'DEVOLUCION':('$'+Number(s.total).toFixed(2)))+'</td>'+
                     '</tr>';
