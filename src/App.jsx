@@ -346,6 +346,11 @@ export default function App(){
   const [dbUsers,setDbUsers]         = useState([]);
   const [dataLoaded,setDataLoaded]   = useState(false);
 
+  const [windowW,setWindowW] = React.useState(window.innerWidth);
+  React.useEffect(()=>{const h=()=>setWindowW(window.innerWidth);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h);},[]);
+  const isMobile = windowW < 768;
+  const isTablet = windowW < 1024;
+
   const [tab,setTab]                 = useState("dashboard");
   const [notification,setNotif]      = useState(null);
   const [showReceipt,setShowReceipt] = useState(null);
@@ -518,7 +523,7 @@ tr:last-child td{border-bottom:none}
 tr:hover td{background:#fdfcfa}
 `}</style>
         <div style={{background:"#fff",border:"1px solid #e8e4df",borderRadius:14,padding:40,width:340,textAlign:"center"}}>
-          <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:220,height:"auto",marginBottom:8,filter:"invert(1)"}}/>
+          <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:220,height:"auto",marginBottom:8}}/>
           <div style={{fontSize:11,color:"#777",letterSpacing:3,marginBottom:4}}>PUNTO DE VENTA</div>
           <div style={{fontSize:11,color:"#888",marginBottom:2}}>{EMPRESA.direccion}</div>
           <div style={{fontSize:11,color:"#888",marginBottom:2}}>{EMPRESA.colonia}, {EMPRESA.ciudad}</div>
@@ -544,7 +549,7 @@ tr:hover td{background:#fdfcfa}
   if(!dataLoaded) return(
     <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f5f5f0",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",color:"#E8681A"}}>
       <div style={{textAlign:"center"}}>
-        <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:180,marginBottom:20,filter:"invert(1)"}}/>
+        <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:180,marginBottom:20}}/>
         <div style={{fontSize:14,letterSpacing:2,marginBottom:16}}>Cargando sistema...</div>
         <button onClick={loadData} style={{background:"#E8681A",color:"#fff",border:"none",borderRadius:6,padding:"10px 20px",fontFamily:"inherit",cursor:"pointer",fontSize:13}}>
           Reintentar conexion
@@ -890,7 +895,7 @@ tr:hover td{background:#fdfcfa}
         {tab==="dashboard"&&(
           <div className="anim-in">
             <div className="section-title">Panel Principal</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:16}}>
+            <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(2,1fr)":"repeat(4,1fr)",gap:12,marginBottom:16}}>
               {[
                 {label:"Ventas Hoy",  value:fmt(totalIn(sDay)),  sub:`${salesIn(sDay).length} transacciones`},
                 {label:"Esta Semana", value:fmt(totalIn(sWeek)), sub:`${salesIn(sWeek).length} transacciones`},
@@ -939,7 +944,7 @@ tr:hover td{background:#fdfcfa}
             </div>
             <div className="card" style={{marginBottom:12}}>
               <div style={{fontSize:10,color:"#777",letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Ventas por canal — este mes</div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+              <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(2,1fr)":"repeat(4,1fr)",gap:10}}>
                 {canalStats.map(c=>(
                   <div key={c.id} style={{background:c.bg,border:"1px solid "+c.color+"22",borderRadius:8,padding:"14px 16px"}}>
                     <div style={{fontSize:18,marginBottom:5}}>{c.emoji}</div>
@@ -970,7 +975,7 @@ tr:hover td{background:#fdfcfa}
 
         {/* ══ NUEVA VENTA ══ */}
         {tab==="ventas"&&(
-          <div className="anim-in" style={{display:"grid",gridTemplateColumns:"1fr 380px",gap:18,alignItems:"start"}}>
+          <div className="anim-in" style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 380px",gap:12,alignItems:"start"}}>
             <div>
               <div className="section-title">Nueva Venta</div>
               <div className="card" style={{marginBottom:12}}>
@@ -1458,7 +1463,7 @@ tr:hover td{background:#fdfcfa}
             </div>
             <div className="card" style={{marginBottom:12}}>
               <div className="label" style={{marginBottom:14}}>Por Canal</div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+              <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(2,1fr)":"repeat(4,1fr)",gap:10}}>
                 {CANALES.map(c=>{
                   const t=corteByCanal[c.id]||0; const cnt=corteSales.filter(s=>s.canal===c.id).length;
                   return(
@@ -1714,7 +1719,7 @@ tr:hover td{background:#fdfcfa}
               const ch=sales.filter(s=>s.cliente_id===clienteDetalle.id&&!s.cancelada&&!s.devolucion);
               const ct=ch.reduce((a,s)=>a+Number(s.total),0);
               return(<>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}}>
+                <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(2,1fr)":"repeat(3,1fr)",gap:10,marginBottom:16}}>
                   {[["Total compras",fmt(ct)],["Visitas",ch.length],["Ticket prom.",ch.length?fmt(ct/ch.length):fmt(0)]].map(([l,v])=>(
                     <div key={l} style={{background:"#faf8f5",borderRadius:6,padding:"10px 12px",textAlign:"center"}}>
                       <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,color:"#E8681A",fontSize:16}}>{v}</div>
