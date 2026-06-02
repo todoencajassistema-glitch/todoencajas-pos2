@@ -346,8 +346,8 @@ export default function App(){
   const [dbUsers,setDbUsers]         = useState([]);
   const [dataLoaded,setDataLoaded]   = useState(false);
 
-  const [windowW,setWindowW] = React.useState(window.innerWidth);
-  React.useEffect(()=>{const h=()=>setWindowW(window.innerWidth);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h);},[]);
+  const [windowW,setWindowW] = useState(window.innerWidth);
+  useEffect(()=>{const h=()=>setWindowW(window.innerWidth);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h);},[]);
   const isMobile = windowW < 768;
   const isTablet = windowW < 1024;
 
