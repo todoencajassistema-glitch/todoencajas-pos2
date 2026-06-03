@@ -521,6 +521,13 @@ th{text-align:left;padding:11px 14px;color:#b0a898;font-weight:600;font-size:11p
 td{padding:11px 14px;border-bottom:1px solid #f5f2ee;color:#333;vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fdfcfa}
+nav::-webkit-scrollbar{display:none}
+@media(max-width:768px){
+  nav{-webkit-overflow-scrolling:touch}
+  .modal{padding:18px!important;margin:10px!important}
+  table{min-width:500px}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
 `}</style>
         <div style={{background:"#fff",border:"1px solid #e8e4df",borderRadius:14,padding:40,width:340,textAlign:"center"}}>
           <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:220,height:"auto",marginBottom:8}}/>
@@ -873,10 +880,10 @@ tr:hover td{background:#fdfcfa}
             <div style={{fontSize:9,color:"#333",marginTop:1}}><span className="sync-dot"/>EN LINEA</div>
           </div>
         </div>
-        <nav style={{display:"flex",gap:2}}>
+        <nav style={{display:"flex",gap:2,overflowX:"auto",overflowY:"hidden",WebkitOverflowScrolling:"touch",msOverflowStyle:"none",scrollbarWidth:"none",flexShrink:0}}>
           {tabs.map(t=>(
             <button key={t.id} className="btn" onClick={()=>setTab(t.id)}
-              style={{background:tab===t.id?"#E8681A":"transparent",color:tab===t.id?"#fff":"#666",fontWeight:tab===t.id?600:400,fontSize:12,padding:"6px 12px"}}>
+              style={{flexShrink:0,whiteSpace:"nowrap",background:tab===t.id?"#E8681A":"transparent",color:tab===t.id?"#fff":"#666",fontWeight:tab===t.id?600:400,fontSize:12,padding:"6px 12px"}}>
               {t.icon} {t.label}
             </button>
           ))}
