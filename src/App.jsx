@@ -844,8 +844,8 @@ nav::-webkit-scrollbar{display:none}
     {id:"historial",icon:"📋",label:"Historial"},
     {id:"corte",icon:"💰",label:"Corte"},
     {id:"entradas",icon:"🚛",label:"Entradas"},
-  ];
     {id:"auditoria",icon:"🔍",label:"Auditoría"},
+  ];
 
   // ═══ RENDER ════════════════════════════════════════════════════════════════
   return(
