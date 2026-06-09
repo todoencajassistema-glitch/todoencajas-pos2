@@ -1717,7 +1717,7 @@ nav::-webkit-scrollbar{display:none}
                             await sb.delete("movimientos_inventario",m.id);
                             setMovimientos(prev=>prev.filter(x=>x.id!==m.id));
                             notify("Movimiento eliminado");
-                          }})}}>🗑</button>
+                          }})}>🗑</button>
                       </td>}
                     </tr>
                   ))}
