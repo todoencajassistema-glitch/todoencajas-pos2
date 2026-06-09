@@ -352,6 +352,9 @@ export default function App(){
   const isTablet = windowW < 1024;
 
   const [tab,setTab]                 = useState("dashboard");
+  const [movimientos,setMovimientos] = useState([]);
+  const [movFiltroSku,setMovFiltroSku] = useState("");
+  const [movFiltroTipo,setMovFiltroTipo] = useState("todos");
   const [notification,setNotif]      = useState(null);
   const [showReceipt,setShowReceipt] = useState(null);
   const [receiptItems,setReceiptItems] = useState([]);
@@ -646,6 +649,15 @@ nav::-webkit-scrollbar{display:none}
           const prod=products.find(p=>p.id===i.productoId);
           return sb.patch("productos",i.productoId,{stock:prod.stock-i.cantidad});
         }));
+        // Register inventory movements
+        try {
+          await sb.post("movimientos_inventario", cart.map(i=>({
+            producto_id:i.productoId, sku:i.sku, nombre:i.nombre,
+            tipo:"venta", cantidad:-i.cantidad,
+            referencia:venta.folio, usuario:currentUser.nombre,
+            nota:"Venta "+venta.folio
+          })));
+        } catch(e){}
         await loadData();
         const itemsForReceipt=cart.map(i=>({nombre:i.nombre,sku:i.sku,cantidad:i.cantidad,precio_unitario:i.precioUnitario,descuento:Math.round((i.descuento||0)*100)/100}));
         setShowReceipt(venta); setReceiptItems(itemsForReceipt);
@@ -833,6 +845,7 @@ nav::-webkit-scrollbar{display:none}
     {id:"corte",icon:"💰",label:"Corte"},
     {id:"entradas",icon:"🚛",label:"Entradas"},
   ];
+    {id:"auditoria",icon:"🔍",label:"Auditoría"},
 
   // ═══ RENDER ════════════════════════════════════════════════════════════════
   return(
@@ -1614,7 +1627,158 @@ nav::-webkit-scrollbar{display:none}
       )}
 
       {/* ══ MODALES ══ */}
-      {showReceipt&&<PrintReceipt sale={showReceipt} items={receiptItems} onClose={()=>{setShowReceipt(null);setReceiptItems([]);}}/>}
+
+        {/* ══ AUDITORÍA ══ */}
+        {tab==="auditoria"&&(
+          <div className="card">
+            <div className="section-title">🔍 Auditoría de Inventario</div>
+
+            {/* Filters */}
+            <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap",alignItems:"flex-end"}}>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Buscar producto (SKU o nombre)</div>
+                <input value={movFiltroSku} onChange={e=>setMovFiltroSku(e.target.value)}
+                  placeholder="Ej: Box Lunch, CC-001..." style={{width:220}}/>
+              </div>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Tipo de movimiento</div>
+                <select value={movFiltroTipo} onChange={e=>setMovFiltroTipo(e.target.value)} style={{width:160}}>
+                  <option value="todos">Todos</option>
+                  <option value="venta">Ventas</option>
+                  <option value="entrada">Entradas</option>
+                  <option value="ajuste">Ajustes</option>
+                  <option value="devolucion">Devoluciones</option>
+                </select>
+              </div>
+              <button className="btn btn-gold" onClick={async()=>{
+                let params = "order=created_at.desc&limit=200";
+                if(movFiltroSku) params += "&or=(sku.ilike.*"+movFiltroSku+"*,nombre.ilike.*"+movFiltroSku+"*)";
+                if(movFiltroTipo!=="todos") params += "&tipo=eq."+movFiltroTipo;
+                const data = await sb.get("movimientos_inventario", params);
+                setMovimientos(Array.isArray(data)?data:[]);
+              }}>Buscar</button>
+              <button className="btn btn-dark" onClick={async()=>{
+                const data = await sb.get("movimientos_inventario","order=created_at.desc&limit=200");
+                setMovimientos(Array.isArray(data)?data:[]);
+              }}>Ver todos</button>
+            </div>
+
+            {/* Resumen por producto */}
+            {movFiltroSku&&movimientos.length>0&&(()=>{
+              const byProd = {};
+              movimientos.forEach(m=>{
+                const key = m.sku||m.nombre;
+                if(!byProd[key]) byProd[key]={nombre:m.nombre,sku:m.sku,entradas:0,ventas:0,ajustes:0,devs:0};
+                if(m.tipo==="entrada") byProd[key].entradas+=m.cantidad;
+                if(m.tipo==="venta") byProd[key].ventas+=Math.abs(m.cantidad);
+                if(m.tipo==="ajuste") byProd[key].ajustes+=m.cantidad;
+                if(m.tipo==="devolucion") byProd[key].devs+=m.cantidad;
+              });
+              return Object.values(byProd).map((p,i)=>(
+                <div key={i} style={{background:"#faf8f5",border:"1.5px solid #ede8e0",borderRadius:10,padding:"14px 18px",marginBottom:12,display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:12,textAlign:"center"}}>
+                  <div><div className="label">Producto</div><div style={{fontWeight:600,fontSize:13}}>{p.nombre}</div><div style={{fontSize:10,color:"#b0a898"}}>{p.sku}</div></div>
+                  <div><div className="label">Entradas</div><div style={{fontWeight:700,fontSize:18,color:"#1a7a3a"}}>+{p.entradas}</div></div>
+                  <div><div className="label">Ventas</div><div style={{fontWeight:700,fontSize:18,color:"#c0392b"}}>-{p.ventas}</div></div>
+                  <div><div className="label">Ajustes</div><div style={{fontWeight:700,fontSize:18,color:"#c47c0a"}}>{p.ajustes>=0?"+":""}{p.ajustes}</div></div>
+                  <div><div className="label">Balance</div><div style={{fontWeight:700,fontSize:18,color:"#E8681A"}}>{p.entradas-p.ventas+p.ajustes+p.devs}</div></div>
+                </div>
+              ));
+            })()}
+
+            {/* Movements table */}
+            <div style={{overflowX:"auto",borderRadius:10,border:"1.5px solid #ede8e0"}}>
+              <table>
+                <thead><tr>
+                  <th>Fecha</th><th>Tipo</th><th>SKU</th><th>Producto</th>
+                  <th>Cantidad</th><th>Referencia</th><th>Usuario</th><th>Nota</th>
+                  {isAdmin&&<th>Acción</th>}
+                </tr></thead>
+                <tbody>
+                  {movimientos.length===0&&<tr><td colSpan={9} style={{textAlign:"center",color:"#b0a898",padding:24}}>
+                    Busca un producto o da clic en "Ver todos" para cargar movimientos
+                  </td></tr>}
+                  {movimientos.map((m,i)=>(
+                    <tr key={i}>
+                      <td style={{fontSize:11,color:"#888"}}>{fmtDate(m.created_at)}</td>
+                      <td><span className={`tag ${m.tipo==="entrada"?"tag-ok":m.tipo==="venta"?"tag-danger":m.tipo==="devolucion"?"tag-blue":"tag-warn"}`}>
+                        {m.tipo==="entrada"?"📥 Entrada":m.tipo==="venta"?"📤 Venta":m.tipo==="devolucion"?"↩ Devolución":"⚙️ Ajuste"}
+                      </span></td>
+                      <td style={{fontSize:12,color:"#b0a898"}}>{m.sku}</td>
+                      <td style={{fontWeight:500}}>{m.nombre}</td>
+                      <td style={{fontWeight:700,color:m.cantidad>0?"#1a7a3a":"#c0392b",textAlign:"center"}}>
+                        {m.cantidad>0?"+":""}{m.cantidad}
+                      </td>
+                      <td style={{fontSize:12,color:"#E8681A"}}>{m.referencia||"—"}</td>
+                      <td style={{fontSize:12}}>{m.usuario||"—"}</td>
+                      <td style={{fontSize:12,color:"#888"}}>{m.nota||"—"}</td>
+                      {isAdmin&&<td>
+                        <button className="btn btn-red" style={{fontSize:10,padding:"3px 8px"}}
+                          onClick={()=>setConfirm({msg:"Eliminar este movimiento?",onYes:async()=>{
+                            await sb.delete("movimientos_inventario",m.id);
+                            setMovimientos(prev=>prev.filter(x=>x.id!==m.id));
+                            notify("Movimiento eliminado");
+                          }})}}>🗑</button>
+                      </td>}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Manual adjustment */}
+            {isAdmin&&(
+              <div style={{marginTop:20,background:"#faf8f5",border:"1.5px solid #ede8e0",borderRadius:10,padding:16}}>
+                <div style={{fontWeight:600,marginBottom:12,color:"#1a1a1a"}}>⚙️ Registrar ajuste manual</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 80px 1fr",gap:10,marginBottom:10}}>
+                  <div>
+                    <div className="label" style={{marginBottom:5}}>Producto</div>
+                    <select id="adj-prod" style={{width:"100%"}}>
+                      {products.map(p=><option key={p.id} value={p.id+"|"+p.sku+"|"+p.nombre}>{p.nombre} ({p.sku})</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <div className="label" style={{marginBottom:5}}>Motivo</div>
+                    <select id="adj-tipo" style={{width:"100%"}}>
+                      <option value="ajuste">Ajuste físico</option>
+                      <option value="merma">Merma / Daño</option>
+                      <option value="devolucion">Devolución de cliente</option>
+                      <option value="regalo">Muestra / Regalo</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div className="label" style={{marginBottom:5}}>Cantidad</div>
+                    <input id="adj-qty" type="number" defaultValue="0" style={{width:"100%"}} placeholder="±"/>
+                  </div>
+                  <div>
+                    <div className="label" style={{marginBottom:5}}>Nota</div>
+                    <input id="adj-nota" placeholder="Descripción del ajuste..." style={{width:"100%"}}/>
+                  </div>
+                </div>
+                <button className="btn btn-gold" onClick={async()=>{
+                  const prodVal = document.getElementById("adj-prod").value.split("|");
+                  const tipo = document.getElementById("adj-tipo").value;
+                  const qty = parseInt(document.getElementById("adj-qty").value)||0;
+                  const nota = document.getElementById("adj-nota").value;
+                  if(!qty){notify("Ingresa una cantidad","error");return;}
+                  const prod = products.find(p=>p.id===Number(prodVal[0]));
+                  if(!prod) return;
+                  await sb.post("movimientos_inventario",[{
+                    producto_id:prod.id, sku:prodVal[1], nombre:prodVal[2],
+                    tipo:tipo, cantidad:qty, referencia:"AJUSTE-MANUAL",
+                    usuario:currentUser.nombre, nota:nota||tipo
+                  }]);
+                  await sb.patch("productos",prod.id,{stock:prod.stock+qty});
+                  setProducts(prev=>prev.map(p=>p.id===prod.id?{...p,stock:p.stock+qty}:p));
+                  notify("Ajuste registrado");
+                  const data = await sb.get("movimientos_inventario","order=created_at.desc&limit=200");
+                  setMovimientos(Array.isArray(data)?data:[]);
+                }}>Registrar Ajuste</button>
+              </div>
+            )}
+          </div>
+        )}
+
+            {showReceipt&&<PrintReceipt sale={showReceipt} items={receiptItems} onClose={()=>{setShowReceipt(null);setReceiptItems([]);}}/>}
 
       {showAnticipo&&cart.length>0&&(
         <div className="overlay" onClick={()=>setShowAnticipo(false)}>
