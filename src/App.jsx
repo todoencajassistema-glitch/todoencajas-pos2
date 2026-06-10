@@ -51,10 +51,11 @@ const sb = {
 
 // ─── CONSTANTES ──────────────────────────────────────────────────────────────
 const CANALES = [
-  { id:"tienda", label:"Tienda",        emoji:"🏪", color:"#E8681A", bg:"#fff8f4" },
-  { id:"tiktok", label:"TikTok",        emoji:"🎵", color:"#0095A8", bg:"#e8f7f9" },
-  { id:"meli",   label:"Mercado Libre", emoji:"🛍️", color:"#c47c0a", bg:"#fff8ec" },
-  { id:"amazon", label:"Amazon",        emoji:"📦", color:"#c45c00", bg:"#fff3e8" },
+  { id:"tienda",  label:"Tienda",        emoji:"🏪", color:"#E8681A", bg:"#fff8f4" },
+  { id:"tiktok",  label:"TikTok",        emoji:"🎵", color:"#0095A8", bg:"#e8f7f9" },
+  { id:"meli",    label:"Mercado Libre", emoji:"🛍️", color:"#c47c0a", bg:"#fff8ec" },
+  { id:"amazon",  label:"Amazon",        emoji:"📦", color:"#c45c00", bg:"#fff3e8" },
+  { id:"online",  label:"Tienda Online", emoji:"🌐", color:"#7c3aed", bg:"#f5f0ff" },
 ];
 const CANAL_MAP = Object.fromEntries(CANALES.map(c=>[c.id,c]));
 
@@ -1063,7 +1064,7 @@ nav::-webkit-scrollbar{display:none}
                           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}>
                             <div style={{display:"flex",alignItems:"center",gap:5}}>
                               <button className="btn btn-dark" style={{padding:"2px 9px",fontSize:15}} onClick={()=>updateQty(item.productoId,item.cantidad-1)}>−</button>
-                              <span style={{minWidth:22,textAlign:"center"}}>{item.cantidad}</span>
+                              <span style={{minWidth:28,textAlign:"center",fontWeight:700,fontSize:15,color:"#1a1a1a",background:"#f5f5f0",borderRadius:6,padding:"2px 4px"}}>{item.cantidad}</span>
                               <button className="btn btn-dark" style={{padding:"2px 9px",fontSize:15}} onClick={()=>updateQty(item.productoId,item.cantidad+1)}>+</button>
                             </div>
                             <div style={{display:"flex",flexDirection:"column",gap:3,alignItems:"flex-end"}}>
