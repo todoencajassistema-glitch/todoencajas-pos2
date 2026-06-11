@@ -1151,11 +1151,16 @@ nav::-webkit-scrollbar{display:none}
                 {isAdmin&&<button className="btn btn-gold" onClick={()=>setShowAddProduct(true)}>+ Agregar</button>}
               </div>
             </div>
+            <div style={{marginBottom:12}}>
+              <input value={invSearch} onChange={e=>setInvSearch(e.target.value)}
+                placeholder="🔍 Buscar por nombre o SKU..."
+                style={{width:"100%",maxWidth:360,padding:"9px 14px",borderRadius:10,border:"1.5px solid #e5e0d8",fontSize:13,outline:"none"}}/>
+            </div>
             <div className="card" style={{padding:0,overflow:"hidden"}}>
               <table>
                 <thead><tr><th>SKU</th><th>Producto</th><th>Categoria</th><th>Proveedor</th><th>Precio</th>{currentUser.rol==="admin"&&<th>Costo</th>}<th>Stock</th><th>Min</th><th>Estado</th><th>Acciones</th></tr></thead>
                 <tbody>
-                  {products.map(p=>(
+                  {products.filter(p=>!invSearch||(p.nombre.toLowerCase().includes(invSearch.toLowerCase())||( p.sku&&p.sku.toLowerCase().includes(invSearch.toLowerCase())))).map(p=>(
                     <tr key={p.id}>
                       <td style={{color:"#777",fontSize:11}}>{p.sku}</td>
                       <td style={{fontWeight:500}}>{p.nombre}</td>
@@ -2083,8 +2088,13 @@ nav::-webkit-scrollbar{display:none}
               {ordenIva&&<span style={{marginLeft:"auto",color:"#E8681A",fontSize:12,fontWeight:600}}>Subtotal + 16% IVA</span>}
             </div>
             <div className="label" style={{marginBottom:8}}>Productos a solicitar</div>
-            <div style={{maxHeight:300,overflowY:"auto",marginBottom:16}}>
-              {ordenItems.map((item,idx)=>(
+            <div style={{marginBottom:8}}>
+                <input value={ocSearch} onChange={e=>setOcSearch(e.target.value)}
+                  placeholder="🔍 Buscar producto u SKU..."
+                  style={{width:"100%",padding:"8px 12px",borderRadius:10,border:"1.5px solid #e5e0d8",fontSize:12,outline:"none"}}/>
+              </div>
+              <div style={{maxHeight:300,overflowY:"auto",marginBottom:16}}>
+              {ordenItems.filter(item=>!ocSearch||(item.nombre.toLowerCase().includes(ocSearch.toLowerCase())||(item.sku&&item.sku.toLowerCase().includes(ocSearch.toLowerCase())))).map((item,idx)=>(
                 <div key={item.productoId} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #f5f2ee"}}>
                   <div style={{flex:1}}>
                     <div style={{fontSize:12,color:"#777"}}>{item.nombre}</div>
