@@ -355,6 +355,8 @@ export default function App(){
   const [tab,setTab]                 = useState("dashboard");
   const [movimientos,setMovimientos] = useState([]);
   const [movFiltroSku,setMovFiltroSku] = useState("");
+  const [invSearch,setInvSearch] = useState("");
+  const [ocSearch,setOcSearch] = useState("");
   const [movFiltroTipo,setMovFiltroTipo] = useState("todos");
   const [notification,setNotif]      = useState(null);
   const [showReceipt,setShowReceipt] = useState(null);
