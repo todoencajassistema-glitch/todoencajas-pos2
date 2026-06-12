@@ -398,6 +398,9 @@ export default function App(){
     const d=new Date(); d.setDate(d.getDate()-d.getDay()+1); return d.toISOString().slice(0,10);
   });
   const [fechaCorteHasta,setFechaCorteHasta] = useState(new Date().toISOString().slice(0,10));
+  const [gastos,setGastos] = useState([]);
+  const [showNuevoGasto,setShowNuevoGasto] = useState(false);
+  const [nuevoGasto,setNuevoGasto] = useState({concepto:"",monto:"",categoria:"operacion",metodoPago:"efectivo"});
   const [filtroFechaHasta,setFiltroFechaHasta] = useState("");
   const [showAnticipo,setShowAnticipo] = useState(false);
   const [anticipoPct,setAnticipoPct]   = useState(50);
@@ -842,6 +845,13 @@ nav::-webkit-scrollbar{display:none}
     ? activeSales.filter(s=>new Date(s.fecha)>=corteFecha&&new Date(s.fecha)<=corteFechaFin)
     : activeSales.filter(s=>{const f=new Date(s.fecha);return f>=new Date(fechaCorteDesde+"T00:00:00")&&f<=new Date(fechaCorteHasta+"T23:59:59");});
   const corteTotal=corteSales.reduce((a,s)=>a+Number(s.total),0);
+  const gastosDelPeriodo = corteMode==="semana" ? gastos.filter(g=>{
+    const f=new Date(g.fecha);
+    return f>=new Date(fechaCorteDesde+"T00:00:00")&&f<=new Date(fechaCorteHasta+"T23:59:59");
+  }) : [];
+  const gastosTotal = gastosDelPeriodo.reduce((a,g)=>a+Number(g.monto),0);
+  const gastosByMetodo = {};
+  METODOS_PAGO.forEach(p=>{gastosByMetodo[p.id]=gastosDelPeriodo.filter(g=>g.metodo_pago===p.id).reduce((a,g)=>a+Number(g.monto),0);});
   const corteByPago={}; METODOS_PAGO.forEach(p=>{corteByPago[p.id]=corteSales.filter(s=>s.metodo_pago===p.id).reduce((a,s)=>a+Number(s.total),0);});
   const corteByCanal={}; CANALES.forEach(c=>{corteByCanal[c.id]=corteSales.filter(s=>s.canal===c.id).reduce((a,s)=>a+Number(s.total),0);});
 
@@ -1545,6 +1555,70 @@ nav::-webkit-scrollbar{display:none}
               </table>
             </div>
           </div>
+
+            {/* GASTOS - solo en modo semana */}
+            {corteMode==="semana"&&(
+            <div>
+              <div className="card" style={{marginBottom:12}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                  <div className="label">💸 Gastos del periodo</div>
+                  <button className="btn btn-gold" style={{fontSize:12,padding:"6px 14px"}} onClick={()=>setShowNuevoGasto(true)}>+ Agregar gasto</button>
+                </div>
+                {gastosDelPeriodo.length===0&&<div style={{color:"#b0a898",fontSize:13,textAlign:"center",padding:"12px 0"}}>Sin gastos registrados en este periodo</div>}
+                {gastosDelPeriodo.map((g,i)=>(
+                  <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid #f5f2ee"}}>
+                    <div>
+                      <div style={{fontWeight:600,fontSize:13}}>{g.concepto}</div>
+                      <div style={{fontSize:11,color:"#b0a898"}}>{g.categoria} · {PAGO_MAP[g.metodo_pago]?.emoji} {PAGO_MAP[g.metodo_pago]?.label} · {fmtDate(g.fecha)}</div>
+                    </div>
+                    <div style={{display:"flex",alignItems:"center",gap:8}}>
+                      <span style={{fontWeight:700,color:"#c0392b",fontSize:15}}>-{fmt(g.monto)}</span>
+                      <button className="btn btn-red" style={{fontSize:10,padding:"3px 8px"}} onClick={()=>setGastos(prev=>prev.filter((_,j)=>j!==i))}>🗑</button>
+                    </div>
+                  </div>
+                ))}
+                {gastosDelPeriodo.length>0&&(
+                  <div style={{display:"flex",justifyContent:"space-between",padding:"12px 0 0",fontWeight:700}}>
+                    <span style={{color:"#333"}}>Total gastos</span>
+                    <span style={{color:"#c0392b",fontSize:16}}>-{fmt(gastosTotal)}</span>
+                  </div>
+                )}
+              </div>
+              <div className="card" style={{background:"#faf8f5"}}>
+                <div className="label" style={{marginBottom:12}}>💰 Balance del periodo</div>
+                <div style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:"1px solid #f5f2ee"}}>
+                  <span style={{fontSize:13}}>Total ventas</span><span style={{color:"#1a7a3a",fontWeight:600}}>{fmt(corteTotal)}</span>
+                </div>
+                <div style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:"1px solid #f5f2ee"}}>
+                  <span style={{fontSize:13}}>Total gastos</span><span style={{color:"#c0392b",fontWeight:600}}>-{fmt(gastosTotal)}</span>
+                </div>
+                <div style={{display:"flex",justifyContent:"space-between",padding:"12px 0 0"}}>
+                  <span style={{fontSize:14,fontWeight:700}}>Neto del periodo</span>
+                  <span style={{fontSize:20,fontWeight:800,color:corteTotal-gastosTotal>=0?"#1a7a3a":"#c0392b"}}>{fmt(corteTotal-gastosTotal)}</span>
+                </div>
+              </div>
+              {/* Desglose por método de pago incluyendo gastos */}
+              <div className="card">
+                <div className="label" style={{marginBottom:12}}>Efectivo y transferencias (neto)</div>
+                {METODOS_PAGO.map(p=>{
+                  const ingresos=corteByPago[p.id]||0;
+                  const egresos=gastosByMetodo[p.id]||0;
+                  const neto=ingresos-egresos;
+                  if(ingresos===0&&egresos===0) return null;
+                  return(
+                    <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #f5f2ee"}}>
+                      <span style={{fontSize:13}}>{p.emoji} {p.label}</span>
+                      <div style={{textAlign:"right"}}>
+                        <div style={{fontSize:13,color:"#1a7a3a"}}>+{fmt(ingresos)}</div>
+                        {egresos>0&&<div style={{fontSize:11,color:"#c0392b"}}>-{fmt(egresos)} gastos</div>}
+                        <div style={{fontSize:13,fontWeight:700,color:neto>=0?"#1a7a3a":"#c0392b"}}>{fmt(neto)} neto</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            )}
         )}
       </div>
 
@@ -1803,6 +1877,55 @@ nav::-webkit-scrollbar{display:none}
         )}
 
             {showReceipt&&<PrintReceipt sale={showReceipt} items={receiptItems} onClose={()=>{setShowReceipt(null);setReceiptItems([]);}}/>}
+
+      {showNuevoGasto&&(
+        <div className="overlay" onClick={()=>setShowNuevoGasto(false)}>
+          <div className="modal anim-in" style={{maxWidth:420}} onClick={e=>e.stopPropagation()}>
+            <div className="section-title" style={{marginBottom:18}}>💸 Registrar Gasto</div>
+            <div style={{display:"grid",gap:12,marginBottom:16}}>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Concepto</div>
+                <input value={nuevoGasto.concepto} onChange={e=>setNuevoGasto(g=>({...g,concepto:e.target.value}))}
+                  placeholder="Ej: Compra micas, basura, herramientas..." style={{width:"100%"}}/>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                <div>
+                  <div className="label" style={{marginBottom:6}}>Monto</div>
+                  <input type="number" value={nuevoGasto.monto} onChange={e=>setNuevoGasto(g=>({...g,monto:e.target.value}))}
+                    placeholder="$0.00" style={{width:"100%"}}/>
+                </div>
+                <div>
+                  <div className="label" style={{marginBottom:6}}>Pagado con</div>
+                  <select value={nuevoGasto.metodoPago} onChange={e=>setNuevoGasto(g=>({...g,metodoPago:e.target.value}))} style={{width:"100%"}}>
+                    {METODOS_PAGO.map(p=><option key={p.id} value={p.id}>{p.emoji} {p.label}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Categoría</div>
+                <select value={nuevoGasto.categoria} onChange={e=>setNuevoGasto(g=>({...g,categoria:e.target.value}))} style={{width:"100%"}}>
+                  <option value="operacion">Operación</option>
+                  <option value="limpieza">Limpieza</option>
+                  <option value="herramientas">Herramientas y equipo</option>
+                  <option value="servicios">Servicios (luz, internet...)</option>
+                  <option value="papeleria">Papelería y oficina</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+            </div>
+            <div style={{display:"flex",gap:10}}>
+              <button className="btn btn-gold" style={{flex:1,padding:11}} onClick={()=>{
+                if(!nuevoGasto.concepto||!nuevoGasto.monto){notify("Faltan datos","error");return;}
+                setGastos(prev=>[...prev,{...nuevoGasto,monto:parseFloat(nuevoGasto.monto),fecha:new Date().toISOString(),usuario:currentUser.nombre,metodo_pago:nuevoGasto.metodoPago}]);
+                setNuevoGasto({concepto:"",monto:"",categoria:"operacion",metodoPago:"efectivo"});
+                setShowNuevoGasto(false);
+                notify("Gasto registrado");
+              }}>Guardar Gasto</button>
+              <button className="btn btn-dark" style={{flex:1}} onClick={()=>setShowNuevoGasto(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showAnticipo&&cart.length>0&&(
         <div className="overlay" onClick={()=>setShowAnticipo(false)}>
@@ -2375,7 +2498,56 @@ nav::-webkit-scrollbar{display:none}
         </div>
       )}
 
-            {showAnticipo&&cart.length>0&&(
+            {showNuevoGasto&&(
+        <div className="overlay" onClick={()=>setShowNuevoGasto(false)}>
+          <div className="modal anim-in" style={{maxWidth:420}} onClick={e=>e.stopPropagation()}>
+            <div className="section-title" style={{marginBottom:18}}>💸 Registrar Gasto</div>
+            <div style={{display:"grid",gap:12,marginBottom:16}}>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Concepto</div>
+                <input value={nuevoGasto.concepto} onChange={e=>setNuevoGasto(g=>({...g,concepto:e.target.value}))}
+                  placeholder="Ej: Compra micas, basura, herramientas..." style={{width:"100%"}}/>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                <div>
+                  <div className="label" style={{marginBottom:6}}>Monto</div>
+                  <input type="number" value={nuevoGasto.monto} onChange={e=>setNuevoGasto(g=>({...g,monto:e.target.value}))}
+                    placeholder="$0.00" style={{width:"100%"}}/>
+                </div>
+                <div>
+                  <div className="label" style={{marginBottom:6}}>Pagado con</div>
+                  <select value={nuevoGasto.metodoPago} onChange={e=>setNuevoGasto(g=>({...g,metodoPago:e.target.value}))} style={{width:"100%"}}>
+                    {METODOS_PAGO.map(p=><option key={p.id} value={p.id}>{p.emoji} {p.label}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <div className="label" style={{marginBottom:6}}>Categoría</div>
+                <select value={nuevoGasto.categoria} onChange={e=>setNuevoGasto(g=>({...g,categoria:e.target.value}))} style={{width:"100%"}}>
+                  <option value="operacion">Operación</option>
+                  <option value="limpieza">Limpieza</option>
+                  <option value="herramientas">Herramientas y equipo</option>
+                  <option value="servicios">Servicios (luz, internet...)</option>
+                  <option value="papeleria">Papelería y oficina</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+            </div>
+            <div style={{display:"flex",gap:10}}>
+              <button className="btn btn-gold" style={{flex:1,padding:11}} onClick={()=>{
+                if(!nuevoGasto.concepto||!nuevoGasto.monto){notify("Faltan datos","error");return;}
+                setGastos(prev=>[...prev,{...nuevoGasto,monto:parseFloat(nuevoGasto.monto),fecha:new Date().toISOString(),usuario:currentUser.nombre,metodo_pago:nuevoGasto.metodoPago}]);
+                setNuevoGasto({concepto:"",monto:"",categoria:"operacion",metodoPago:"efectivo"});
+                setShowNuevoGasto(false);
+                notify("Gasto registrado");
+              }}>Guardar Gasto</button>
+              <button className="btn btn-dark" style={{flex:1}} onClick={()=>setShowNuevoGasto(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAnticipo&&cart.length>0&&(
         <div className="overlay" onClick={()=>setShowAnticipo(false)}>
           <div className="modal anim-in" style={{maxWidth:420}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:4}}>📋 Pedido con Anticipo</div>
