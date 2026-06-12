@@ -393,6 +393,11 @@ export default function App(){
   const [filtroCanal,setFiltroCanal]   = useState("todos");
   const [filtroFechaDesde,setFiltroFechaDesde] = useState("");
   const [fechaCorte,setFechaCorte] = useState(new Date().toISOString().slice(0,10));
+  const [corteMode,setCorteMode] = useState("dia"); // "dia" or "semana"
+  const [fechaCorteDesde,setFechaCorteDesde] = useState(()=>{
+    const d=new Date(); d.setDate(d.getDate()-d.getDay()+1); return d.toISOString().slice(0,10);
+  });
+  const [fechaCorteHasta,setFechaCorteHasta] = useState(new Date().toISOString().slice(0,10));
   const [filtroFechaHasta,setFiltroFechaHasta] = useState("");
   const [showAnticipo,setShowAnticipo] = useState(false);
   const [anticipoPct,setAnticipoPct]   = useState(50);
@@ -833,7 +838,9 @@ nav::-webkit-scrollbar{display:none}
 
   const corteFecha = new Date(fechaCorte+"T00:00:00");
   const corteFechaFin = new Date(fechaCorte+"T23:59:59");
-  const corteSales=activeSales.filter(s=>new Date(s.fecha)>=corteFecha&&new Date(s.fecha)<=corteFechaFin);
+  const corteSales = corteMode==="dia"
+    ? activeSales.filter(s=>new Date(s.fecha)>=corteFecha&&new Date(s.fecha)<=corteFechaFin)
+    : activeSales.filter(s=>{const f=new Date(s.fecha);return f>=new Date(fechaCorteDesde+"T00:00:00")&&f<=new Date(fechaCorteHasta+"T23:59:59");});
   const corteTotal=corteSales.reduce((a,s)=>a+Number(s.total),0);
   const corteByPago={}; METODOS_PAGO.forEach(p=>{corteByPago[p.id]=corteSales.filter(s=>s.metodo_pago===p.id).reduce((a,s)=>a+Number(s.total),0);});
   const corteByCanal={}; CANALES.forEach(c=>{corteByCanal[c.id]=corteSales.filter(s=>s.canal===c.id).reduce((a,s)=>a+Number(s.total),0);});
@@ -1351,11 +1358,20 @@ nav::-webkit-scrollbar{display:none}
         {tab==="corte"&&(
           <div className="anim-in">
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-              <div style={{display:"flex",alignItems:"center",gap:14}}>
-                <div className="section-title" style={{margin:0}}>Corte de Caja</div>
-                <input type="date" value={fechaCorte} onChange={e=>setFechaCorte(e.target.value)} style={{fontSize:13,padding:"6px 10px"}}/>
-                {fechaCorte!==new Date().toISOString().slice(0,10)&&<button className="btn btn-dark" style={{fontSize:11,padding:"4px 10px"}} onClick={()=>setFechaCorte(new Date().toISOString().slice(0,10))}>Hoy</button>}
+            <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+              <div className="section-title" style={{margin:0}}>Corte de Caja</div>
+              <div style={{display:"flex",gap:4}}>
+                <button className="btn" onClick={()=>setCorteMode("dia")} style={{fontSize:12,padding:"5px 12px",background:corteMode==="dia"?"#E8681A":"#fff",color:corteMode==="dia"?"#fff":"#888",border:"1.5px solid",borderColor:corteMode==="dia"?"#E8681A":"#e5e0d8",borderRadius:99}}>📅 Por día</button>
+                <button className="btn" onClick={()=>setCorteMode("semana")} style={{fontSize:12,padding:"5px 12px",background:corteMode==="semana"?"#E8681A":"#fff",color:corteMode==="semana"?"#fff":"#888",border:"1.5px solid",borderColor:corteMode==="semana"?"#E8681A":"#e5e0d8",borderRadius:99}}>📆 Por semana</button>
               </div>
+              {corteMode==="dia"&&<input type="date" value={fechaCorte} onChange={e=>setFechaCorte(e.target.value)} style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #e5e0d8"}}/>}
+              {corteMode==="semana"&&<div style={{display:"flex",alignItems:"center",gap:6}}>
+                <input type="date" value={fechaCorteDesde} onChange={e=>setFechaCorteDesde(e.target.value)} style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #e5e0d8"}}/>
+                <span style={{color:"#888",fontSize:12}}>al</span>
+                <input type="date" value={fechaCorteHasta} onChange={e=>setFechaCorteHasta(e.target.value)} style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #e5e0d8"}}/>
+              </div>}
+              {corteMode==="dia"&&fechaCorte!==new Date().toISOString().slice(0,10)&&<button className="btn btn-dark" style={{fontSize:11}} onClick={()=>setFechaCorte(new Date().toISOString().slice(0,10))}>Hoy</button>}
+            </div>
               <div style={{display:"flex",gap:8}}>
                 <button className="btn btn-dark" style={{fontSize:12}} onClick={loadData}>↻ Actualizar</button>
                 <button className="btn btn-gold" style={{fontSize:12}} onClick={async ()=>{
