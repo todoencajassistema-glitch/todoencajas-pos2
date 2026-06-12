@@ -1552,6 +1552,9 @@ nav::-webkit-scrollbar{display:none}
                     );
                   })}
                 </tbody>
+              </table>
+            </div>
+          </div>
             {/* GASTOS - solo en modo semana */}
             {corteMode==="semana"&&(
             <div>
