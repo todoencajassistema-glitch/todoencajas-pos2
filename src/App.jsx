@@ -803,7 +803,15 @@ nav::-webkit-scrollbar{display:none}
   };
   const registrarEntrada = async () => {
     if(!entradaCant||parseInt(entradaCant)<=0){notify("Cantidad invalida","error");return;}
-    await sb.patch("productos",showEntrada.id,{stock:showEntrada.stock+parseInt(entradaCant)});
+    const qty=parseInt(entradaCant);
+    await sb.patch("productos",showEntrada.id,{stock:showEntrada.stock+qty});
+    try {
+      await sb.post("movimientos_inventario",[{
+        producto_id:showEntrada.id, sku:showEntrada.sku, nombre:showEntrada.nombre,
+        tipo:"entrada", cantidad:qty, referencia:"ENTRADA-RAPIDA",
+        usuario:currentUser.nombre, nota:"Entrada rapida desde inventario"
+      }]);
+    } catch(e){}
     await loadData(); setShowEntrada(null); setEntradaCant(""); notify("Entrada registrada");
   };
 
@@ -2324,8 +2332,15 @@ nav::-webkit-scrollbar{display:none}
                   const prod=products.find(p=>p.id===i.productoId);
                   return prod?sb.patch("productos",i.productoId,{stock:prod.stock+i.cantidad}):null;
                 }));
-                await loadData();
                 const folio=`ENT-${String(entradas.length+1).padStart(4,"0")}`;
+                try {
+                  await sb.post("movimientos_inventario", itemsRecibidos.map(i=>({
+                    producto_id:i.productoId, sku:i.sku, nombre:i.nombre,
+                    tipo:"entrada", cantidad:i.cantidad, referencia:folio,
+                    usuario:currentUser.nombre, nota:"Entrada "+folio+(showNuevaEntrada.folio?(" (OC "+showNuevaEntrada.folio+")"):"")
+                  })));
+                } catch(e){}
+                await loadData();
                 const entrada={id:Date.now(),folio,fecha:new Date().toISOString(),proveedor:showNuevaEntrada.proveedor,recibe:entradaRecibe,refOrden:showNuevaEntrada.folio,items:itemsRecibidos};
                 const savedEntrada = await sb.post("entradas_mercancia", {
                   folio, proveedor:showNuevaEntrada.proveedor,
