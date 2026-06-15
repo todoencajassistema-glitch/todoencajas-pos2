@@ -869,7 +869,7 @@ nav::-webkit-scrollbar{display:none}
 
   // ═══ RENDER ════════════════════════════════════════════════════════════════
   return(
-    <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f5f5f0",minHeight:"100vh",color:"#faf8f5"}}>
+    <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f5f5f0",minHeight:"100vh",color:"#1a1a1a",overflowX:"hidden",maxWidth:"100vw"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
@@ -2243,7 +2243,10 @@ nav::-webkit-scrollbar{display:none}
                   <div style={{display:"flex",alignItems:"center",gap:6}}>
                     <span style={{fontSize:11,color:"#777"}}>Cantidad:</span>
                     <input type="number" min={0} value={item.cantidad}
-                      onChange={e=>setOrdenItems(prev=>prev.map((i,ix)=>ix===idx?{...i,cantidad:parseInt(e.target.value)||0}:i))}
+                      onChange={e=>{
+                        const val=parseInt(e.target.value)||0;
+                        setOrdenItems(prev=>prev.map(i=>i.productoId===item.productoId?{...i,cantidad:val}:i));
+                      }}
                       style={{width:64,textAlign:"center",padding:"4px 8px"}}/>
                   </div>
                 </div>
