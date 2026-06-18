@@ -437,7 +437,7 @@ export default function App(){
   // ── LOAD DATA ──────────────────────────────────────────────────────────────
   const loadData = useCallback(async () => {
     try {
-      const [prods, clts, provs, sts, usrs, ords, ents] = await Promise.all([
+      const [prods, clts, provs, sts, usrs, ords, ents, gsts] = await Promise.all([
         sb.get("productos","order=nombre.asc&activo=eq.true"),
         sb.get("clientes","order=nombre.asc"),
         sb.get("proveedores","order=nombre.asc"),
@@ -445,6 +445,7 @@ export default function App(){
         sb.get("usuarios","order=nombre.asc"),
         sb.get("ordenes_compra","order=created_at.desc"),
         sb.get("entradas_mercancia","order=created_at.desc"),
+        sb.get("gastos","order=created_at.desc"),
       ]);
       if(Array.isArray(prods)) setProducts(prods);
       if(Array.isArray(clts))  setClientes(clts);
@@ -461,6 +462,7 @@ export default function App(){
         try { if(typeof items === 'string') items = JSON.parse(items); } catch(e2) { items = []; }
         return {...e, items: Array.isArray(items) ? items : []};
       }));
+      if(Array.isArray(gsts)) setGastos(gsts);
       setDataLoaded(true);
     } catch(e) {
       console.error("Error cargando datos:", e);
@@ -854,7 +856,7 @@ nav::-webkit-scrollbar{display:none}
     : activeSales.filter(s=>{const f=new Date(s.fecha);return f>=new Date(fechaCorteDesde+"T00:00:00")&&f<=new Date(fechaCorteHasta+"T23:59:59");});
   const corteTotal=corteSales.reduce((a,s)=>a+Number(s.total),0);
   const gastosDelPeriodo = corteMode==="semana" ? gastos.filter(g=>{
-    const f=new Date(g.fecha);
+    const f=new Date(g.fecha||g.created_at);
     return f>=new Date(fechaCorteDesde+"T00:00:00")&&f<=new Date(fechaCorteHasta+"T23:59:59");
   }) : [];
   const gastosTotal = gastosDelPeriodo.reduce((a,g)=>a+Number(g.monto),0);
@@ -982,12 +984,29 @@ nav::-webkit-scrollbar{display:none}
               </div>
               <div className="card">
                 <div style={{fontSize:10,color:"#777",letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Top productos</div>
-                {(() => {
+                {(()=>{
                   const map={};
-                  activeSales.forEach(s=>{ /* no items in sales list */ });
-                  return sales.length===0?<div style={{fontSize:12,color:"#888"}}>Sin datos aun</div>:null;
+                  movimientos.filter(m=>m.tipo==="venta").forEach(m=>{
+                    if(!map[m.nombre]) map[m.nombre]={nombre:m.nombre,sku:m.sku,total:0};
+                    map[m.nombre].total += Math.abs(m.cantidad);
+                  });
+                  const top=Object.values(map).sort((a,b)=>b.total-a.total).slice(0,5);
+                  if(top.length===0) return <div style={{fontSize:12,color:"#888",textAlign:"center",padding:"12px 0"}}>
+                    Ve a Auditoría → Ver todos para cargar datos
+                  </div>;
+                  const max=top[0].total;
+                  return top.map((p,i)=>(
+                    <div key={i} style={{marginBottom:10}}>
+                      <div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:4}}>
+                        <span style={{fontWeight:600,color:"#1a1a1a"}}>{p.nombre}</span>
+                        <span style={{color:"#E8681A",fontWeight:700}}>{p.total} pzas</span>
+                      </div>
+                      <div style={{height:6,background:"#f0ede8",borderRadius:99}}>
+                        <div style={{height:6,background:"#E8681A",borderRadius:99,width:`${(p.total/max)*100}%`}}/>
+                      </div>
+                    </div>
+                  ));
                 })()}
-                <div style={{fontSize:12,color:"#777",textAlign:"center",padding:"20px 0"}}>Los datos de top productos<br/>se calculan con el historial</div>
               </div>
             </div>
             <div className="card" style={{marginBottom:12}}>
@@ -1579,7 +1598,10 @@ nav::-webkit-scrollbar{display:none}
                     </div>
                     <div style={{display:"flex",alignItems:"center",gap:8}}>
                       <span style={{fontWeight:700,color:"#c0392b",fontSize:15}}>-{fmt(g.monto)}</span>
-                      <button className="btn btn-red" style={{fontSize:10,padding:"3px 8px"}} onClick={()=>setGastos(prev=>prev.filter((_,j)=>j!==i))}>🗑</button>
+                      <button className="btn btn-red" style={{fontSize:10,padding:"3px 8px"}} onClick={async()=>{
+                      if(g.id) await sb.delete("gastos",g.id);
+                      setGastos(prev=>prev.filter((_,j)=>j!==i));
+                    }}>🗑</button>
                     </div>
                   </div>
                 ))}
@@ -1923,7 +1945,17 @@ nav::-webkit-scrollbar{display:none}
             <div style={{display:"flex",gap:10}}>
               <button className="btn btn-gold" style={{flex:1,padding:11}} onClick={()=>{
                 if(!nuevoGasto.concepto||!nuevoGasto.monto){notify("Faltan datos","error");return;}
-                setGastos(prev=>[...prev,{...nuevoGasto,monto:parseFloat(nuevoGasto.monto),fecha:new Date().toISOString(),usuario:currentUser.nombre,metodo_pago:nuevoGasto.metodoPago}]);
+                const saved = await sb.post("gastos",[{
+                  concepto:nuevoGasto.concepto,
+                  monto:parseFloat(nuevoGasto.monto),
+                  categoria:nuevoGasto.categoria,
+                  metodo_pago:nuevoGasto.metodoPago,
+                  usuario:currentUser.nombre,
+                  fecha:new Date().toISOString()
+                }]);
+                if(Array.isArray(saved)&&saved[0]){
+                  setGastos(prev=>[saved[0],...prev]);
+                }
                 setNuevoGasto({concepto:"",monto:"",categoria:"operacion",metodoPago:"efectivo"});
                 setShowNuevoGasto(false);
                 notify("Gasto registrado");
@@ -2553,7 +2585,17 @@ nav::-webkit-scrollbar{display:none}
             <div style={{display:"flex",gap:10}}>
               <button className="btn btn-gold" style={{flex:1,padding:11}} onClick={()=>{
                 if(!nuevoGasto.concepto||!nuevoGasto.monto){notify("Faltan datos","error");return;}
-                setGastos(prev=>[...prev,{...nuevoGasto,monto:parseFloat(nuevoGasto.monto),fecha:new Date().toISOString(),usuario:currentUser.nombre,metodo_pago:nuevoGasto.metodoPago}]);
+                const saved = await sb.post("gastos",[{
+                  concepto:nuevoGasto.concepto,
+                  monto:parseFloat(nuevoGasto.monto),
+                  categoria:nuevoGasto.categoria,
+                  metodo_pago:nuevoGasto.metodoPago,
+                  usuario:currentUser.nombre,
+                  fecha:new Date().toISOString()
+                }]);
+                if(Array.isArray(saved)&&saved[0]){
+                  setGastos(prev=>[saved[0],...prev]);
+                }
                 setNuevoGasto({concepto:"",monto:"",categoria:"operacion",metodoPago:"efectivo"});
                 setShowNuevoGasto(false);
                 notify("Gasto registrado");
