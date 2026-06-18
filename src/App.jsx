@@ -1943,7 +1943,7 @@ nav::-webkit-scrollbar{display:none}
               </div>
             </div>
             <div style={{display:"flex",gap:10}}>
-              <button className="btn btn-gold" style={{flex:1,padding:11}} onClick={()=>{
+              <button className="btn btn-gold" style={{flex:1,padding:11}} onClick={async()=>{
                 if(!nuevoGasto.concepto||!nuevoGasto.monto){notify("Faltan datos","error");return;}
                 const saved = await sb.post("gastos",[{
                   concepto:nuevoGasto.concepto,
@@ -2583,7 +2583,7 @@ nav::-webkit-scrollbar{display:none}
               </div>
             </div>
             <div style={{display:"flex",gap:10}}>
-              <button className="btn btn-gold" style={{flex:1,padding:11}} onClick={()=>{
+              <button className="btn btn-gold" style={{flex:1,padding:11}} onClick={async()=>{
                 if(!nuevoGasto.concepto||!nuevoGasto.monto){notify("Faltan datos","error");return;}
                 const saved = await sb.post("gastos",[{
                   concepto:nuevoGasto.concepto,
