@@ -1229,11 +1229,7 @@ nav::-webkit-scrollbar{display:none}
                       <td><div style={{display:"flex",gap:5}}>
                         <button className="btn btn-green" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setShowEntrada(p)}>+ Stock</button>
                         {isAdmin&&<button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setEditProduct({...p})}>✏️</button>}
-                        {isAdmin&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setConfirm({msg:"¿Eliminar "+p.nombre+"? Esta acción no se puede deshacer.",onYes:async()=>{
-                          await sb.delete("productos",p.id);
-                          setProducts(prev=>prev.filter(x=>x.id!==p.id));
-                          notify("Producto eliminado");
-                        }}})}>🗑</button>}
+                        {isAdmin&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setConfirm({msg:"¿Eliminar este producto? Esta acción no se puede deshacer.",onYes:async()=>{ await sb.delete("productos",p.id); setProducts(prev=>prev.filter(x=>x.id!==p.id)); notify("Producto eliminado"); }})}>🗑</button>}
                       </div></td>
                     </tr>
                   ))}
