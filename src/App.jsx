@@ -1228,7 +1228,12 @@ nav::-webkit-scrollbar{display:none}
                       </td>
                       <td><div style={{display:"flex",gap:5}}>
                         <button className="btn btn-green" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setShowEntrada(p)}>+ Stock</button>
-                        {isAdmin&&<button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setEditProduct({...p})}>Editar</button>}
+                        {isAdmin&&<button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setEditProduct({...p})}>✏️</button>}
+                        {isAdmin&&<button className="btn btn-red" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setConfirm({msg:`¿Eliminar "${p.nombre}"? Esta acción no se puede deshacer.`,onYes:async()=>{
+                          await sb.delete("productos",p.id);
+                          setProducts(prev=>prev.filter(x=>x.id!==p.id));
+                          notify("Producto eliminado");
+                        }}})}>🗑</button>}
                       </div></td>
                     </tr>
                   ))}
@@ -1684,8 +1689,13 @@ nav::-webkit-scrollbar{display:none}
                 {lowStock.map(p=>(
                   <div key={p.id} style={{background:"#fff8f4",border:"1px solid #f5c89a",borderRadius:6,padding:"8px 12px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                     <div>
-                      <div style={{fontSize:12,color:"#777"}}>{p.nombre}</div>
+                      <div style={{fontSize:12,fontWeight:600,color:"#1a1a1a"}}>{p.nombre}</div>
                       <div style={{fontSize:11,color:"#777"}}>{p.sku} · Proveedor: {p.proveedor||"—"}</div>
+                      {ordenes.some(o=>!o.cancelada&&!o.recibida&&Array.isArray(o.items)&&o.items.some(i=>i.productoId===p.id))&&(
+                        <span style={{fontSize:9,fontWeight:700,background:"#fff3e8",color:"#c45c00",border:"1px solid #f5c99a",borderRadius:99,padding:"2px 7px",marginTop:3,display:"inline-block"}}>
+                          📋 OC pendiente
+                        </span>
+                      )}
                     </div>
                     <div style={{textAlign:"right"}}>
                       <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,color:"#E8681A",fontSize:16}}>{p.stock}</div>
