@@ -1216,7 +1216,16 @@ nav::-webkit-scrollbar{display:none}
                       {currentUser.rol==="admin"&&<td style={{fontSize:12,color:"#777"}}>{p.costo>0?fmt(p.costo):"—"}</td>}
                       <td style={{fontFamily:"'Syne',sans-serif",fontWeight:700}}>{p.stock}</td>
                       <td style={{fontSize:11,color:"#777"}}>{p.stock_min}</td>
-                      <td><span className={`tag ${p.stock>p.stock_min?"tag-ok":p.stock>0?"tag-warn":"tag-danger"}`}>{p.stock>p.stock_min?"OK":p.stock>0?"Bajo":"Agotado"}</span></td>
+                      <td>
+                        <span className={`tag ${p.stock>p.stock_min?"tag-ok":p.stock>0?"tag-warn":"tag-danger"}`}>
+                          {p.stock>p.stock_min?"OK":p.stock>0?"Bajo":"Agotado"}
+                        </span>
+                        {ordenes.some(o=>!o.cancelada&&!o.recibida&&Array.isArray(o.items)&&o.items.some(i=>i.productoId===p.id))&&(
+                          <span className="tag" style={{background:"#fff3e8",color:"#c45c00",border:"1px solid #f5c99a",marginLeft:4,fontSize:9}}>
+                            📋 OC pendiente
+                          </span>
+                        )}
+                      </td>
                       <td><div style={{display:"flex",gap:5}}>
                         <button className="btn btn-green" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setShowEntrada(p)}>+ Stock</button>
                         {isAdmin&&<button className="btn btn-dark" style={{fontSize:10,padding:"3px 9px"}} onClick={()=>setEditProduct({...p})}>Editar</button>}
