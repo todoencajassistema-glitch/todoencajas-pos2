@@ -1507,6 +1507,24 @@ nav::-webkit-scrollbar{display:none}
                   parts.push('<td style="width:10%"></td>');
                   parts.push('<td style="width:45%;text-align:center"><div style="border-top:1px solid #aaa;padding-top:6px;font-size:10pt;color:#666">Vo.Bo. Gerencia</div></td>');
                   parts.push('</tr></table>');
+                  // Gastos section (only semana mode)
+                  if(corteMode==="semana" && gastosDelPeriodo.length>0){
+                    parts.push('<div style="margin-top:24px;border-top:2px solid #E8681A;padding-top:16px">');
+                    parts.push('<div style="font-weight:700;font-size:13pt;margin-bottom:10px;color:#E8681A">Gastos del Periodo</div>');
+                    parts.push('<table style="width:100%;border-collapse:collapse;margin-bottom:12px">');
+                    parts.push('<thead><tr style="background:#f5f5f0"><th style="padding:6px 8px;text-align:left;border:1px solid #ddd;font-size:9pt">Concepto</th><th style="padding:6px 8px;text-align:left;border:1px solid #ddd;font-size:9pt">Categoría</th><th style="padding:6px 8px;text-align:left;border:1px solid #ddd;font-size:9pt">Método</th><th style="padding:6px 8px;text-align:right;border:1px solid #ddd;font-size:9pt">Monto</th></tr></thead><tbody>');
+                    gastosDelPeriodo.forEach(g=>{
+                      const mp = METODOS_PAGO.find(p=>p.id===g.metodo_pago);
+                      parts.push('<tr><td style="padding:5px 8px;border:1px solid #eee;font-size:9pt">'+g.concepto+'</td><td style="padding:5px 8px;border:1px solid #eee;font-size:9pt">'+g.categoria+'</td><td style="padding:5px 8px;border:1px solid #eee;font-size:9pt">'+(mp?mp.label:g.metodo_pago)+'</td><td style="padding:5px 8px;border:1px solid #eee;text-align:right;font-size:9pt;color:#c0392b">-$'+Number(g.monto).toFixed(2)+'</td></tr>');
+                    });
+                    parts.push('</tbody><tfoot><tr style="background:#fff3f3"><td colspan="3" style="padding:8px;font-weight:700;border:1px solid #ddd">Total Gastos</td><td style="padding:8px;text-align:right;font-weight:800;color:#c0392b;font-size:12pt;border:1px solid #ddd">-$'+gastosTotal.toFixed(2)+'</td></tr></tfoot></table>');
+                    parts.push('<table style="width:100%;border-collapse:collapse"><tr>');
+                    parts.push('<td style="padding:10px;background:#edfbf2;border:1px solid #b8e8c8;text-align:center"><div style="font-size:10pt;color:#888">Total Ventas</div><div style="font-size:16pt;font-weight:800;color:#1a7a3a">$'+corteTotal.toFixed(2)+'</div></td>');
+                    parts.push('<td style="padding:10px;background:#fff3f3;border:1px solid #f5c9c9;text-align:center"><div style="font-size:10pt;color:#888">Total Gastos</div><div style="font-size:16pt;font-weight:800;color:#c0392b">-$'+gastosTotal.toFixed(2)+'</div></td>');
+                    const neto = corteTotal - gastosTotal;
+                    parts.push('<td style="padding:10px;background:'+(neto>=0?'#edfbf2':'#fff3f3')+';border:1px solid '+(neto>=0?'#b8e8c8':'#f5c9c9')+';text-align:center"><div style="font-size:10pt;color:#888">Neto del Periodo</div><div style="font-size:18pt;font-weight:800;color:'+(neto>=0?'#1a7a3a':'#c0392b')+'">$'+neto.toFixed(2)+'</div></td>');
+                    parts.push('</tr></table></div>');
+                  }
                   parts.push('<p style="text-align:center;font-size:9pt;color:#aaa;margin-top:20px">Todo en Cajas.com - todoencajas.com - Tel: 55 9824 1503 | WA: 55 2268 8744</p>');
                   parts.push('</body></html>');
                   win.document.write(parts.join(''));
