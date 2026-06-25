@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 const SUPABASE_URL = "https://tbsnhkerfkovxsgreqqy.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic25oa2VyZmtvdnhzZ3JlcXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2Mjg5NTEsImV4cCI6MjA5NTIwNDk1MX0.lIMcF5ATSBr9rQKxv_PGz0btEIF7uZB6z5O_DBw5f_Y";
 const TELEGRAM_TOKEN = "8131978330:AAFhleXcEQ89_1Ob8H1KpEL6fslw0uc2RxE";
-const TELEGRAM_CHAT  = "-5579888753";
+const TELEGRAM_CHAT  = "-1004290792900";
 const sendTelegram = async (msg) => {
   try {
     await fetch("https://api.telegram.org/bot"+TELEGRAM_TOKEN+"/sendMessage",{
