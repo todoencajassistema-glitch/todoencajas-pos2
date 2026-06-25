@@ -677,6 +677,21 @@ nav::-webkit-scrollbar{display:none}
         setCart([]); setClienteId(""); setClienteNombre(""); setCanal("tienda");
         setMetodoPago("efectivo"); setEfectivoRecibido(""); setDescGlobal(0);
         notify("Venta registrada!");
+        // Telegram notification
+        try {
+          const canal_emoji = CANALES.find(c=>c.id===canal)?.emoji||"🏪";
+          const mp = METODOS_PAGO.find(p=>p.id===metodoPago)?.label||metodoPago;
+          const productos_txt = cart.map(i=>i.cantidad+"x "+i.nombre).join(", ");
+          const msg = "🛒 <b>Nueva venta - Todo en Cajas</b>\n"+
+            "📋 <b>Folio:</b> "+nextFolio+"\n"+
+            "👤 <b>Cajero:</b> "+currentUser.nombre+"\n"+
+            (clienteNombreFinal?"🙍 <b>Cliente:</b> "+clienteNombreFinal+"\n":"")+
+            "💰 <b>Total:</b> $"+cartTotal.toFixed(2)+"\n"+
+            "💳 <b>Pago:</b> "+mp+"\n"+
+            canal_emoji+" <b>Canal:</b> "+canal+"\n"+
+            "📦 "+productos_txt;
+          await sendTelegram(msg);
+        } catch(e){}
       }
     } catch(e){ notify("Error al registrar venta","error"); }
     setLoading(false);
