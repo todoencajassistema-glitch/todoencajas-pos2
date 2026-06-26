@@ -1220,6 +1220,26 @@ nav::-webkit-scrollbar{display:none}
               <div className="section-title" style={{margin:0}}>Inventario</div>
               <div style={{display:"flex",gap:8}}>
                 <button className="btn btn-dark" style={{fontSize:12}} onClick={loadData}>↻ Actualizar</button>
+                <button className="btn btn-dark" style={{fontSize:12}} onClick={()=>{
+                  const headers = ["SKU","Nombre","Categoría","Proveedor","Precio","Costo","Stock","Stock Mín","Estado"];
+                  const rows = products.map(p=>[
+                    p.sku||"",
+                    p.nombre||"",
+                    p.categoria||"",
+                    p.proveedor||"",
+                    Number(p.precio||0).toFixed(2),
+                    Number(p.costo||0).toFixed(2),
+                    p.stock||0,
+                    p.stock_min||0,
+                    p.stock>p.stock_min?"OK":p.stock>0?"Bajo":"Agotado"
+                  ]);
+                  const csv = [headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
+                  const blob = new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8;"});
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href=url; a.download="inventario-todoencajas.csv"; a.click();
+                  URL.revokeObjectURL(url);
+                }}>📊 Exportar Excel</button>
                 {isAdmin&&<button className="btn btn-gold" onClick={()=>setShowAddProduct(true)}>+ Agregar</button>}
               </div>
             </div>
