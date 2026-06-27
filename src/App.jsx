@@ -647,11 +647,11 @@ nav::-webkit-scrollbar{display:none}
     try {
       const recibido=metodoPago==="efectivo"&&efectivoRecibido?parseFloat(efectivoRecibido):cartTotal;
       // Generate sequential folio based on highest existing folio
-      const folioData = await sb.get("ventas","select=folio&order=folio.desc&limit=1");
+      const folioData = await sb.get("ventas","select=folio&order=created_at.desc&limit=100");
       let nextNum = 1;
-      if(Array.isArray(folioData) && folioData.length>0 && folioData[0].folio){
-        const lastNum = parseInt(folioData[0].folio.replace("VTA-",""))||0;
-        nextNum = lastNum + 1;
+      if(Array.isArray(folioData) && folioData.length>0){
+        const nums = folioData.map(v=>parseInt((v.folio||"").replace("VTA-",""))||0);
+        nextNum = Math.max(...nums) + 1;
       }
       const nextFolio = "VTA-"+String(nextNum).padStart(4,"0");
       const clienteNombreFinal=clienteNombre||clientes.find(c=>c.id===parseInt(clienteId))?.nombre||"Cliente general";
