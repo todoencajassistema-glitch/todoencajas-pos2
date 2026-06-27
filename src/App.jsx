@@ -646,9 +646,14 @@ nav::-webkit-scrollbar{display:none}
     setLoading(true);
     try {
       const recibido=metodoPago==="efectivo"&&efectivoRecibido?parseFloat(efectivoRecibido):cartTotal;
-      // Generate unique folio based on timestamp to avoid duplicates
-      const ts = Date.now();
-      const nextFolio = "VTA-"+String(ts).slice(-6);
+      // Generate sequential folio based on highest existing folio
+      const folioData = await sb.get("ventas","select=folio&order=folio.desc&limit=1");
+      let nextNum = 1;
+      if(Array.isArray(folioData) && folioData.length>0 && folioData[0].folio){
+        const lastNum = parseInt(folioData[0].folio.replace("VTA-",""))||0;
+        nextNum = lastNum + 1;
+      }
+      const nextFolio = "VTA-"+String(nextNum).padStart(4,"0");
       const clienteNombreFinal=clienteNombre||clientes.find(c=>c.id===parseInt(clienteId))?.nombre||"Cliente general";
 
       const [ventaArr] = await Promise.all([
