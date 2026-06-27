@@ -646,7 +646,9 @@ nav::-webkit-scrollbar{display:none}
     setLoading(true);
     try {
       const recibido=metodoPago==="efectivo"&&efectivoRecibido?parseFloat(efectivoRecibido):cartTotal;
-      const nextFolio=`VTA-${String(sales.length+1).padStart(4,"0")}`;
+      // Generate unique folio based on timestamp to avoid duplicates
+      const ts = Date.now();
+      const nextFolio = "VTA-"+String(ts).slice(-6);
       const clienteNombreFinal=clienteNombre||clientes.find(c=>c.id===parseInt(clienteId))?.nombre||"Cliente general";
 
       const [ventaArr] = await Promise.all([
@@ -1249,7 +1251,8 @@ nav::-webkit-scrollbar{display:none}
                 style={{width:"100%",maxWidth:360,padding:"9px 14px",borderRadius:10,border:"1.5px solid #e5e0d8",fontSize:13,outline:"none"}}/>
             </div>
             <div className="card" style={{padding:0,overflow:"hidden"}}>
-              <table>
+              <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+              <table style={{minWidth:700}}>
                 <thead><tr><th>SKU</th><th>Producto</th><th>Categoria</th><th>Proveedor</th><th>Precio</th>{currentUser.rol==="admin"&&<th>Costo</th>}<th>Stock</th><th>Min</th><th>Estado</th><th>Acciones</th></tr></thead>
                 <tbody>
                   {products.filter(p=>!invSearch||(p.nombre.toLowerCase().includes(invSearch.toLowerCase())||( p.sku&&p.sku.toLowerCase().includes(invSearch.toLowerCase())))).map(p=>(
@@ -1281,6 +1284,7 @@ nav::-webkit-scrollbar{display:none}
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
         )}
