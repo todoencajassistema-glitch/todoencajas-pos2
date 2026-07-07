@@ -2272,6 +2272,13 @@ nav::-webkit-scrollbar{display:none}
                 </div>
               ))}
             </div>
+            <div style={{marginBottom:12}}>
+              <div className="label" style={{marginBottom:5}}>Ubicación en tienda</div>
+              <select value={editProduct.ubicacion||""} onChange={e=>setEditProduct(p=>({...p,ubicacion:e.target.value}))} style={{width:"100%"}}>
+                <option value="">Sin asignar</option>
+                <option value="Vitrina">Vitrina</option><option value="Anaquel 1">Anaquel 1</option><option value="Anaquel 2">Anaquel 2</option><option value="Almacén 1">Almacén 1</option><option value="Almacén 2">Almacén 2</option><option value="Almacén 3">Almacén 3</option><option value="Almacén 4">Almacén 4</option>
+              </select>
+            </div>
             <div style={{display:"flex",gap:10}}>
               <button className="btn btn-gold" style={{flex:1}} onClick={saveProduct}>Guardar</button>
               <button className="btn btn-dark" style={{flex:1}} onClick={()=>setEditProduct(null)}>Cancelar</button>
