@@ -828,7 +828,7 @@ nav::-webkit-scrollbar{display:none}
 
   const saveProduct = async () => {
     if(!editProduct.nombre||!editProduct.precio){notify("Campos requeridos","error");return;}
-    await sb.patch("productos",editProduct.id,{nombre:editProduct.nombre,sku:editProduct.sku,precio:parseFloat(editProduct.precio),costo:parseFloat(editProduct.costo||0),stock:parseInt(editProduct.stock),stock_min:parseInt(editProduct.stock_min||0),categoria:editProduct.categoria,proveedor:editProduct.proveedor});
+    await sb.patch("productos",editProduct.id,{nombre:editProduct.nombre,sku:editProduct.sku,precio:parseFloat(editProduct.precio),costo:parseFloat(editProduct.costo||0),stock:parseInt(editProduct.stock),stock_min:parseInt(editProduct.stock_min||0),categoria:editProduct.categoria,proveedor:editProduct.proveedor,ubicacion:editProduct.ubicacion||""});
     await loadData(); setEditProduct(null); notify("Producto actualizado");
   };
   const addProduct = async () => {
@@ -839,14 +839,62 @@ nav::-webkit-scrollbar{display:none}
   const registrarEntrada = async () => {
     if(!entradaCant||parseInt(entradaCant)<=0){notify("Cantidad invalida","error");return;}
     const qty=parseInt(entradaCant);
+    // Generate folio for quick entrada
+    const entFolioData = await sb.get("entradas_mercancia","select=folio&order=created_at.desc&limit=50");
+    const entNums = Array.isArray(entFolioData)?entFolioData.map(e=>{
+      const m=(e.folio||"").match(/ENT-R-(\d+)/);
+      return m?parseInt(m[1]):0;
+    }):[];
+    const nextEntNum = entNums.length>0?Math.max(...entNums)+1:1;
+    const entradaFolio = "ENT-R-"+String(nextEntNum).padStart(4,"0");
+    // Update stock
     await sb.patch("productos",showEntrada.id,{stock:showEntrada.stock+qty});
+    // Save to entradas_mercancia
+    try {
+      await sb.post("entradas_mercancia",[{
+        folio:entradaFolio,
+        fecha:new Date().toISOString(),
+        proveedor:showEntrada.proveedor||"Sin proveedor",
+        recibe:currentUser.nombre,
+        ref_orden:"SIN OC",
+        items:JSON.stringify([{productoId:showEntrada.id,sku:showEntrada.sku,nombre:showEntrada.nombre,cantidad:qty,costo:showEntrada.costo||0}])
+      }]);
+    } catch(e){}
+    // Save movimiento
     try {
       await sb.post("movimientos_inventario",[{
         producto_id:showEntrada.id, sku:showEntrada.sku, nombre:showEntrada.nombre,
-        tipo:"entrada", cantidad:qty, referencia:"ENTRADA-RAPIDA",
-        usuario:currentUser.nombre, nota:"Entrada rapida desde inventario"
+        tipo:"entrada", cantidad:qty, referencia:entradaFolio,
+        usuario:currentUser.nombre, nota:"Entrada rápida "+entradaFolio
       }]);
     } catch(e){}
+    // Print PDF
+    const win=window.open('','_blank','width=700,height=500');
+    if(win){
+      const parts=[];
+      parts.push('<html><head><meta charset="utf-8"/><style>body{font-family:Arial,sans-serif;padding:30px;color:#1a1a1a;max-width:600px;margin:0 auto}h2{color:#E8681A;margin-bottom:4px}.info{background:#f5f5f0;border-radius:8px;padding:14px;margin:14px 0}table{width:100%;border-collapse:collapse;margin-top:14px}th{background:#f5f5f0;padding:8px;text-align:left;font-size:11pt}td{padding:8px;border-bottom:1px solid #eee}@media print{button{display:none}}</style></head><body>');
+      parts.push('<div style="text-align:center;margin-bottom:16px"><div style="font-size:22pt;font-weight:900;color:#1a1a1a">TODO EN <span style="color:#E8681A">CAJAS</span>.COM</div><div style="color:#888;font-size:10pt">Cucurpe 44, Venustiano Carranza, CDMX · Tel: 55 9824 1503</div></div>');
+      parts.push('<h2>Entrada Rápida de Mercancía</h2>');
+      parts.push('<div class="info">');
+      parts.push('<b>Folio:</b> '+entradaFolio+'<br/>');
+      parts.push('<b>Fecha:</b> '+new Date().toLocaleString("es-MX")+'<br/>');
+      parts.push('<b>Recibió:</b> '+currentUser.nombre+'<br/>');
+      parts.push('<b>Proveedor:</b> '+(showEntrada.proveedor||"Sin proveedor")+'<br/>');
+      parts.push('<b>Referencia OC:</b> Sin orden de compra');
+      parts.push('</div>');
+      parts.push('<table><thead><tr><th>SKU</th><th>Producto</th><th>Cantidad</th><th>Stock anterior</th><th>Stock nuevo</th></tr></thead><tbody>');
+      parts.push('<tr><td>'+showEntrada.sku+'</td><td>'+showEntrada.nombre+'</td><td style="text-align:center;font-weight:700;color:#E8681A">'+qty+'</td><td style="text-align:center">'+showEntrada.stock+'</td><td style="text-align:center;font-weight:700">'+( showEntrada.stock+qty)+'</td></tr>');
+      parts.push('</tbody></table>');
+      parts.push('<div style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:30px;text-align:center">');
+      parts.push('<div style="border-top:1px solid #aaa;padding-top:6px;color:#888;font-size:10pt">Recibió: '+currentUser.nombre+'</div>');
+      parts.push('<div style="border-top:1px solid #aaa;padding-top:6px;color:#888;font-size:10pt">Autoriza</div>');
+      parts.push('</div>');
+      parts.push('<p style="text-align:center;color:#aaa;font-size:9pt;margin-top:20px">Todo en Cajas.com · todoencajas.com</p>');
+      parts.push('<div style="text-align:center;margin-top:10px"><button onclick="window.print()" style="background:#E8681A;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:13pt;cursor:pointer">🖨 Imprimir</button></div>');
+      parts.push('</body></html>');
+      win.document.write(parts.join(''));
+      win.document.close();
+    }
     await loadData(); setShowEntrada(null); setEntradaCant(""); notify("Entrada registrada");
   };
 
@@ -1262,7 +1310,10 @@ nav::-webkit-scrollbar{display:none}
                 <tbody>
                   {products.filter(p=>!invSearch||(p.nombre.toLowerCase().includes(invSearch.toLowerCase())||( p.sku&&p.sku.toLowerCase().includes(invSearch.toLowerCase())))).map(p=>(
                     <tr key={p.id}>
-                      <td style={{color:"#777",fontSize:11}}>{p.sku}</td>
+                      <td style={{color:"#777",fontSize:11}}>
+                        {p.sku}
+                        {p.ubicacion&&<div style={{fontSize:9,color:"#E8681A",fontWeight:600,marginTop:2}}>📍{p.ubicacion}</div>}
+                      </td>
                       <td style={{fontWeight:500}}>{p.nombre}</td>
                       <td><span className="tag tag-blue">{p.categoria}</span></td>
                       <td style={{fontSize:11,color:"#777"}}>{p.proveedor||"—"}</td>
@@ -1274,7 +1325,7 @@ nav::-webkit-scrollbar{display:none}
                         <span className={`tag ${p.stock>p.stock_min?"tag-ok":p.stock>0?"tag-warn":"tag-danger"}`}>
                           {p.stock>p.stock_min?"OK":p.stock>0?"Bajo":"Agotado"}
                         </span>
-                        {ordenes.some(o=>!o.cancelada&&!o.recibida&&Array.isArray(o.items)&&o.items.some(i=>i.productoId===p.id))&&(
+                        {p.stock<=p.stock_min&&ordenes.some(o=>!o.cancelada&&!o.recibida&&Array.isArray(o.items)&&o.items.some(i=>i.productoId===p.id))&&(
                           <span className="tag" style={{background:"#fff3e8",color:"#c45c00",border:"1px solid #f5c99a",marginLeft:4,fontSize:9}}>
                             📋 OC pendiente
                           </span>
@@ -1760,7 +1811,7 @@ nav::-webkit-scrollbar{display:none}
                     <div>
                       <div style={{fontSize:12,fontWeight:600,color:"#1a1a1a"}}>{p.nombre}</div>
                       <div style={{fontSize:11,color:"#777"}}>{p.sku} · Proveedor: {p.proveedor||"—"}</div>
-                      {ordenes.some(o=>!o.cancelada&&!o.recibida&&Array.isArray(o.items)&&o.items.some(i=>i.productoId===p.id))&&(
+                      {p.stock<=p.stock_min&&ordenes.some(o=>!o.cancelada&&!o.recibida&&Array.isArray(o.items)&&o.items.some(i=>i.productoId===p.id))&&(
                         <span style={{fontSize:9,fontWeight:700,background:"#fff3e8",color:"#c45c00",border:"1px solid #f5c99a",borderRadius:99,padding:"2px 7px",marginTop:3,display:"inline-block"}}>
                           📋 OC pendiente
                         </span>
@@ -2241,6 +2292,20 @@ nav::-webkit-scrollbar{display:none}
                 </div>
               ))}
             </div>
+            <div style={{marginBottom:12}}>
+              <div className="label" style={{marginBottom:5}}>Ubicación en tienda</div>
+              <select value={newProduct.ubicacion||""} onChange={e=>setNewProduct(p=>({...p,ubicacion:e.target.value}))} style={{width:"100%"}}>
+                <option value="">Sin asignar</option>
+                <option value="Vitrina">Vitrina</option><option value="Anaquel 1">Anaquel 1</option><option value="Anaquel 2">Anaquel 2</option><option value="Almacén 1">Almacén 1</option><option value="Almacén 2">Almacén 2</option><option value="Almacén 3">Almacén 3</option><option value="Almacén 4">Almacén 4</option>
+              </select>
+            </div>
+            <div style={{marginBottom:12}}>
+              <div className="label" style={{marginBottom:5}}>Ubicación en tienda</div>
+              <select value={newProduct.ubicacion||""} onChange={e=>setNewProduct(p=>({...p,ubicacion:e.target.value}))} style={{width:"100%"}}>
+                <option value="">Sin asignar</option>
+                <option value="Vitrina">Vitrina</option><option value="Anaquel 1">Anaquel 1</option><option value="Anaquel 2">Anaquel 2</option><option value="Almacén 1">Almacén 1</option><option value="Almacén 2">Almacén 2</option><option value="Almacén 3">Almacén 3</option><option value="Almacén 4">Almacén 4</option>
+              </select>
+            </div>
             <div style={{display:"flex",gap:10}}>
               <button className="btn btn-gold" style={{flex:1}} onClick={addProduct}>Agregar</button>
               <button className="btn btn-dark" style={{flex:1}} onClick={()=>setShowAddProduct(false)}>Cancelar</button>
@@ -2461,6 +2526,22 @@ nav::-webkit-scrollbar{display:none}
                   })));
                 } catch(e){}
                 await loadData();
+                // Auto-close OC if all products now have sufficient stock
+                if(showNuevaEntrada.id){
+                  try {
+                    const updatedProds = await sb.get("productos","select=id,stock,stock_min");
+                    const ocItems = showNuevaEntrada.items||[];
+                    const allSufficient = ocItems.every(i=>{
+                      if(!i.cantidad||i.cantidad<=0) return true;
+                      const prod = Array.isArray(updatedProds)?updatedProds.find(p=>p.id===i.productoId):null;
+                      return prod ? prod.stock > prod.stock_min : false;
+                    });
+                    if(allSufficient){
+                      await sb.patch("ordenes_compra", showNuevaEntrada.id, {recibida:true, estado:"recibida"});
+                      notify("✓ OC "+showNuevaEntrada.folio+" cerrada automáticamente");
+                    }
+                  } catch(e){}
+                }
                 const entrada={id:Date.now(),folio,fecha:new Date().toISOString(),proveedor:showNuevaEntrada.proveedor,recibe:entradaRecibe,refOrden:showNuevaEntrada.folio,items:itemsRecibidos};
                 const savedEntrada = await sb.post("entradas_mercancia", {
                   folio, proveedor:showNuevaEntrada.proveedor,
