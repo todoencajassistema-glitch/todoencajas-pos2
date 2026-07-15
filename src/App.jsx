@@ -1107,12 +1107,13 @@ nav::-webkit-scrollbar{display:none}
               </div>
             </div>
             {lowStock.length>0&&(
-              <div className="card" style={{borderColor:"#4a2010"}}>
-                <div style={{fontSize:10,color:"#eb5757",letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>⚠ Stock bajo ({lowStock.length} productos)</div>
+              <div className="card" style={{borderColor:"#f5c9c9"}}>
+                <div style={{fontSize:10,color:"#c0392b",letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>⚠ Stock bajo ({lowStock.length} productos)</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
                   {lowStock.map(p=>(
-                    <div key={p.id} style={{background:"#1e1010",border:"1px solid #4a2020",borderRadius:5,padding:"5px 12px",fontSize:12}}>
-                      <span style={{color:"#eb5757",marginRight:5}}>●</span>{p.nombre}<strong style={{color:"#eb5757",marginLeft:5}}>{p.stock}</strong><span style={{color:"#888"}}>/{p.stock_min}</span>
+                    <div key={p.id} style={{background:"#fff3f3",border:"1px solid #f5c9c9",borderRadius:8,padding:"7px 12px",fontSize:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <span style={{color:"#1a1a1a",fontWeight:500}}>{p.nombre}</span>
+                      <span style={{color:"#c0392b",fontWeight:700,marginLeft:8}}>{p.stock}<span style={{color:"#888",fontWeight:400}}>/{p.stock_min}</span></span>
                     </div>
                   ))}
                 </div>
