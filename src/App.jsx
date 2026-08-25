@@ -504,15 +504,7 @@ export default function App(){
   },[currentUser]);
 
   // ── LOGIN ─────────────────────────────────────────────────────────────────
-  if(!currentUser){
-    const doLogin = async () => {
-      setLoading(true);
-      const users = await sb.get("usuarios","usuario=eq."+loginUser+"&pin=eq."+loginPin+"&activo=eq.true");
-      setLoading(false);
-      if(Array.isArray(users)&&users.length>0) { setCurrentUser(users[0]); setLoginError(""); }
-      else setLoginError("Usuario o PIN incorrecto");
-    };
-    useEffect(()=>{
+  useEffect(()=>{
     if(!showQRScanner) return;
     let stream=null;
     let animFrame=null;
@@ -560,6 +552,18 @@ export default function App(){
       if(animFrame) cancelAnimationFrame(animFrame);
     };
   },[showQRScanner]);
+
+
+  if(!currentUser){
+    const doLogin = async () => {
+      setLoading(true);
+      const users = await sb.get("usuarios","usuario=eq."+loginUser+"&pin=eq."+loginPin+"&activo=eq.true");
+      setLoading(false);
+      if(Array.isArray(users)&&users.length>0) { setCurrentUser(users[0]); setLoginError(""); }
+      else setLoginError("Usuario o PIN incorrecto");
+    };
+
+
 
   return(
       <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f5f5f0",minHeight:"100vh",color:"#1a1a1a",overflowX:"hidden",maxWidth:"100vw",width:"100%"}}>
