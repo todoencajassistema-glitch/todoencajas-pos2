@@ -507,55 +507,47 @@ export default function App(){
   useEffect(()=>{
     if(!showQRScanner) return;
     let stream=null;
-    let animFrame=null;
-    let scanned_done = false;
+    let interval=null;
+    let done=false;
+    const stopAll=()=>{ done=true; if(interval) clearInterval(interval); if(stream) stream.getTracks().forEach(t=>t.stop()); };
     const startCamera = async ()=>{
       try {
-        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
+        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:640},height:{ideal:480}}});
         const video = document.getElementById("qr-video");
         const canvas = document.getElementById("qr-canvas");
-        if(!video||!canvas) return;
+        if(!video||!canvas){stopAll();return;}
         video.srcObject = stream;
         await video.play();
-        const detector = "BarcodeDetector" in window ? new BarcodeDetector({formats:["qr_code","code_128","ean_13","code_39"]}) : null;
-        const tick = async ()=>{
-          if(scanned_done) return;
-          if(video.readyState===video.HAVE_ENOUGH_DATA && detector){
-            canvas.height=video.videoHeight;
-            canvas.width=video.videoWidth;
-            const ctx=canvas.getContext("2d");
-            ctx.drawImage(video,0,0,canvas.width,canvas.height);
-            try {
-              const codes = await detector.detect(canvas);
-              if(codes.length>0 && !scanned_done){
-                scanned_done = true;
-                cancelAnimationFrame(animFrame);
-                if(stream) stream.getTracks().forEach(t=>t.stop());
-                const sku=codes[0].rawValue;
-                const found=products.find(p=>p.sku===sku||p.nombre===sku);
-                if(found){
-                  setQrScanStatus("✓ "+found.nombre);
-                  const qty = parseInt(prompt("¿Cuántas piezas de "+found.nombre+"?","1"))||1;
-                  for(let i=0;i<qty;i++) addToCart(found);
-                  setTimeout(()=>{setShowQRScanner(false);setQrScanStatus("");},300);
-                } else {
-                  setQrScanStatus("⚠ SKU no encontrado: "+sku);
-                  setTimeout(()=>{setShowQRScanner(false);setQrScanStatus("");},2000);
-                }
-                return;
+        if(!("BarcodeDetector" in window)){setQrScanStatus("⚠ Tu navegador no soporta escaneo QR. Usa Chrome en Android.");return;}
+        const detector = new BarcodeDetector({formats:["qr_code","code_128","ean_13","code_39","upc_a","upc_e"]});
+        interval = setInterval(async ()=>{
+          if(done) return;
+          if(video.readyState!==video.HAVE_ENOUGH_DATA) return;
+          canvas.height=video.videoHeight;
+          canvas.width=video.videoWidth;
+          canvas.getContext("2d").drawImage(video,0,0,canvas.width,canvas.height);
+          try {
+            const codes = await detector.detect(canvas);
+            if(codes.length>0 && !done){
+              stopAll();
+              const sku=codes[0].rawValue;
+              const found=products.find(p=>p.sku===sku||p.nombre===sku);
+              if(found){
+                setQrScanStatus("✓ "+found.nombre);
+                const qty=parseInt(prompt("¿Cuántas piezas de "+found.nombre+"?","1"))||1;
+                for(let i=0;i<qty;i++) addToCart(found);
+                setTimeout(()=>{setShowQRScanner(false);setQrScanStatus("");},300);
+              } else {
+                setQrScanStatus("⚠ SKU no encontrado: "+sku);
+                setTimeout(()=>{setShowQRScanner(false);setQrScanStatus("");},2000);
               }
-            } catch(e){}
-          }
-          if(!scanned_done) animFrame=requestAnimationFrame(tick);
-        };
-        animFrame=requestAnimationFrame(tick);
+            }
+          } catch(e){}
+        }, 500);
       } catch(e){ setQrScanStatus("⚠ No se pudo acceder a la cámara"); }
     };
     startCamera();
-    return ()=>{
-      if(stream) stream.getTracks().forEach(t=>t.stop());
-      if(animFrame) cancelAnimationFrame(animFrame);
-    };
+    return ()=>stopAll();
   },[showQRScanner]);
 
 
