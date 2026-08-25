@@ -585,7 +585,7 @@ textarea{resize:vertical}
 .btn-red:hover{background:#ffe8e8}
 .btn-green{background:#f2fbf5;color:#1a7a3a;border:1.5px solid #b8e8c8}
 .btn-green:hover{background:#e0f5e8}
-.card{background:#fff;border:1.5px solid #ede8e0;border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.card{background:#fff;border:1.5px solid #ede8e0;border-radius:14px;padding:clamp(12px,3vw,20px);box-shadow:0 1px 3px rgba(0,0,0,0.04)}
 .section-title{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;margin-bottom:18px;color:#1a1a1a}
 .label{font-size:11px;color:#b0a898;letter-spacing:0.8px;text-transform:uppercase;font-weight:600}
 .tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
@@ -1084,7 +1084,7 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
         </div>
       </div>
 
-      <div style={{padding:"24px 24px 50px"}}>
+      <div style={{padding:isMobile?"12px 12px 60px":"24px 24px 50px",overflowX:"hidden"}}>
 
         {/* ══ DASHBOARD ══ */}
         {tab==="dashboard"&&(
@@ -1099,7 +1099,7 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
               ].map((k,i)=>(
                 <div key={i} className="card">
                   <div style={{fontSize:10,color:"#777",letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>{k.label}</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:24,fontWeight:800,color:"#E8681A",marginBottom:4}}>{k.value}</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:isMobile?16:24,fontWeight:800,color:"#E8681A",marginBottom:4}}>{k.value}</div>
                   <div style={{fontSize:11,color:"#888"}}>{k.sub}</div>
                 </div>
               ))}
