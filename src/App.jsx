@@ -512,7 +512,56 @@ export default function App(){
       if(Array.isArray(users)&&users.length>0) { setCurrentUser(users[0]); setLoginError(""); }
       else setLoginError("Usuario o PIN incorrecto");
     };
-    return(
+    useEffect(()=>{
+    if(!showQRScanner) return;
+    let stream=null;
+    let animFrame=null;
+    const startCamera = async ()=>{
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
+        const video = document.getElementById("qr-video");
+        const canvas = document.getElementById("qr-canvas");
+        if(!video||!canvas) return;
+        video.srcObject = stream;
+        await video.play();
+        const tick = ()=>{
+          if(!showQRScanner){return;}
+          if(video.readyState===video.HAVE_ENOUGH_DATA){
+            canvas.height=video.videoHeight;
+            canvas.width=video.videoWidth;
+            const ctx=canvas.getContext("2d");
+            ctx.drawImage(video,0,0,canvas.width,canvas.height);
+            const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+            // Use BarcodeDetector if available (Android Chrome)
+            if("BarcodeDetector" in window){
+              new BarcodeDetector({formats:["qr_code","code_128","ean_13","code_39"]}).detect(canvas).then(codes=>{
+                if(codes.length>0){
+                  const scanned=codes[0].rawValue;
+                  const found=products.find(p=>p.sku===scanned||p.nombre===scanned);
+                  if(found){
+                    addToCart(found);
+                    setQrScanStatus("✓ "+found.nombre+" agregado");
+                    setTimeout(()=>{setShowQRScanner(false);setQrScanStatus("");},1200);
+                  } else {
+                    setQrScanStatus("⚠ SKU no encontrado: "+scanned);
+                  }
+                }
+              }).catch(()=>{});
+            }
+          }
+          animFrame=requestAnimationFrame(tick);
+        };
+        animFrame=requestAnimationFrame(tick);
+      } catch(e){ setQrScanStatus("⚠ No se pudo acceder a la cámara"); }
+    };
+    startCamera();
+    return ()=>{
+      if(stream) stream.getTracks().forEach(t=>t.stop());
+      if(animFrame) cancelAnimationFrame(animFrame);
+    };
+  },[showQRScanner]);
+
+  return(
       <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f5f5f0",minHeight:"100vh",color:"#1a1a1a",overflowX:"hidden",maxWidth:"100vw",width:"100%"}}>
         <style>{`
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap');
@@ -644,54 +693,7 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
   const updateDesc = (id,pct) => setCart(c=>c.map(i=>i.productoId===id?{...i,descuento:parseFloat(Math.min(100,Math.max(0,pct)).toFixed(4))}:i));
   const updateDescPesos = (id,pesos) => setCart(c=>c.map(i=>i.productoId===id?{...i,descuentoPesos:parseFloat(Number(pesos).toFixed(2)),descuento:i.precioUnitario>0?parseFloat(Math.min(100,(pesos/i.precioUnitario)*100).toFixed(4)):0}:i));
 
-  useEffect(()=>{
-    if(!showQRScanner) return;
-    let stream=null;
-    let animFrame=null;
-    const startCamera = async ()=>{
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
-        const video = document.getElementById("qr-video");
-        const canvas = document.getElementById("qr-canvas");
-        if(!video||!canvas) return;
-        video.srcObject = stream;
-        await video.play();
-        const tick = ()=>{
-          if(!showQRScanner){return;}
-          if(video.readyState===video.HAVE_ENOUGH_DATA){
-            canvas.height=video.videoHeight;
-            canvas.width=video.videoWidth;
-            const ctx=canvas.getContext("2d");
-            ctx.drawImage(video,0,0,canvas.width,canvas.height);
-            const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
-            // Use BarcodeDetector if available (Android Chrome)
-            if("BarcodeDetector" in window){
-              new BarcodeDetector({formats:["qr_code","code_128","ean_13","code_39"]}).detect(canvas).then(codes=>{
-                if(codes.length>0){
-                  const scanned=codes[0].rawValue;
-                  const found=products.find(p=>p.sku===scanned||p.nombre===scanned);
-                  if(found){
-                    addToCart(found);
-                    setQrScanStatus("✓ "+found.nombre+" agregado");
-                    setTimeout(()=>{setShowQRScanner(false);setQrScanStatus("");},1200);
-                  } else {
-                    setQrScanStatus("⚠ SKU no encontrado: "+scanned);
-                  }
-                }
-              }).catch(()=>{});
-            }
-          }
-          animFrame=requestAnimationFrame(tick);
-        };
-        animFrame=requestAnimationFrame(tick);
-      } catch(e){ setQrScanStatus("⚠ No se pudo acceder a la cámara"); }
-    };
-    startCamera();
-    return ()=>{
-      if(stream) stream.getTracks().forEach(t=>t.stop());
-      if(animFrame) cancelAnimationFrame(animFrame);
-    };
-  },[showQRScanner]);
+
 
   const cartSubtotal  = cart.reduce((a,i)=>a+i.cantidad*i.precioUnitario,0);
   const cartDescuento = cart.reduce((a,i)=>a+i.cantidad*i.precioUnitario*(i.descuento/100),0)+cartSubtotal*(descGlobal/100);
