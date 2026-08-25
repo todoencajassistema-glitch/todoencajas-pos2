@@ -360,6 +360,55 @@ export default function App(){
 
   const [windowW,setWindowW] = useState(window.innerWidth);
   useEffect(()=>{const h=()=>setWindowW(window.innerWidth);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h);},[]);
+
+  useEffect(()=>{
+    if(!showQRScanner) return;
+    let stream=null;
+    let animFrame=null;
+    const startCamera = async ()=>{
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
+        const video = document.getElementById("qr-video");
+        const canvas = document.getElementById("qr-canvas");
+        if(!video||!canvas) return;
+        video.srcObject = stream;
+        await video.play();
+        const tick = ()=>{
+          if(!showQRScanner){return;}
+          if(video.readyState===video.HAVE_ENOUGH_DATA){
+            canvas.height=video.videoHeight;
+            canvas.width=video.videoWidth;
+            const ctx=canvas.getContext("2d");
+            ctx.drawImage(video,0,0,canvas.width,canvas.height);
+            const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+            // Use BarcodeDetector if available (Android Chrome)
+            if("BarcodeDetector" in window){
+              new BarcodeDetector({formats:["qr_code","code_128","ean_13","code_39"]}).detect(canvas).then(codes=>{
+                if(codes.length>0){
+                  const scanned=codes[0].rawValue;
+                  const found=products.find(p=>p.sku===scanned||p.nombre===scanned);
+                  if(found){
+                    addToCart(found);
+                    setQrScanStatus("✓ "+found.nombre+" agregado");
+                    setTimeout(()=>{setShowQRScanner(false);setQrScanStatus("");},1200);
+                  } else {
+                    setQrScanStatus("⚠ SKU no encontrado: "+scanned);
+                  }
+                }
+              }).catch(()=>{});
+            }
+          }
+          animFrame=requestAnimationFrame(tick);
+        };
+        animFrame=requestAnimationFrame(tick);
+      } catch(e){ setQrScanStatus("⚠ No se pudo acceder a la cámara"); }
+    };
+    startCamera();
+    return ()=>{
+      if(stream) stream.getTracks().forEach(t=>t.stop());
+      if(animFrame) cancelAnimationFrame(animFrame);
+    };
+  },[showQRScanner]);
   const isMobile = windowW < 768;
   const isTablet = windowW < 1024;
 
@@ -382,6 +431,8 @@ export default function App(){
   const [efectivoRecibido,setEfectivoRecibido] = useState("");
   const [descGlobal,setDescGlobal]   = useState(0);
   const [searchProd,setSearchProd]   = useState("");
+  const [showQRScanner,setShowQRScanner] = useState(false);
+  const [qrScanStatus,setQrScanStatus] = useState("");
 
   const [editProduct,setEditProduct]   = useState(null);
   const [showAddProduct,setShowAddProduct] = useState(false);
@@ -409,6 +460,8 @@ export default function App(){
     const d=new Date(); d.setDate(d.getDate()-d.getDay()+1); return d.toISOString().slice(0,10);
   });
   const [fechaCorteHasta,setFechaCorteHasta] = useState(new Date().toISOString().slice(0,10));
+  const [cortePeriodoSales,setCortePeriodoSales] = useState([]);
+  const [cortePeriodoLoading,setCortePeriodoLoading] = useState(false);
   const [gastos,setGastos] = useState([]);
   const [showNuevoGasto,setShowNuevoGasto] = useState(false);
   const [nuevoGasto,setNuevoGasto] = useState({concepto:"",monto:"",categoria:"operacion",metodoPago:"efectivo"});
@@ -507,7 +560,7 @@ export default function App(){
       else setLoginError("Usuario o PIN incorrecto");
     };
     return(
-      <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f5f5f0",minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",color:"#222"}}>
+      <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:"#f5f5f0",minHeight:"100vh",color:"#1a1a1a",overflowX:"hidden",maxWidth:"100vw",width:"100%"}}>
         <style>{`
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -551,10 +604,13 @@ tr:hover td{background:#fdfcfa}
 nav::-webkit-scrollbar{display:none}
 @media(max-width:768px){
   nav{-webkit-overflow-scrolling:touch}
-  .modal{padding:18px!important;margin:10px!important}
+  .modal{padding:18px!important;margin:10px!important;width:calc(100vw - 32px)!important;max-width:100%!important}
   table{min-width:500px}
   .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  body{overflow-x:hidden}
+  *{max-width:100vw;box-sizing:border-box}
 }
+html,body{overflow-x:hidden;width:100%;max-width:100vw}
 `}</style>
         <div style={{background:"#fff",border:"1px solid #e8e4df",borderRadius:14,padding:40,width:340,textAlign:"center"}}>
           <img src={LOGO_SRC} alt="Todo en Cajas" style={{width:220,height:"auto",marginBottom:8}}/>
@@ -934,7 +990,7 @@ nav::-webkit-scrollbar{display:none}
   const corteFechaFin = new Date(fechaCorte+"T23:59:59");
   const corteSales = corteMode==="dia"
     ? activeSales.filter(s=>new Date(s.fecha)>=corteFecha&&new Date(s.fecha)<=corteFechaFin)
-    : activeSales.filter(s=>{const f=new Date(s.fecha);return f>=new Date(fechaCorteDesde+"T00:00:00")&&f<=new Date(fechaCorteHasta+"T23:59:59");});
+    : cortePeriodoSales;
   const corteTotal=corteSales.reduce((a,s)=>a+Number(s.total),0);
   const gastosDelPeriodo = corteMode==="semana" ? gastos.filter(g=>{
     const f=new Date(g.fecha||g.created_at);
@@ -1155,7 +1211,18 @@ nav::-webkit-scrollbar{display:none}
               </div>
               <div className="card">
                 <div className="label" style={{marginBottom:10}}>Catalogo</div>
-                <input value={searchProd} onChange={e=>setSearchProd(e.target.value)} placeholder="Buscar por nombre o SKU..." style={{width:"100%",marginBottom:12}}/>
+                <div style={{display:"flex",gap:8,marginBottom:12}}>
+                  <input value={searchProd} onChange={e=>setSearchProd(e.target.value)} 
+                    placeholder="Buscar por nombre o SKU..." style={{flex:1}}
+                    onKeyDown={e=>{
+                      if(e.key==="Enter"&&searchProd.trim()){
+                        const found=products.find(p=>p.sku===searchProd.trim()||p.nombre.toLowerCase()===searchProd.trim().toLowerCase());
+                        if(found){addToCart(found);setSearchProd("");}
+                      }
+                    }}/>
+                  <button className="btn btn-dark" style={{padding:"8px 12px",fontSize:18}} 
+                    onClick={()=>setShowQRScanner(true)} title="Escanear QR">📷</button>
+                </div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:9}}>
                   {products.filter(p=>p.nombre.toLowerCase().includes(searchProd.toLowerCase())||p.sku.toLowerCase().includes(searchProd.toLowerCase())).map(p=>(
                     <div key={p.id} onClick={()=>addToCart(p)} className="card"
@@ -1296,6 +1363,40 @@ nav::-webkit-scrollbar{display:none}
                   a.href=url; a.download="inventario-todoencajas.csv"; a.click();
                   URL.revokeObjectURL(url);
                 }}>📊 Exportar Excel</button>
+                <button className="btn btn-dark" style={{fontSize:12}} onClick={()=>{
+                  const win=window.open('','_blank','width=900,height=700');
+                  if(!win) return;
+                  const prods = products.filter(p=>p.activo!==false);
+                  const parts=[];
+                  parts.push('<html><head><meta charset="utf-8"/><style>');
+                  parts.push('body{font-family:Arial,sans-serif;padding:20px;background:#f5f5f0}');
+                  parts.push('h1{color:#E8681A;font-size:18pt;margin-bottom:4px}');
+                  parts.push('.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}');
+                  parts.push('.card{background:#fff;border:1px solid #ede8e0;border-radius:8px;padding:12px;text-align:center;page-break-inside:avoid}');
+                  parts.push('.sku{font-size:8pt;color:#888;margin-bottom:4px}');
+                  parts.push('.nombre{font-size:9pt;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.2}');
+                  parts.push('.precio{font-size:10pt;font-weight:700;color:#E8681A}');
+                  parts.push('.ubicacion{font-size:8pt;color:#888;margin-top:2px}');
+                  parts.push('@media print{button{display:none}.grid{grid-template-columns:repeat(4,1fr)}}');
+                  parts.push('</style></head><body>');
+                  parts.push('<h1>📦 TODO EN CAJAS.COM</h1>');
+                  parts.push('<p style="color:#888;font-size:10pt">Etiquetas QR de Inventario · '+prods.length+' productos</p>');
+                  parts.push('<div style="text-align:right;margin-bottom:10px"><button onclick="window.print()" style="background:#E8681A;color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:12pt;cursor:pointer">🖨 Imprimir etiquetas</button></div>');
+                  parts.push('<div class="grid">');
+                  prods.forEach(p=>{
+                    const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=120x120&data='+encodeURIComponent(p.sku||p.nombre);
+                    parts.push('<div class="card">');
+                    parts.push('<div class="sku">'+p.sku+'</div>');
+                    parts.push('<img src="'+qrUrl+'" width="100" height="100" alt="QR"/>');
+                    parts.push('<div class="nombre">'+p.nombre+'</div>');
+                    parts.push('<div class="precio">$'+Number(p.precio||0).toFixed(2)+'</div>');
+                    if(p.ubicacion) parts.push('<div class="ubicacion">📍'+p.ubicacion+'</div>');
+                    parts.push('</div>');
+                  });
+                  parts.push('</div></body></html>');
+                  win.document.write(parts.join(''));
+                  win.document.close();
+                }}>🏷 Generar QR</button>
                 {isAdmin&&<button className="btn btn-gold" onClick={()=>setShowAddProduct(true)}>+ Agregar</button>}
               </div>
             </div>
@@ -1519,10 +1620,17 @@ nav::-webkit-scrollbar{display:none}
                 <button className="btn" onClick={()=>setCorteMode("semana")} style={{fontSize:12,padding:"5px 12px",background:corteMode==="semana"?"#E8681A":"#fff",color:corteMode==="semana"?"#fff":"#888",border:"1.5px solid",borderColor:corteMode==="semana"?"#E8681A":"#e5e0d8",borderRadius:99}}>📆 Por semana</button>
               </div>
               {corteMode==="dia"&&<input type="date" value={fechaCorte} onChange={e=>setFechaCorte(e.target.value)} style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #e5e0d8"}}/>}
-              {corteMode==="semana"&&<div style={{display:"flex",alignItems:"center",gap:6}}>
+              {corteMode==="semana"&&<div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
                 <input type="date" value={fechaCorteDesde} onChange={e=>setFechaCorteDesde(e.target.value)} style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #e5e0d8"}}/>
                 <span style={{color:"#888",fontSize:12}}>al</span>
                 <input type="date" value={fechaCorteHasta} onChange={e=>setFechaCorteHasta(e.target.value)} style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #e5e0d8"}}/>
+                <button className="btn btn-gold" style={{fontSize:12,padding:"6px 14px"}} onClick={async()=>{
+                  setCortePeriodoLoading(true);
+                  const data = await sb.get("ventas","cancelada=eq.false&fecha=gte."+fechaCorteDesde+"T00:00:00&fecha=lte."+fechaCorteHasta+"T23:59:59&order=fecha.asc&limit=2000");
+                  setCortePeriodoSales(Array.isArray(data)?data:[]);
+                  setCortePeriodoLoading(false);
+                }}>{cortePeriodoLoading?"Cargando...":"🔍 Cargar periodo"}</button>
+                {cortePeriodoSales.length>0&&<span style={{fontSize:11,color:"#888"}}>{cortePeriodoSales.length} ventas</span>}
               </div>}
               {corteMode==="dia"&&fechaCorte!==new Date().toISOString().slice(0,10)&&<button className="btn btn-dark" style={{fontSize:11}} onClick={()=>setFechaCorte(new Date().toISOString().slice(0,10))}>Hoy</button>}
             </div>
@@ -2102,6 +2210,19 @@ nav::-webkit-scrollbar{display:none}
               }}>Guardar Gasto</button>
               <button className="btn btn-dark" style={{flex:1}} onClick={()=>setShowNuevoGasto(false)}>Cancelar</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showQRScanner&&(
+        <div className="overlay" onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>
+          <div className="modal anim-in" style={{maxWidth:360,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:8}}>📷 Escanear QR</div>
+            <div style={{fontSize:12,color:"#888",marginBottom:16}}>Apunta la cámara al código QR de la caja</div>
+            <video id="qr-video" style={{width:"100%",borderRadius:10,background:"#000",maxHeight:280}} autoPlay playsInline muted/>
+            <canvas id="qr-canvas" style={{display:"none"}}/>
+            {qrScanStatus&&<div style={{marginTop:12,padding:"8px 14px",background:qrScanStatus.startsWith("✓")?"#edfbf2":"#fff3f3",borderRadius:8,fontSize:13,fontWeight:600,color:qrScanStatus.startsWith("✓")?"#1a7a3a":"#c0392b"}}>{qrScanStatus}</div>}
+            <button className="btn btn-dark" style={{width:"100%",marginTop:14}} onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>Cerrar</button>
           </div>
         </div>
       )}
@@ -2779,6 +2900,19 @@ nav::-webkit-scrollbar{display:none}
               }}>Guardar Gasto</button>
               <button className="btn btn-dark" style={{flex:1}} onClick={()=>setShowNuevoGasto(false)}>Cancelar</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showQRScanner&&(
+        <div className="overlay" onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>
+          <div className="modal anim-in" style={{maxWidth:360,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:8}}>📷 Escanear QR</div>
+            <div style={{fontSize:12,color:"#888",marginBottom:16}}>Apunta la cámara al código QR de la caja</div>
+            <video id="qr-video" style={{width:"100%",borderRadius:10,background:"#000",maxHeight:280}} autoPlay playsInline muted/>
+            <canvas id="qr-canvas" style={{display:"none"}}/>
+            {qrScanStatus&&<div style={{marginTop:12,padding:"8px 14px",background:qrScanStatus.startsWith("✓")?"#edfbf2":"#fff3f3",borderRadius:8,fontSize:13,fontWeight:600,color:qrScanStatus.startsWith("✓")?"#1a7a3a":"#c0392b"}}>{qrScanStatus}</div>}
+            <button className="btn btn-dark" style={{width:"100%",marginTop:14}} onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>Cerrar</button>
           </div>
         </div>
       )}
