@@ -1376,7 +1376,7 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
                   if(!win) return;
                   const prods = products.filter(p=>p.activo!==false);
                   const parts=[];
-                  parts.push('<html><head><meta charset="utf-8"/><style>');
+                  parts.push('<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><style>');
                   parts.push('body{font-family:Arial,sans-serif;padding:12px;background:#f5f5f0;margin:0}');
                   parts.push('h1{color:#E8681A;font-size:14pt;margin-bottom:2px}');
                   parts.push('.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}');
