@@ -2181,16 +2181,16 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
           <div className="modal anim-in" style={{maxWidth:360,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:8}}>📷 Escanear QR</div>
             <div style={{fontSize:12,color:"#888",marginBottom:16}}>Escribe o pega el SKU, o usa un lector de códigos</div>
-            <input autoFocus id="qr-input" placeholder="Escanea o escribe el SKU..."
+            <input autoFocus id="qr-input" placeholder="Escanea o escribe el SKU y presiona Enter..."
               style={{width:"100%",fontSize:15,padding:"12px",marginBottom:12}}
               onKeyDown={e=>{
                 if(e.key==="Enter"){
                   const sku=e.target.value.trim();
+                  e.target.value="";
                   if(!sku) return;
                   const found=products.find(p=>p.sku===sku||p.nombre===sku);
                   if(found){
                     setQrScanStatus("✓ "+found.nombre+" encontrado");
-                    e.target.value="";
                     setTimeout(()=>{
                       const qty=parseInt(prompt("¿Cuántas piezas de "+found.nombre+"?","1"))||1;
                       for(let i=0;i<qty;i++) addToCart(found);
@@ -2198,23 +2198,6 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
                     },100);
                   } else {
                     setQrScanStatus("⚠ SKU no encontrado: "+sku);
-                    e.target.value="";
-                  }
-                }
-              }}
-              onChange={e=>{
-                // Auto-detect when barcode reader pastes full code fast
-                const val=e.target.value.trim();
-                if(val.length>=3){
-                  const found=products.find(p=>p.sku===val||p.nombre===val);
-                  if(found){
-                    setQrScanStatus("✓ "+found.nombre+" encontrado");
-                    e.target.value="";
-                    setTimeout(()=>{
-                      const qty=parseInt(prompt("¿Cuántas piezas de "+found.nombre+"?","1"))||1;
-                      for(let i=0;i<qty;i++) addToCart(found);
-                      setShowQRScanner(false);setQrScanStatus("");
-                    },100);
                   }
                 }
               }}
