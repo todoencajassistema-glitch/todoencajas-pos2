@@ -504,51 +504,7 @@ export default function App(){
   },[currentUser]);
 
   // ── LOGIN ─────────────────────────────────────────────────────────────────
-  useEffect(()=>{
-    if(!showQRScanner) return;
-    let stream=null;
-    let interval=null;
-    let done=false;
-    const stopAll=()=>{ done=true; if(interval) clearInterval(interval); if(stream) stream.getTracks().forEach(t=>t.stop()); };
-    const startCamera = async ()=>{
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:640},height:{ideal:480}}});
-        const video = document.getElementById("qr-video");
-        const canvas = document.getElementById("qr-canvas");
-        if(!video||!canvas){stopAll();return;}
-        video.srcObject = stream;
-        await video.play();
-        if(!("BarcodeDetector" in window)){setQrScanStatus("⚠ Tu navegador no soporta escaneo QR. Usa Chrome en Android.");return;}
-        const detector = new BarcodeDetector({formats:["qr_code","code_128","ean_13","code_39","upc_a","upc_e"]});
-        interval = setInterval(async ()=>{
-          if(done) return;
-          if(video.readyState!==video.HAVE_ENOUGH_DATA) return;
-          canvas.height=video.videoHeight;
-          canvas.width=video.videoWidth;
-          canvas.getContext("2d").drawImage(video,0,0,canvas.width,canvas.height);
-          try {
-            const codes = await detector.detect(canvas);
-            if(codes.length>0 && !done){
-              stopAll();
-              const sku=codes[0].rawValue;
-              const found=products.find(p=>p.sku===sku||p.nombre===sku);
-              if(found){
-                setQrScanStatus("✓ "+found.nombre);
-                const qty=parseInt(prompt("¿Cuántas piezas de "+found.nombre+"?","1"))||1;
-                for(let i=0;i<qty;i++) addToCart(found);
-                setTimeout(()=>{setShowQRScanner(false);setQrScanStatus("");},300);
-              } else {
-                setQrScanStatus("⚠ SKU no encontrado: "+sku);
-                setTimeout(()=>{setShowQRScanner(false);setQrScanStatus("");},2000);
-              }
-            }
-          } catch(e){}
-        }, 500);
-      } catch(e){ setQrScanStatus("⚠ No se pudo acceder a la cámara"); }
-    };
-    startCamera();
-    return ()=>stopAll();
-  },[showQRScanner]);
+
 
 
   if(!currentUser){
@@ -2224,10 +2180,46 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
         <div className="overlay" onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>
           <div className="modal anim-in" style={{maxWidth:360,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:8}}>📷 Escanear QR</div>
-            <div style={{fontSize:12,color:"#888",marginBottom:16}}>Apunta la cámara al código QR de la caja</div>
-            <video id="qr-video" style={{width:"100%",borderRadius:10,background:"#000",maxHeight:280}} autoPlay playsInline muted/>
-            <canvas id="qr-canvas" style={{display:"none"}}/>
-            {qrScanStatus&&<div style={{marginTop:12,padding:"8px 14px",background:qrScanStatus.startsWith("✓")?"#edfbf2":"#fff3f3",borderRadius:8,fontSize:13,fontWeight:600,color:qrScanStatus.startsWith("✓")?"#1a7a3a":"#c0392b"}}>{qrScanStatus}</div>}
+            <div style={{fontSize:12,color:"#888",marginBottom:16}}>Escribe o pega el SKU, o usa un lector de códigos</div>
+            <input autoFocus id="qr-input" placeholder="Escanea o escribe el SKU..."
+              style={{width:"100%",fontSize:15,padding:"12px",marginBottom:12}}
+              onKeyDown={e=>{
+                if(e.key==="Enter"){
+                  const sku=e.target.value.trim();
+                  if(!sku) return;
+                  const found=products.find(p=>p.sku===sku||p.nombre===sku);
+                  if(found){
+                    setQrScanStatus("✓ "+found.nombre+" encontrado");
+                    e.target.value="";
+                    setTimeout(()=>{
+                      const qty=parseInt(prompt("¿Cuántas piezas de "+found.nombre+"?","1"))||1;
+                      for(let i=0;i<qty;i++) addToCart(found);
+                      setShowQRScanner(false);setQrScanStatus("");
+                    },100);
+                  } else {
+                    setQrScanStatus("⚠ SKU no encontrado: "+sku);
+                    e.target.value="";
+                  }
+                }
+              }}
+              onChange={e=>{
+                // Auto-detect when barcode reader pastes full code fast
+                const val=e.target.value.trim();
+                if(val.length>=3){
+                  const found=products.find(p=>p.sku===val||p.nombre===val);
+                  if(found){
+                    setQrScanStatus("✓ "+found.nombre+" encontrado");
+                    e.target.value="";
+                    setTimeout(()=>{
+                      const qty=parseInt(prompt("¿Cuántas piezas de "+found.nombre+"?","1"))||1;
+                      for(let i=0;i<qty;i++) addToCart(found);
+                      setShowQRScanner(false);setQrScanStatus("");
+                    },100);
+                  }
+                }
+              }}
+            />
+            {qrScanStatus&&<div style={{marginTop:8,padding:"8px 14px",background:qrScanStatus.startsWith("✓")?"#edfbf2":"#fff3f3",borderRadius:8,fontSize:13,fontWeight:600,color:qrScanStatus.startsWith("✓")?"#1a7a3a":"#c0392b"}}>{qrScanStatus}</div>}
             <button className="btn btn-dark" style={{width:"100%",marginTop:14}} onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>Cerrar</button>
           </div>
         </div>
@@ -2910,18 +2902,7 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
         </div>
       )}
 
-      {showQRScanner&&(
-        <div className="overlay" onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>
-          <div className="modal anim-in" style={{maxWidth:360,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:8}}>📷 Escanear QR</div>
-            <div style={{fontSize:12,color:"#888",marginBottom:16}}>Apunta la cámara al código QR de la caja</div>
-            <video id="qr-video" style={{width:"100%",borderRadius:10,background:"#000",maxHeight:280}} autoPlay playsInline muted/>
-            <canvas id="qr-canvas" style={{display:"none"}}/>
-            {qrScanStatus&&<div style={{marginTop:12,padding:"8px 14px",background:qrScanStatus.startsWith("✓")?"#edfbf2":"#fff3f3",borderRadius:8,fontSize:13,fontWeight:600,color:qrScanStatus.startsWith("✓")?"#1a7a3a":"#c0392b"}}>{qrScanStatus}</div>}
-            <button className="btn btn-dark" style={{width:"100%",marginTop:14}} onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>Cerrar</button>
-          </div>
-        </div>
-      )}
+      
 
       {showAnticipo&&cart.length>0&&(
         <div className="overlay" onClick={()=>setShowAnticipo(false)}>
