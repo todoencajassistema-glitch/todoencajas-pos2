@@ -2176,34 +2176,76 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
         </div>
       )}
 
-      {showQRScanner&&(
+            {showQRScanner&&(
         <div className="overlay" onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>
           <div className="modal anim-in" style={{maxWidth:360,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,marginBottom:8}}>📷 Escanear QR</div>
-            <div style={{fontSize:12,color:"#888",marginBottom:16}}>Escribe o pega el SKU, o usa un lector de códigos</div>
-            <input autoFocus id="qr-input" placeholder="Escanea o escribe el SKU y presiona Enter..."
-              style={{width:"100%",fontSize:15,padding:"12px",marginBottom:12}}
-              onKeyDown={e=>{
-                if(e.key==="Enter"){
-                  const sku=e.target.value.trim();
-                  e.target.value="";
-                  if(!sku) return;
-                  const found=products.find(p=>p.sku===sku||p.nombre===sku);
-                  if(found){
-                    setQrScanStatus("✓ "+found.nombre+" encontrado");
-                    setTimeout(()=>{
-                      const qty=parseInt(prompt("¿Cuántas piezas de "+found.nombre+"?","1"))||1;
-                      for(let i=0;i<qty;i++) addToCart(found);
-                      setShowQRScanner(false);setQrScanStatus("");
-                    },100);
-                  } else {
-                    setQrScanStatus("⚠ SKU no encontrado: "+sku);
-                  }
-                }
-              }}
+            <div style={{fontSize:12,color:"#888",marginBottom:16}}>Apunta la cámara al código QR de la caja</div>
+            <input
+              type="text"
+              autoFocus
+              id="qr-input"
+              placeholder="SKU aparecerá aquí al escanear..."
+              readOnly
+              style={{width:"100%",fontSize:13,padding:"10px",marginBottom:8,background:"#f5f5f0",textAlign:"center"}}
             />
-            {qrScanStatus&&<div style={{marginTop:8,padding:"8px 14px",background:qrScanStatus.startsWith("✓")?"#edfbf2":"#fff3f3",borderRadius:8,fontSize:13,fontWeight:600,color:qrScanStatus.startsWith("✓")?"#1a7a3a":"#c0392b"}}>{qrScanStatus}</div>}
-            <button className="btn btn-dark" style={{width:"100%",marginTop:14}} onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>Cerrar</button>
+            <label style={{display:"block",width:"100%",marginBottom:8}}>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                style={{display:"none"}}
+                onChange={async(e)=>{
+                  const file=e.target.files[0];
+                  if(!file) return;
+                  if(!("BarcodeDetector" in window)){
+                    notify("Tu navegador no soporta escaneo automático","error");
+                    return;
+                  }
+                  const img=await createImageBitmap(file);
+                  const detector=new BarcodeDetector({formats:["qr_code","code_128","ean_13","code_39"]});
+                  const codes=await detector.detect(img);
+                  if(codes.length>0){
+                    const sku=codes[0].rawValue;
+                    setShowQRScanner(false);
+                    const found=products.find(p=>p.sku===sku||p.nombre===sku);
+                    if(found){
+                      addToCart(found);
+                      notify("✓ "+found.nombre+" agregado");
+                    } else {
+                      notify("SKU no encontrado: "+sku,"error");
+                    }
+                  } else {
+                    notify("No se detectó código QR","error");
+                  }
+                  e.target.value="";
+                }}
+              />
+              <span className="btn btn-gold" style={{display:"block",width:"100%",padding:12,fontSize:14,cursor:"pointer"}}>📷 Abrir cámara y escanear</span>
+            </label>
+            <div style={{fontSize:11,color:"#aaa",marginBottom:12}}>O escribe el SKU manualmente:</div>
+            <div style={{display:"flex",gap:8}}>
+              <input
+                id="qr-manual"
+                placeholder="Escribe el SKU..."
+                style={{flex:1,fontSize:13,padding:"8px"}}
+                onKeyDown={e=>{
+                  if(e.key==="Enter"){
+                    const sku=e.target.value.trim();
+                    if(!sku) return;
+                    setShowQRScanner(false);
+                    const found=products.find(p=>p.sku===sku||p.nombre===sku);
+                    if(found){
+                      addToCart(found);
+                      notify("✓ "+found.nombre+" agregado");
+                    } else {
+                      notify("SKU no encontrado: "+sku,"error");
+                    }
+                  }
+                }}
+              />
+              <button className="btn btn-dark" onClick={()=>{setShowQRScanner(false);setQrScanStatus("");}}>✕</button>
+            </div>
           </div>
         </div>
       )}
