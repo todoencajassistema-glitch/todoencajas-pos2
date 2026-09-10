@@ -380,6 +380,7 @@ export default function App(){
   const [clienteId,setClienteId]     = useState("");
   const [clienteNombre,setClienteNombre] = useState("");
   const [canal,setCanal]             = useState("tienda");
+  const [refPedidoOnline,setRefPedidoOnline] = useState("");
   const [metodoPago,setMetodoPago]   = useState("efectivo");
   const [efectivoRecibido,setEfectivoRecibido] = useState("");
   const [descGlobal,setDescGlobal]   = useState(0);
