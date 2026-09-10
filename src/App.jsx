@@ -709,7 +709,7 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
         } catch(e){}
         await loadData();
         const itemsForReceipt=cart.map(i=>({nombre:i.nombre,sku:i.sku,cantidad:i.cantidad,precio_unitario:i.precioUnitario,descuento:Math.round((i.descuento||0)*100)/100}));
-        setShowReceipt(venta); setReceiptItems(itemsForReceipt);
+        setShowReceipt({...venta, ref_pedido_online: refPedidoOnline}); setReceiptItems(itemsForReceipt);
         setCart([]); setClienteId(""); setClienteNombre(""); setCanal("tienda");
         setMetodoPago("efectivo"); setEfectivoRecibido(""); setDescGlobal(0); setRefPedidoOnline("");
         notify("Venta registrada!");
