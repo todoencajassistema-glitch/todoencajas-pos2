@@ -677,7 +677,7 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
         sb.post("ventas",{
           folio:nextFolio, cliente:clienteNombreFinal,
           cliente_id:clienteId?parseInt(clienteId):null,
-          canal, metodo_pago:metodoPago, cajero:currentUser.nombre,
+          canal, ref_pedido_online:canal==="online"?refPedidoOnline:"", metodo_pago:metodoPago, cajero:currentUser.nombre,
           subtotal:cartSubtotal, descuento_total:cartDescuento, total:cartTotal,
           recibido, cambio:Math.max(0,recibido-cartTotal),
           cancelada:false, devolucion:false,
@@ -710,7 +710,7 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
         const itemsForReceipt=cart.map(i=>({nombre:i.nombre,sku:i.sku,cantidad:i.cantidad,precio_unitario:i.precioUnitario,descuento:Math.round((i.descuento||0)*100)/100}));
         setShowReceipt(venta); setReceiptItems(itemsForReceipt);
         setCart([]); setClienteId(""); setClienteNombre(""); setCanal("tienda");
-        setMetodoPago("efectivo"); setEfectivoRecibido(""); setDescGlobal(0);
+        setMetodoPago("efectivo"); setEfectivoRecibido(""); setDescGlobal(0); setRefPedidoOnline("");
         notify("Venta registrada!");
         // Telegram notification
         try {
@@ -745,7 +745,7 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
         sb.post("ventas",{
           folio, cliente:clienteNombreFinal,
           cliente_id:clienteId?parseInt(clienteId):null,
-          canal, metodo_pago:metodoPago, cajero:currentUser.nombre,
+          canal, ref_pedido_online:canal==="online"?refPedidoOnline:"", metodo_pago:metodoPago, cajero:currentUser.nombre,
           subtotal:cartSubtotal, descuento_total:cartDescuento, total:cartTotal,
           recibido:montoAnticipo, cambio:0,
           cancelada:false, devolucion:false,
@@ -1170,6 +1170,14 @@ html,body{overflow-x:hidden;width:100%;max-width:100vw}
                   </div>
                 </div>
               </div>
+              {canal==="online"&&(
+                <div style={{marginTop:10}}>
+                  <div className="label" style={{marginBottom:6}}>📋 Número de pedido (referencia)</div>
+                  <input value={refPedidoOnline} onChange={e=>setRefPedidoOnline(e.target.value)}
+                    placeholder="Ej: ORD-12345, #98765..."
+                    style={{width:"100%",fontSize:13}}/>
+                </div>
+              )}
               <div className="card">
                 <div className="label" style={{marginBottom:10}}>Catalogo</div>
                 <div style={{display:"flex",gap:8,marginBottom:12}}>
