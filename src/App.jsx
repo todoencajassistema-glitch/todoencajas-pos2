@@ -283,7 +283,7 @@ const doPrint = () => {
   parts.push('<hr style="border:2px solid #E8681A;margin-bottom:16px"/>');
   parts.push('<table style="width:100%;margin-bottom:16px;border-collapse:collapse"><tr>');
   parts.push('<td style="width:33%;padding:8px 10px;background:#f9f9f9;border:1px solid #eee"><div style="font-size:9pt;color:#888;margin-bottom:2px">CLIENTE</div><div style="font-weight:600">'+sale.cliente+'</div></td>');
-  parts.push('<td style="width:22%;padding:8px 10px;background:#f9f9f9;border:1px solid #eee"><div style="font-size:9pt;color:#888;margin-bottom:2px">CANAL</div><div>'+canal.emoji+' '+canal.label+'</div></td>');
+  parts.push('<td style="width:22%;padding:8px 10px;background:#f9f9f9;border:1px solid #eee"><div style="font-size:9pt;color:#888;margin-bottom:2px">CANAL</div><div>'+canal.emoji+' '+canal.label+(sale.ref_pedido_online?'<br/><span style="font-size:9pt;color:#7c3aed">Ref: '+sale.ref_pedido_online+'</span>':'')+'</div></td>');
   parts.push('<td style="width:22%;padding:8px 10px;background:#f9f9f9;border:1px solid #eee"><div style="font-size:9pt;color:#888;margin-bottom:2px">FORMA DE PAGO</div><div>'+pago.emoji+' '+pago.label+'</div></td>');
   parts.push('<td style="width:23%;padding:8px 10px;background:#f9f9f9;border:1px solid #eee"><div style="font-size:9pt;color:#888;margin-bottom:2px">ATENDIO</div><div>'+sale.cajero+'</div></td>');
   parts.push('</tr></table>');
